@@ -1,13 +1,13 @@
 import { store } from '@wordpress/interactivity';
-import { actions, state } from '@wordpress/interactivity-router';
 
 const catalog = '.zion-catalog-native';
 const sortForm = '.zion-catalog-toolbar form.woocommerce-ordering';
+const { state: routerState } = store('core/router');
 let loading = false;
 let navigation = 0;
 let observed;
 let noticeTimeout;
-let waitForScroll = false;
+let waitForScroll = true;
 
 const notice = document.createElement('div');
 notice.className = 'zion-shop-notice';
@@ -26,6 +26,9 @@ async function navigate(url, message, replace = false) {
   loading = true;
   const finish = window.zionCommercePending?.();
   try {
+    // WordPress 6.9 snapshots router regions when the module loads. Wait
+    // until an interaction so that the original WooCommerce islands hydrate.
+    const { actions } = await import('@wordpress/interactivity-router');
     await actions.navigate(url, { replace });
     if (current === navigation && message && location.href === url) announce(message);
   } finally {
@@ -42,7 +45,7 @@ let routerPending = false;
 store('zion/catalog', {
   callbacks: {
     syncProgress() {
-      routerPending = state.navigating ?? (state.navigation?.hasStarted && !state.navigation?.hasFinished);
+      routerPending = routerState.navigating ?? (routerState.navigation?.hasStarted && !routerState.navigation?.hasFinished);
       if (routerPending) {
         finishRouter ??= window.zionCommercePending?.();
       } else {
