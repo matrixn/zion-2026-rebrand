@@ -15,6 +15,7 @@ require_once __DIR__ . '/includes/product-page.php';
 require_once __DIR__ . '/includes/commerce-translations.php';
 require_once __DIR__ . '/includes/component-library.php';
 require_once __DIR__ . '/includes/services.php';
+require_once __DIR__ . '/includes/navigation.php';
 require_once __DIR__ . '/includes/seo.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/includes/control-center.php';
@@ -40,6 +41,16 @@ function zion_theme_enqueue_styles(): void {
 	wp_enqueue_style( 'zion-theme', get_theme_file_uri( 'assets/dist/zion.css' ), array(), $theme->get( 'Version' ) );
 }
 add_action( 'wp_enqueue_scripts', 'zion_theme_enqueue_styles' );
+
+/**
+ * Show progress for native WooCommerce requests as well as Zion storefront requests.
+ */
+function zion_theme_enqueue_commerce_progress(): void {
+	if ( class_exists( 'WooCommerce' ) ) {
+		wp_enqueue_script( 'zion-commerce-progress', get_theme_file_uri( 'assets/blocks/commerce-progress.js' ), array( 'wp-api-fetch', 'jquery' ), wp_get_theme()->get( 'Version' ), true );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'zion_theme_enqueue_commerce_progress', 5 );
 
 /**
  * Get the published page selected as the posts index.

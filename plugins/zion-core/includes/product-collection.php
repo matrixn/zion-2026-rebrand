@@ -292,7 +292,7 @@ function zion_core_storefront_sort_form( string $url, string $sort, string $page
 				<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $sort, $key ); ?>><?php echo esc_html( $choice[0] ); ?></option>
 			<?php endforeach; ?>
 		</select>
-		<button type="submit" class="wp-element-button"><?php esc_html_e( 'Aplică sortarea', 'zion-core' ); ?></button>
+		<noscript><button type="submit" class="wp-element-button"><?php esc_html_e( 'Aplică sortarea', 'zion-core' ); ?></button></noscript>
 		<?php wc_query_string_form_fields( null, array( 'orderby', 'submit', $page_key, 'product-page', 'zion_category', 'zion_more' ) ); ?>
 	</form>
 	<?php
@@ -303,7 +303,7 @@ function zion_core_storefront_sort_form( string $url, string $sort, string $page
  * Load AJAX controls for the native archive toolbar and Zion storefronts.
  */
 function zion_core_enqueue_catalog_controls(): void {
-	wp_enqueue_script_module( 'zion-catalog', plugins_url( 'assets/catalog.js', dirname( __DIR__ ) . '/zion-core.php' ), array( '@wordpress/interactivity-router' ), '1.1.0' );
+	wp_enqueue_script_module( 'zion-catalog', plugins_url( 'assets/catalog.js', dirname( __DIR__ ) . '/zion-core.php' ), array( '@wordpress/interactivity', '@wordpress/interactivity-router' ), '1.1.1' );
 }
 add_filter(
 	'render_block_woocommerce/catalog-sorting',
@@ -368,7 +368,7 @@ function zion_core_render_storefront_collection( array $options, array $display 
 	$facets     = zion_core_storefront_facets( $display, $url, $page_key, $on_sale );
 	$is_list    = 'list' === $display['layout'];
 	$base_limit = max( 1, min( 48, (int) $display['page_size'] ) );
-	$expanded   = $display['load_more'] ? zion_core_storefront_parameter( 'zion_more' ) : '';
+	$expanded   = $display['load_more'] && 'auto' === $display['load_mode'] ? zion_core_storefront_parameter( 'zion_more' ) : '';
 	$limit      = ctype_digit( $expanded ) ? max( $base_limit, min( 96, (int) $expanded ) ) : $base_limit;
 	$query      = array(
 		'postType'                 => 'product',
@@ -447,7 +447,7 @@ function zion_core_render_storefront_collection( array $options, array $display 
 	}
 	$content .= '<div class="zion-catalog-results"><div class="zion-catalog-toolbar">' .
 		zion_core_storefront_sort_form( $url, $sort, $page_key ) . '<!-- zion-catalog-count --></div>' .
-		$cards . $pagination . '<!-- zion-catalog-more -->' . $empty . '</div></div></div>';
+		$cards . '<!-- zion-catalog-more -->' . $pagination . $empty . '</div></div></div>';
 
 	$results = null;
 	$capture = static function ( array $posts, WP_Query $wp_query ) use ( &$results, $shop ): array {
@@ -495,10 +495,9 @@ function zion_core_render_storefront_collection( array $options, array $display 
 			esc_html( sprintf( $label, number_format_i18n( $total ) ) ) . '</p>';
 	}
 	$more = '';
-	if ( $display['load_more'] && $total > $limit && $limit < 96 && absint( zion_core_storefront_parameter( $page_key ) ) < 2 ) {
+	if ( $display['load_more'] && 'auto' === $display['load_mode'] && $total > $limit && $limit < 96 && absint( zion_core_storefront_parameter( $page_key ) ) < 2 ) {
 		$more_url = add_query_arg( 'zion_more', min( 96, $limit + $base_limit ), remove_query_arg( $page_key ) );
-		$more     = '<p class="zion-catalog-more" data-zion-load="' . esc_attr( 'manual' === $display['load_mode'] ? 'manual' : 'auto' ) . '"><a class="wp-element-button" href="' . esc_url( $more_url ) . '">' .
-			esc_html__( 'Încarcă mai multe', 'zion-core' ) . '</a></p>';
+		$more     = '<div class="zion-catalog-sentinel" aria-hidden="true" data-zion-next="' . esc_url( $more_url ) . '"></div>';
 	}
 	zion_core_enqueue_catalog_controls();
 	return str_replace( array( '<!-- zion-catalog-count -->', '<!-- zion-catalog-more -->' ), array( $count, $more ), $html );

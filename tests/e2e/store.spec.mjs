@@ -60,17 +60,30 @@ test('both storefronts are isolated and a software product reaches the native ca
   await expect(page.getByRole('heading', { name: 'Suport modular 3D', exact: true })).toHaveCount(0);
   await page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }).getByRole('link').click();
   const documentStart = await page.evaluate(() => performance.timeOrigin);
+  let complete;
+  const hold = new Promise(resolve => { complete = resolve; });
+  await page.route('**/product/zion-catalog-tools/', async route => {
+    if (route.request().method() === 'POST') await hold;
+    await route.continue();
+  });
   await page.getByRole('button', { name: 'Adaugă în coș', exact: true }).click();
+  try {
+    await expect(page.locator('.zion-commerce-progress')).toHaveText('Se încarcă…');
+  } finally {
+    complete();
+  }
   await expect(page.locator('.zion-purchase-notice')).toContainText('a fost adăugat în coș');
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentStart);
   await page.getByRole('link', { name: /vezi coșul/i }).first().click();
   await expect(page.getByRole('link', { name: 'Zion Catalog Tools' })).toBeVisible();
+  await expect(page.getByLabel('Cantitatea pentru Zion Catalog Tools din coș.')).toBeVisible();
   await page.getByRole('link', { name: /continuă la finalizarea comenzii/i }).click();
   await expect(page).toHaveURL(/\/checkout\/?$/);
   const checkout = page.getByRole('form', { name: 'Finalizare comandă', exact: true });
   await expect(checkout).toBeVisible();
   await expect(checkout.getByRole('textbox', { name: 'Adresă de e-mail' })).toBeVisible();
   await expect(checkout.getByRole('button', { name: 'Plasează comanda' })).toBeVisible();
+  await expect(page.getByText(/1 × Zion Catalog Tools — total:/)).toHaveCount(1);
   expect(errors).toEqual([]);
 });
 

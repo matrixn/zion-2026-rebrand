@@ -127,7 +127,7 @@ function zion_core_create_shop_pages(): array {
 				'post_name'    => $shop['slug'],
 				'post_title'   => $shop['title'],
 				'post_content' => wp_slash(
-					'<!-- wp:paragraph --><p>' . esc_html( $shop['description'] ) . '</p><!-- /wp:paragraph -->' .
+					'<!-- wp:paragraph {"className":"zion-store-intro"} --><p class="zion-store-intro">' . esc_html( $shop['description'] ) . '</p><!-- /wp:paragraph -->' .
 					'<!-- wp:shortcode -->[zion_catalog shop="' . esc_attr( $slug ) . '"]<!-- /wp:shortcode -->'
 				),
 			),

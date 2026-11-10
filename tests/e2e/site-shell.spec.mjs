@@ -4,11 +4,11 @@ test('the native desktop submenu is keyboard accessible', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 850 });
   await page.goto('/');
   const navigation = page.locator('.zion-header .zion-navigation');
-  const submenu = navigation.getByRole('button', { name: /Explorează/ }).first();
+  const submenu = navigation.getByRole('button', { name: /Software/ }).first();
   await expect(navigation.locator('.wp-block-navigation__responsive-container-open')).toBeHidden();
   await submenu.focus();
   await page.keyboard.press('Enter');
-  const shop = navigation.getByRole('link', { name: 'Toate produsele' });
+  const shop = navigation.getByRole('link', { name: 'Magazin Software' });
   await expect(shop).toBeVisible();
   await page.keyboard.press('Tab');
   await expect(shop).toBeFocused();

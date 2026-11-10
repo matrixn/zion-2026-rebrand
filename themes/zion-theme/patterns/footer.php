@@ -10,8 +10,11 @@
 $zion_theme_contact     = get_page_by_path( 'contact' );
 $zion_theme_contact_url = $zion_theme_contact && 'publish' === $zion_theme_contact->post_status ? get_permalink( $zion_theme_contact ) : '';
 $zion_theme_privacy     = get_privacy_policy_url();
-$zion_theme_terms_id    = function_exists( 'wc_terms_and_conditions_page_id' ) ? wc_terms_and_conditions_page_id() : 0;
-$zion_theme_terms       = $zion_theme_terms_id && 'publish' === get_post_status( $zion_theme_terms_id ) ? get_permalink( $zion_theme_terms_id ) : '';
+if ( ! $zion_theme_privacy ) {
+	$zion_theme_privacy = zion_theme_published_page_url( 'politica-de-confidentialitate' );
+}
+$zion_theme_terms_id = function_exists( 'wc_terms_and_conditions_page_id' ) ? wc_terms_and_conditions_page_id() : 0;
+$zion_theme_terms    = $zion_theme_terms_id && 'publish' === get_post_status( $zion_theme_terms_id ) ? get_permalink( $zion_theme_terms_id ) : '';
 ?>
 <!-- wp:group {"align":"full","className":"zion-footer"} -->
 <div class="wp-block-group alignfull zion-footer">
@@ -41,11 +44,25 @@ $zion_theme_terms       = $zion_theme_terms_id && 'publish' === get_post_status(
 	<h2 class="wp-block-heading has-card-font-size">Resurse</h2>
 	<!-- /wp:heading -->
 	<!-- wp:navigation {"ariaLabel":"Navigație în subsol","overlayMenu":"never","layout":{"type":"flex","orientation":"vertical"}} -->
-		<!-- wp:navigation-link {"label":"Magazin 3D","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-3d' ) ); ?>","kind":"custom"} /-->
-		<!-- wp:navigation-link {"label":"Magazin Software","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-software' ) ); ?>","kind":"custom"} /-->
-		<?php if ( zion_theme_journal_url() ) : ?>
-		<!-- wp:navigation-link {"label":"Jurnal","url":"<?php echo esc_url( zion_theme_journal_url() ); ?>","kind":"custom"} /-->
-		<?php endif; ?>
+			<?php
+			$zion_theme_footer_links = array(
+				'Acasă'                   => home_url( '/' ),
+				'Toate serviciile'        => zion_theme_published_page_url( 'servicii' ),
+				'Magazin 3D'              => zion_theme_published_page_url( 'magazin-3d' ),
+				'Magazin Software'        => zion_theme_published_page_url( 'magazin-software' ),
+				'WordPress & WooCommerce' => zion_theme_published_page_url( 'pluginuri-woocommerce' ),
+				'Zion Food'               => 'https://food.zion3d.ro',
+				'Zion Storage Cloud'      => 'https://storage.zion3d.ro',
+				'Despre noi'              => zion_theme_published_page_url( 'despre-noi' ),
+				'Blog'                    => zion_theme_journal_url(),
+				'Întrebări frecvente'     => zion_theme_published_page_url( 'intrebari' ),
+				'Contact'                 => $zion_theme_contact_url,
+				'Contul meu'              => function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '',
+			);
+			foreach ( $zion_theme_footer_links as $zion_theme_label => $zion_theme_url ) {
+				echo zion_theme_nav_item( $zion_theme_label, $zion_theme_url ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Serialized native blocks with sanitized URLs.
+			}
+			?>
 	<!-- /wp:navigation -->
 </div>
 <!-- /wp:group -->

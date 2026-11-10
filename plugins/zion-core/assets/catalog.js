@@ -1,7 +1,7 @@
+import { watch } from '@wordpress/interactivity';
 import { actions, state } from '@wordpress/interactivity-router';
 
 const catalog = '.zion-catalog-native';
-const more = '.zion-catalog-more a';
 const sortForm = '.zion-catalog-toolbar form.woocommerce-ordering';
 let loading = false;
 let navigation = 0;
@@ -23,10 +23,12 @@ async function navigate(url, message, replace = false) {
   if (url === location.href && !loading) return;
   const current = ++navigation;
   loading = true;
+  const finish = window.zionCommercePending?.();
   try {
     await actions.navigate(url, { replace });
     if (current === navigation && message && location.href === url) announce(message);
   } finally {
+    finish?.();
     if (current === navigation) {
       loading = false;
       observeMore();
@@ -34,18 +36,30 @@ async function navigate(url, message, replace = false) {
   }
 }
 
+let finishRouter;
+let routerPending = false;
+watch(() => {
+  routerPending = state.navigating ?? (state.navigation?.hasStarted && !state.navigation?.hasFinished);
+  if (routerPending) {
+    finishRouter ??= window.zionCommercePending?.();
+  } else {
+    finishRouter?.();
+    finishRouter = undefined;
+  }
+});
+
 const observer = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
   for (const entry of entries) {
-    if (entry.isIntersecting && !loading && !state.navigating) {
+    if (entry.isIntersecting && !loading && !routerPending) {
       observer.unobserve(entry.target);
       observed = undefined;
-      navigate(entry.target.href, '', true);
+      navigate(entry.target.dataset.zionNext, '', true).catch(() => {});
     }
   }
 }) : null;
 
 function observeMore() {
-  const next = document.querySelector(`${catalog} [data-zion-load="auto"] a`);
+  const next = document.querySelector(`${catalog} [data-zion-next]`);
   if (observed !== next) {
     if (observed) observer?.unobserve(observed);
     if (next) observer?.observe(next);
@@ -58,7 +72,7 @@ function sort(form) {
   const fields = new URLSearchParams(new FormData(form));
   for (const name of new Set(fields.keys())) url.searchParams.delete(name);
   for (const [name, value] of fields) url.searchParams.append(name, value);
-  navigate(url.href, 'Sortarea a fost actualizată.');
+  navigate(url.href, 'Sortarea a fost actualizată.').catch(() => location.assign(url.href));
 }
 
 document.addEventListener('change', event => {
@@ -76,10 +90,10 @@ document.addEventListener('submit', event => {
 });
 
 document.addEventListener('click', event => {
-  const link = event.target.closest(`${catalog} ${more}, ${catalog} .zion-catalog-reset, ${catalog} .zion-catalog-sale a`);
+  const link = event.target.closest(`${catalog} .zion-catalog-reset, ${catalog} .zion-catalog-sale a`);
   if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
   event.preventDefault();
-  navigate(link.href, '');
+  navigate(link.href, '').catch(() => location.assign(link.href));
 });
 
 new MutationObserver(observeMore).observe(document.body, { childList: true, subtree: true });

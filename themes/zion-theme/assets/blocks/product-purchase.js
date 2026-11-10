@@ -46,6 +46,7 @@ document.addEventListener('submit', async event => {
   const disabled = button?.disabled;
   form.setAttribute('aria-busy', 'true');
   if (button) button.disabled = true;
+  const finish = window.zionCommercePending?.();
   notice.textContent = 'Se adaugă în coș…';
 
   try {
@@ -69,6 +70,7 @@ document.addEventListener('submit', async event => {
   } catch {
     notice.textContent = 'Nu am putut confirma adăugarea. Verifică coșul înainte de a încerca din nou.';
   } finally {
+    finish?.();
     form.removeAttribute('aria-busy');
     if (button) button.disabled = disabled;
   }

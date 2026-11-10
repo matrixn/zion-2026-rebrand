@@ -13,15 +13,7 @@
 <!-- wp:site-logo {"width":112,"className":"zion-header-logo"} /-->
 <!-- wp:site-title {"level":0,"className":"zion-wordmark"} /-->
 <!-- wp:navigation {"ariaLabel":"Meniu principal","overlayMenu":"mobile","className":"zion-navigation","layout":{"type":"flex","justifyContent":"right"}} -->
-<!-- wp:navigation-link {"label":"Magazin 3D","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-3d' ) ); ?>","kind":"custom"} /-->
-<!-- wp:navigation-link {"label":"Magazin Software","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-software' ) ); ?>","kind":"custom"} /-->
-<?php if ( zion_theme_journal_url() ) : ?>
-<!-- wp:navigation-link {"label":"Jurnal","url":"<?php echo esc_url( zion_theme_journal_url() ); ?>","kind":"custom"} /-->
-<?php endif; ?>
-<!-- wp:navigation-submenu {"label":"Explorează","kind":"custom"} -->
-<!-- wp:navigation-link {"label":"Toate produsele","url":"<?php echo esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : zion_theme_shop_url( 'magazin-3d' ) ); ?>","kind":"custom"} /-->
-<!-- wp:navigation-link {"label":"Despre vitrine","url":"<?php echo esc_url( home_url( '/#magazine' ) ); ?>","kind":"custom"} /-->
-<!-- /wp:navigation-submenu -->
+<?php echo zion_theme_primary_navigation(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Serialized native blocks with sanitized URLs. ?>
 <!-- /wp:navigation -->
 <!-- wp:group {"className":"zion-header-tools"} -->
 <div class="wp-block-group zion-header-tools">

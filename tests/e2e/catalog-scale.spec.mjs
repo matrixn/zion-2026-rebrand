@@ -49,7 +49,7 @@ test('scrolling to the next batch loads products without a new document', async 
   const first = await ids(page);
   expect(first).toHaveLength(12);
   const documentStart = await page.evaluate(() => performance.timeOrigin);
-  await page.getByRole('link', { name: 'Încarcă mai multe' }).scrollIntoViewIfNeeded();
+  await page.locator('[data-zion-next]').scrollIntoViewIfNeeded();
   await expect(page).toHaveURL(/zion_more=(24|36|48|60|72|84|96)/);
   expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentStart);
   expect(new URL(page.url()).searchParams.get('categories')).toBe('zion-scale-shared');

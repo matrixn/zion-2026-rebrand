@@ -157,13 +157,13 @@ final class Zion_Theme_Settings {
 			),
 			'catalog_load_mode'       => array(
 				'label'       => 'Mod de încărcare',
-				'description' => 'Încarcă automat când vizitatorul ajunge la finalul listei sau doar la apăsarea butonului.',
+				'description' => 'Încarcă automat la finalul listei sau folosește exclusiv paginarea numerică.',
 				'section'     => 'woo',
 				'type'        => 'choice',
 				'default'     => 'auto',
 				'allowed'     => array(
 					'auto'   => 'Automat la derulare',
-					'manual' => 'Buton manual',
+					'manual' => 'Doar paginare numerică',
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
 			),

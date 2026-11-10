@@ -95,9 +95,9 @@ function zion_theme_card_profile( string $shop ): array {
 	$shown  = match ( $settings['preset'] ) {
 		'minimal' => array(),
 		'compact' => array( 'badge_sale' ),
-		'premium' => array( 'badge_sale', 'badge_featured', 'badge_stock', 'category', 'brand', 'rating', 'reviews', 'availability', 'details', 'zoom', 'secondary' ),
+		'premium' => array( 'badge_sale', 'badge_featured', 'badge_stock', 'category', 'brand', 'description', 'rating', 'reviews', 'availability', 'details', 'zoom', 'secondary' ),
 		'horizontal' => array( 'badge_sale', 'badge_stock', 'description', 'availability', 'details' ),
-		default => array( 'badge_sale', 'badge_stock' ),
+		default => array( 'badge_sale', 'badge_stock', 'category', 'description', 'availability', 'details' ),
 	};
 	$shown             = array_merge( $common, $shown );
 	$keys              = array_keys( Zion_Theme_Settings::card_elements() );
@@ -283,7 +283,7 @@ function zion_theme_card_element( string $key, WC_Product $product, string $url,
 		'rating' => wp_kses_post( wc_get_rating_html( $product->get_average_rating() ) ),
 		/* translators: %s: review count. */
 		'reviews' => esc_html( sprintf( _n( '%s recenzie', '%s recenzii', $product->get_review_count(), 'zion-theme' ), number_format_i18n( $product->get_review_count() ) ) ),
-		'description' => wp_kses_post( wpautop( $product->get_short_description() ) ),
+		'description' => esc_html( wp_trim_words( wp_strip_all_tags( strip_shortcodes( $product->get_short_description() ? $product->get_short_description() : $product->get_description() ) ), 24 ) ),
 		'availability' => $product->is_in_stock() && ! $product->is_on_backorder() ? esc_html__( 'În stoc', 'zion-theme' ) : wp_kses_post( wc_get_stock_html( $product ) ),
 		'cart' => zion_theme_card_cart( $product ),
 		'quick_view' => zion_theme_card_quick_view( $product, $url, $show ),

@@ -127,6 +127,10 @@ function zion_theme_commerce_strings(): array {
 		'Product categories'                            => 'Categorii de produse',
 		'Price'                                         => 'Preț',
 		'Quantity'                                      => 'Cantitate',
+		'Quantity of %s in your cart.'                  => 'Cantitatea pentru %s din coș.',
+		'%s has been removed from your cart.'           => 'Am eliminat %s din coș.',
+		'Total price for <quantity/> <productName/> item: <price/>' => '<quantity/> × <productName/> — total: <price/>',
+		'Total price for <quantity/> <productName/> items: <price/>' => '<quantity/> × <productName/> — total: <price/>',
 		'Remove item'                                   => 'Elimină produsul',
 		'Remove %s from cart'                           => 'Elimină %s din coș',
 		'Remove'                                        => 'Elimină',
@@ -268,7 +272,9 @@ function zion_theme_commerce_script_translations(): void {
 	if ( ! zion_theme_romanian_commerce( 'woocommerce' ) ) {
 		return;
 	}
-	$data = array_map( static fn ( string $value ): array => array( $value ), zion_theme_commerce_strings() );
+	$data               = array_map( static fn ( string $value ): array => array( $value ), zion_theme_commerce_strings() );
+	$total_key          = 'Total price for <quantity/> <productName/> item: <price/>';
+	$data[ $total_key ] = array_fill( 0, 3, $data[ $total_key ][0] );
 	foreach ( array( 'woocommerce', 'woo-gutenberg-products-block' ) as $domain ) {
 		wp_add_inline_script(
 			'wp-i18n',

@@ -23,6 +23,35 @@ function zion_theme_services(): array {
 }
 
 /**
+ * Paths retained when the existing Zion site is migrated.
+ *
+ * @return array<string,string>
+ */
+function zion_theme_service_paths(): array {
+	return array(
+		'printare-3d'             => 'printare-3d-la-comanda-zion-3d-print',
+		'proiectare-3d'           => 'proiectare-si-modelare-3d',
+		'software-personalizat'   => 'software-personalizat-pentru-afaceri',
+		'platforme-saas'          => 'platforme-si-produse-saas',
+		'pluginuri-si-integrari'  => 'pluginuri-si-integrari-software',
+		'aplicatii-windows-linux' => 'aplicatii-windows-si-linux',
+		'integrari-ai'            => 'integrari-ai-si-automatizari-inteligente',
+	);
+}
+
+/**
+ * Link to the existing service page before considering the short default slug.
+ *
+ * @param string $slug Service identifier.
+ * @return string
+ */
+function zion_theme_service_url( string $slug ): string {
+	$path = zion_theme_service_paths()[ $slug ] ?? $slug;
+	$url  = zion_theme_published_page_url( $path );
+	return $url ? $url : zion_theme_published_page_url( $slug );
+}
+
+/**
  * Register editable native Gutenberg patterns for the service pages.
  */
 function zion_theme_register_services(): void {
@@ -58,7 +87,7 @@ function zion_theme_create_service_pages(): array {
 		'failed'  => 0,
 	);
 	foreach ( zion_theme_services() as $slug => $service ) {
-		if ( get_page_by_path( $slug ) ) {
+		if ( zion_theme_service_url( $slug ) || get_page_by_path( $slug ) ) {
 			continue;
 		}
 		$pattern = WP_Block_Patterns_Registry::get_instance()->get_registered( 'zion-theme/service-' . $slug );
@@ -109,25 +138,13 @@ add_action( 'admin_post_zion_create_service_pages', 'zion_theme_service_pages_ac
  */
 function zion_theme_services_grid(): string {
 	$services = zion_theme_services();
-	$pages    = get_posts(
-		array(
-			'post_type'     => 'page',
-			'post_status'   => 'publish',
-			'post_name__in' => array_keys( $services ),
-			'numberposts'   => count( $services ),
-			'has_password'  => false,
-		)
-	);
-	$urls     = array();
-	foreach ( $pages as $page ) {
-		$urls[ $page->post_name ] = get_permalink( $page );
-	}
-	$cards  = '';
-	$number = 0;
+	$cards    = '';
+	$number   = 0;
 	foreach ( $services as $slug => $service ) {
 		$title  = esc_html( $service[0] );
+		$url    = zion_theme_service_url( $slug );
 		$cards .= '<article class="zion-card"><span class="zion-kicker" aria-hidden="true">' . esc_html( sprintf( '%02d', ++$number ) ) . '</span><h3>' .
-			( isset( $urls[ $slug ] ) ? '<a href="' . esc_url( $urls[ $slug ] ) . '">' . $title . '</a>' : $title ) .
+			( $url ? '<a href="' . esc_url( $url ) . '">' . $title . '</a>' : $title ) .
 			'</h3><p>' . esc_html( $service[1] ) . '</p></article>';
 	}
 	return '<div class="zion-services-grid">' . $cards . '</div>';
