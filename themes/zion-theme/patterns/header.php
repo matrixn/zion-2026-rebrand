@@ -14,6 +14,9 @@
 <!-- wp:navigation {"overlayMenu":"mobile","className":"zion-navigation","layout":{"type":"flex","justifyContent":"right"}} -->
 <!-- wp:navigation-link {"label":"Magazin 3D","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-3d' ) ); ?>","kind":"custom"} /-->
 <!-- wp:navigation-link {"label":"Magazin Software","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-software' ) ); ?>","kind":"custom"} /-->
+<?php if ( zion_theme_journal_url() ) : ?>
+<!-- wp:navigation-link {"label":"Jurnal","url":"<?php echo esc_url( zion_theme_journal_url() ); ?>","kind":"custom"} /-->
+<?php endif; ?>
 <!-- /wp:navigation -->
 </div>
 <!-- /wp:group -->

@@ -8,6 +8,15 @@
       "contentSize": "760px",
       "wideSize": "1320px"
     },
+    "spacing": {
+      "spacingSizes": [
+        { "slug": "compact", "name": "Compact", "size": "0.75rem" },
+        { "slug": "regular", "name": "Regular", "size": "1.25rem" },
+        { "slug": "gutter", "name": "Gutter", "size": "clamp(1rem, 4vw, 3rem)" },
+        { "slug": "grid", "name": "Grid", "size": "clamp(1rem, 3vw, 2.5rem)" },
+        { "slug": "section", "name": "Section", "size": "clamp(3rem, 7vw, 6rem)" }
+      ]
+    },
     "color": {
       "defaultPalette": false,
       "palette": [
@@ -49,6 +58,13 @@
       ]
     },
     "typography": {
+      "fontSizes": [
+        { "slug": "small", "name": "Small", "size": "0.875rem" },
+        { "slug": "body", "name": "Body", "size": "1rem" },
+        { "slug": "card", "name": "Card", "size": "clamp(1.15rem, 2vw, 1.5rem)", "fluid": false },
+        { "slug": "section-title", "name": "Section title", "size": "clamp(2rem, 4.5vw, 4.25rem)", "fluid": false },
+        { "slug": "display", "name": "Display", "size": "clamp(2.65rem, 6.2vw, 6.5rem)", "fluid": false }
+      ],
       "fontFamilies": [
         {
           "slug": "body",
@@ -70,10 +86,10 @@
     },
     "spacing": {
       "padding": {
-        "left": "clamp(1rem, 4vw, 3rem)",
-        "right": "clamp(1rem, 4vw, 3rem)"
+        "left": "var:preset|spacing|gutter",
+        "right": "var:preset|spacing|gutter"
       },
-      "blockGap": "1.25rem"
+      "blockGap": "var:preset|spacing|regular"
     },
     "typography": {
       "fontFamily": "var:preset|font-family|body",

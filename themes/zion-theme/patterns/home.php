@@ -45,7 +45,7 @@
 	<div class="zion-blueprint-label"><span>FIG. 01 / ZION SYSTEMS</span><span>● ONLINE</span></div>
 	<svg viewBox="0 0 480 320" focusable="false">
 		<defs>
-			<linearGradient id="zion-wire" x2="0" y2="1"><stop stop-color="#d9fb4f"/><stop offset="1" stop-color="#526d35"/></linearGradient>
+			<linearGradient id="zion-wire" x2="0" y2="1"><stop class="zion-wire-start"/><stop offset="1" class="zion-wire-end"/></linearGradient>
 		</defs>
 		<g fill="none" stroke="currentColor" opacity=".32">
 			<path d="M14 260h452M45 190h390M75 120h330M106 50h268M134 22 46 296m142-274-32 274m84-274v274m52-274 32 274m22-274 88 274" stroke-dasharray="3 7"/>
@@ -53,12 +53,12 @@
 			<path d="M34 59h43m-21-21v43m348 161h43m-21-21v43"/>
 		</g>
 		<g stroke="url(#zion-wire)" stroke-width="2" stroke-linejoin="round">
-			<path d="m240 48 109 61v107l-109 63-109-63V109z" fill="#15221a"/>
-			<path d="m240 48 109 61-109 63-109-63z" fill="#263b20"/>
-			<path d="m240 172 109-63v107l-109 63z" fill="#1a2b18"/>
+			<path d="m240 48 109 61v107l-109 63-109-63V109z" class="zion-wire-base"/>
+			<path d="m240 48 109 61-109 63-109-63z" class="zion-wire-top"/>
+			<path d="m240 172 109-63v107l-109 63z" class="zion-wire-side"/>
 			<path d="M240 172v107m-109-134 109 63 109-63m-218 35 109 63 109-63m-181-91 109 62v107m-73-190 109 62v107m-2-148-109 62v107m73-190-109 62v107" fill="none" opacity=".7"/>
 			<path d="M47 171h57l26-25m219 36 31-30h55" fill="none"/>
-			<circle cx="47" cy="171" r="4" fill="#d9fb4f"/><circle cx="435" cy="152" r="4" fill="#d9fb4f"/>
+			<circle cx="47" cy="171" r="4" fill="currentColor"/><circle cx="435" cy="152" r="4" fill="currentColor"/>
 		</g>
 	</svg>
 	<div class="zion-blueprint-label"><span>3D / SOFTWARE / AI</span><span>REV. 2026</span></div>

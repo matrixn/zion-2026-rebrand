@@ -31,6 +31,51 @@ if ( ! get_option( 'permalink_structure' ) ) {
 }
 WC_Install::create_pages();
 
+$zion_core_journal_pages = array(
+	'acasa-zion' => 'Acasă',
+	'jurnal'     => 'Jurnal',
+);
+$zion_core_page_ids      = array();
+foreach ( $zion_core_journal_pages as $zion_core_slug => $zion_core_title ) {
+	$zion_core_existing = get_page_by_path( $zion_core_slug );
+	$zion_core_page_id  = $zion_core_existing ? $zion_core_existing->ID : wp_insert_post(
+		array(
+			'post_type'   => 'page',
+			'post_status' => 'publish',
+			'post_name'   => $zion_core_slug,
+			'post_title'  => $zion_core_title,
+		),
+		true
+	);
+	if ( is_wp_error( $zion_core_page_id ) ) {
+		WP_CLI::error( $zion_core_page_id->get_error_message() );
+	}
+	$zion_core_page_ids[ $zion_core_slug ] = $zion_core_page_id;
+}
+
+if ( 'posts' === get_option( 'show_on_front' ) ) {
+	update_option( 'page_on_front', $zion_core_page_ids['acasa-zion'] );
+	update_option( 'show_on_front', 'page' );
+}
+if ( ! get_option( 'page_for_posts' ) ) {
+	update_option( 'page_for_posts', $zion_core_page_ids['jurnal'] );
+}
+
+if ( ! get_page_by_path( 'jurnal-prototip-zion', OBJECT, 'post' ) ) {
+	$zion_core_post_id = wp_insert_post(
+		array(
+			'post_status'  => 'publish',
+			'post_name'    => 'jurnal-prototip-zion',
+			'post_title'   => 'Jurnal de prototipare Zion',
+			'post_content' => '<!-- wp:paragraph --><p>Un prototip demonstrativ, de la model la prima probă de montaj.</p><!-- /wp:paragraph -->',
+		),
+		true
+	);
+	if ( is_wp_error( $zion_core_post_id ) ) {
+		WP_CLI::error( $zion_core_post_id->get_error_message() );
+	}
+}
+
 foreach ( $zion_core_fixture['shops'] as $zion_core_shop => $zion_core_details ) {
 	if ( ! term_exists( $zion_core_shop, 'zion_shop' ) ) {
 		$zion_core_term = wp_insert_term( $zion_core_details['title'], 'zion_shop', array( 'slug' => $zion_core_shop ) );
@@ -72,6 +117,18 @@ foreach ( $zion_core_fixture['products'] as $zion_core_item ) {
 	$zion_core_terms = wp_set_object_terms( $zion_core_product_id, $zion_core_item['shop'], 'zion_shop', true );
 	if ( is_wp_error( $zion_core_terms ) ) {
 		WP_CLI::error( $zion_core_terms->get_error_message() );
+	}
+
+	if ( 'ZION-DEMO-3D-01' === $zion_core_item['sku'] ) {
+		$zion_core_category = get_term_by( 'slug', 'prototipuri-demo', 'product_cat' );
+		$zion_core_term     = $zion_core_category ? array( 'term_id' => $zion_core_category->term_id ) : wp_insert_term( 'Prototipuri demo', 'product_cat', array( 'slug' => 'prototipuri-demo' ) );
+		if ( is_wp_error( $zion_core_term ) ) {
+			WP_CLI::error( $zion_core_term->get_error_message() );
+		}
+		$zion_core_terms = wp_set_object_terms( $zion_core_product_id, (int) $zion_core_term['term_id'], 'product_cat', true );
+		if ( is_wp_error( $zion_core_terms ) ) {
+			WP_CLI::error( $zion_core_terms->get_error_message() );
+		}
 	}
 
 	$zion_core_product = wc_get_product( $zion_core_product_id );

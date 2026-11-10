@@ -13,6 +13,10 @@
 
 Homepage-ul recompune referința „CSS badge buton nou” cu blocuri native. Păstrează accentul lime, etichetele tehnice, grila inspirată de CAD, secțiunile deschise și vitrinele separate. Ilustrația CAD este un SVG original decorativ. Secțiunea „Din atelier” folosește blocul WooCommerce Product Collection. Fonturile de sistem evită cererile externe. Headerul, footerul și homepage-ul se editează în Site Editor. Culorile și fonturile pornesc din `theme.json`. CSS-ul adaugă layout și stări de interacțiune.
 
+Presetările din `theme.json` oferă editorului aceleași culori, dimensiuni de text și spațieri folosite în componente. Varianta deschisă folosește culoarea Paper din aceeași paletă. La 820 px, grila eroului și cea de produs trec la o coloană. La 520 px, cardurile de servicii, vitrinele și footerul se așază vertical. Navigația mobilă folosește comportamentul nativ al blocului WordPress Navigation, iar tranzițiile respectă `prefers-reduced-motion`.
+
+Jurnalul, arhivele și căutarea împart pattern-ul `post-list` cu Query Loop nativ. Catalogul și căutarea de produse împart pattern-ul `product-catalog`, iar șablonul de produs folosește blocurile WooCommerce pentru galerie, preț, adăugare în coș și detalii. Șabloanele și părțile editate și salvate în baza de date au prioritate față de fișierele temei.
+
 ## Date și vitrine
 
 WooCommerce rămâne sursa pentru produse, vizibilitate, prețuri, stoc, coș și checkout. Zion Core adaugă o clasificare independentă de categoriile și tipurile WooCommerce. Creează termenii cu slugurile `3d` și `software` în **Products → Zion shops** dacă instanța nu folosește datele demo. Selectează unul sau ambii termeni din editorul produsului. Un produs virtual sau descărcabil poate aparține oricărei vitrine.

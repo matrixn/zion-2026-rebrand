@@ -26,6 +26,16 @@ function zion_theme_enqueue_styles(): void {
 add_action( 'wp_enqueue_scripts', 'zion_theme_enqueue_styles' );
 
 /**
+ * Get the published page selected as the posts index.
+ *
+ * @return string
+ */
+function zion_theme_journal_url(): string {
+	$page_id = (int) get_option( 'page_for_posts' );
+	return $page_id && 'publish' === get_post_status( $page_id ) ? (string) get_permalink( $page_id ) : '';
+}
+
+/**
  * Resolve a storefront page, with a homepage fallback on fresh installs.
  *
  * @param string $slug Storefront page slug.
