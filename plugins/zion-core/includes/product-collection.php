@@ -303,7 +303,7 @@ function zion_core_storefront_sort_form( string $url, string $sort, string $page
  * Load AJAX controls for the native archive toolbar and Zion storefronts.
  */
 function zion_core_enqueue_catalog_controls(): void {
-	wp_enqueue_script_module( 'zion-catalog', plugins_url( 'assets/catalog.js', dirname( __DIR__ ) . '/zion-core.php' ), array( '@wordpress/interactivity', '@wordpress/interactivity-router' ), '1.1.1-r2' );
+	wp_enqueue_script_module( 'zion-catalog', plugins_url( 'assets/catalog.js', dirname( __DIR__ ) . '/zion-core.php' ), array( '@wordpress/interactivity', '@wordpress/interactivity-router' ), '1.1.1-r3' );
 }
 add_filter(
 	'render_block_woocommerce/catalog-sorting',
@@ -438,7 +438,8 @@ function zion_core_render_storefront_collection( array $options, array $display 
 	}
 	$columns = max( 2, min( 5, (int) $display['desktop'] ) );
 	$style   = sprintf( '--zion-desktop:%d;--zion-tablet:%d;--zion-mobile:%d', $columns, max( 1, min( 4, (int) $display['tablet'] ) ), max( 1, min( 2, (int) $display['mobile'] ) ) );
-	$content = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '"><div class="zion-catalog-shell">';
+	$content = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '">' .
+		'<div hidden data-wp-interactive="zion/catalog" data-wp-watch="callbacks.syncProgress"></div><div class="zion-catalog-shell">';
 	if ( $facets ) {
 		$heading_id = wp_unique_id( 'zion-catalog-filters-' );
 		$content   .= '<aside class="zion-catalog-facets" aria-labelledby="' . esc_attr( $heading_id ) . '">' .

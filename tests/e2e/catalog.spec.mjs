@@ -8,7 +8,18 @@ test('native filters combine with sorting, reset and browser history', async ({ 
   await page.goto('/magazin-3d/?orderby=price');
   await expect(cards(page)).toHaveCount(2);
   const category = catalog(page).getByRole('checkbox', { name: /Prototipuri demo/ });
+  let releaseFilter;
+  const pendingFilter = new Promise(resolve => { releaseFilter = resolve; });
+  await page.route('**/magazin-3d/**', async route => {
+    if (new URL(route.request().url()).searchParams.has('categories')) await pendingFilter;
+    await route.continue();
+  });
   await category.click();
+  try {
+    await expect(page.locator('.zion-commerce-progress')).toHaveText('Se încarcă…');
+  } finally {
+    releaseFilter();
+  }
   await expect(page).toHaveURL(/categories=prototipuri-demo/);
   expect(new URL(page.url()).searchParams.get('orderby')).toBe('price');
   await expect(cards(page)).toHaveCount(1);

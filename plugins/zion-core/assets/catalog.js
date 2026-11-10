@@ -1,4 +1,4 @@
-import { watch } from '@wordpress/interactivity';
+import { store } from '@wordpress/interactivity';
 import { actions, state } from '@wordpress/interactivity-router';
 
 const catalog = '.zion-catalog-native';
@@ -39,14 +39,18 @@ async function navigate(url, message, replace = false) {
 
 let finishRouter;
 let routerPending = false;
-watch(() => {
-  routerPending = state.navigating ?? (state.navigation?.hasStarted && !state.navigation?.hasFinished);
-  if (routerPending) {
-    finishRouter ??= window.zionCommercePending?.();
-  } else {
-    finishRouter?.();
-    finishRouter = undefined;
-  }
+store('zion/catalog', {
+  callbacks: {
+    syncProgress() {
+      routerPending = state.navigating ?? (state.navigation?.hasStarted && !state.navigation?.hasFinished);
+      if (routerPending) {
+        finishRouter ??= window.zionCommercePending?.();
+      } else {
+        finishRouter?.();
+        finishRouter = undefined;
+      }
+    },
+  },
 });
 
 const observer = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {

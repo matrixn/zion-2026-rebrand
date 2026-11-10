@@ -80,9 +80,21 @@ $zion_core_shop_ids = zion_core_shop_term_ids( true );
 if ( is_wp_error( $zion_core_shop_ids ) ) {
 	WP_CLI::error( $zion_core_shop_ids->get_error_message() );
 }
-foreach ( zion_core_create_shop_pages() as $zion_core_page ) {
+$zion_core_shops = zion_core_shops();
+foreach ( zion_core_create_shop_pages() as $zion_core_shop => $zion_core_page ) {
 	if ( is_wp_error( $zion_core_page ) ) {
 		WP_CLI::error( $zion_core_page->get_error_message() );
+	}
+	$zion_core_old_intro = '<!-- wp:paragraph --><p>' . esc_html( $zion_core_shops[ $zion_core_shop ]['description'] ) . '</p><!-- /wp:paragraph -->';
+	$zion_core_shortcode = '<!-- wp:shortcode -->[zion_catalog shop="' . esc_attr( $zion_core_shop ) . '"]<!-- /wp:shortcode -->';
+	if ( get_post_field( 'post_content', $zion_core_page ) === $zion_core_old_intro . $zion_core_shortcode ) {
+		$zion_core_intro = str_replace( '<!-- wp:paragraph --><p>', '<!-- wp:paragraph {"className":"zion-store-intro"} --><p class="zion-store-intro">', $zion_core_old_intro );
+		wp_update_post(
+			array(
+				'ID'           => $zion_core_page,
+				'post_content' => wp_slash( $zion_core_intro . $zion_core_shortcode ),
+			)
+		);
 	}
 }
 
