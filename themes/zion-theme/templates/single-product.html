@@ -1,34 +1,8 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 <!-- wp:group {"tagName":"main","className":"zion-content zion-store zion-product","layout":{"type":"constrained"}} -->
 <main class="wp-block-group zion-content zion-store zion-product">
-	<!-- wp:woocommerce/breadcrumbs {"align":"wide"} /-->
 	<!-- wp:woocommerce/store-notices {"align":"wide"} /-->
-	<!-- wp:group {"align":"wide","className":"zion-product-layout"} -->
-	<div class="wp-block-group alignwide zion-product-layout">
-		<!-- wp:group {"className":"zion-product-media"} -->
-		<div class="wp-block-group zion-product-media">
-			<!-- wp:woocommerce/product-image-gallery /-->
-		</div>
-		<!-- /wp:group -->
-		<!-- wp:group {"className":"zion-product-summary"} -->
-		<div class="wp-block-group zion-product-summary">
-			<!-- wp:post-title {"level":1,"className":"zion-section-title"} /-->
-			<!-- wp:woocommerce/product-rating {"isDescendentOfSingleProductTemplate":true} /-->
-			<!-- wp:woocommerce/product-price {"isDescendentOfSingleProductTemplate":true,"fontSize":"card"} /-->
-			<!-- wp:post-excerpt {"__woocommerceNamespace":"woocommerce/product-query/product-summary"} /-->
-			<!-- wp:woocommerce/add-to-cart-form /-->
-			<!-- wp:woocommerce/product-meta -->
-			<div class="wp-block-woocommerce-product-meta">
-				<!-- wp:woocommerce/product-sku /-->
-				<!-- wp:post-terms {"term":"product_cat"} /-->
-			</div>
-			<!-- /wp:woocommerce/product-meta -->
-		</div>
-		<!-- /wp:group -->
-	</div>
-	<!-- /wp:group -->
-	<!-- wp:woocommerce/product-details {"align":"wide","className":"is-style-minimal"} /-->
-	<!-- wp:pattern {"slug":"zion-theme/related-products"} /-->
+	<!-- wp:zion/product-page /-->
 </main>
 <!-- /wp:group -->
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

@@ -11,10 +11,11 @@ test.beforeEach(({ baseURL }) => {
 
 async function login(page, username = 'admin', password = 'password') {
   await page.goto('/wp-login.php');
-  await page.locator('#user_login').fill(username);
-  await page.locator('#user_pass').fill(password);
-  await page.locator('#wp-submit').click();
-  await page.waitForURL(url => !url.pathname.endsWith('/wp-login.php'), { timeout: 10_000 });
+  const response = await page.request.post('/wp-login.php', {
+    maxRedirects: 0,
+    form: { log: username, pwd: password, testcookie: '1' },
+  });
+  expect(response.status()).toBe(302);
 }
 
 async function openSection(page, section, item = 0) {
@@ -275,6 +276,153 @@ test('all card presets fit desktop and mobile and store overrides control the sh
     await expect(page.locator('.zion-store .zion-product-card--horizontal').first()).toBeVisible();
   } finally {
     await importSettings(page, original);
+  }
+});
+
+test('product presets and native purchases work with real variations, mobile and no JavaScript', async ({ page, browser, baseURL }) => {
+  test.setTimeout(180_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const nonce = await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text();
+  const headers = { 'X-WP-Nonce': nonce };
+  const products = [];
+  const endpoint = '/wp-json/wc/v3/products';
+  const create = async (data, suffix = '') => {
+    const response = await page.request.post(endpoint + suffix, { headers, data: { status: 'publish', ...data } });
+    expect(response.status(), await response.text()).toBe(201);
+    const product = await response.json();
+    if (!suffix) products.push(product);
+    return product;
+  };
+
+  try {
+    const available = await create({ name: 'Zion component test', type: 'simple', regular_price: '39', manage_stock: true, stock_quantity: 20 });
+    const exhausted = await create({ name: 'Zion out-of-stock test', type: 'simple', regular_price: '39', stock_status: 'outofstock' });
+    const grouped = await create({ name: 'Zion grouped test', type: 'grouped', grouped_products: [available.id] });
+    const external = await create({ name: 'Zion affiliate test', type: 'external', regular_price: '22', external_url: 'https://example.test/partner', button_text: 'Partener test' });
+    const download = await create({
+      name: 'Zion downloadable test', type: 'simple', regular_price: '29', virtual: true, downloadable: true,
+      upsell_ids: [available.id], cross_sell_ids: [external.id],
+    });
+    const variable = await create({
+      name: 'Zion variable test', type: 'variable',
+      attributes: [{ name: 'Material', visible: true, variation: true, options: ['PLA', 'PETG'] }],
+    });
+    await create({ regular_price: '89', manage_stock: true, stock_quantity: 10, attributes: [{ name: 'Material', option: 'PLA' }] }, `/${variable.id}/variations`);
+    await create({ regular_price: '99', manage_stock: true, stock_quantity: 0, stock_status: 'outofstock', attributes: [{ name: 'Material', option: 'PETG' }] }, `/${variable.id}/variations`);
+
+    await page.goto(`/wp-admin/post.php?post=${download.id}&action=edit`);
+    await page.locator('#zion-product-detail-version').fill('7.2.1');
+    await page.locator('#zion-product-detail-documentation').fill('https://example.test/manual');
+    await page.locator('#zion-product-detail-files').fill('ZIP\nPDF');
+    await page.locator('#zion-product-detail-faq').fill('Cum instalez? | Descarcă arhiva.\nLinie fără răspuns');
+    await page.locator('#publish').click();
+    await expect(page.getByText('Product updated.', { exact: false })).toBeVisible();
+
+    await importSettings(page, JSON.stringify({
+      version: 2,
+      global: { product_preset: 'minimal', product_show_sticky: 'show', product_show_buy_now: 'show' },
+      shops: { '3d': { product_preset: 'physical' }, software: { product_preset: 'software' } },
+      items: { product: { [download.id]: {
+        product_preset: 'premium', product_section_order: 'version,hero,faq',
+        product_summary_order: 'purchase,title,price', product_accent_sections: 'version',
+      } } },
+    }));
+
+    await page.goto('/product/suport-modular-3d/');
+    await expect(page.locator('.zion-product-page--physical')).toBeVisible();
+    await page.goto('/product/zion-catalog-tools/');
+    await expect(page.locator('.zion-product-page--software')).toBeVisible();
+    await expect(page.locator('[data-zion-section="version"]')).toHaveCount(0);
+    await page.goto(download.permalink);
+    const premium = page.locator('.zion-product-page--premium');
+    await expect(premium.locator('[data-zion-section]').first()).toHaveAttribute('data-zion-section', 'version');
+    await expect(premium.locator('.zion-product-summary > div').first()).toHaveClass('zion-product-summary__purchase');
+    await expect(premium.locator('.zion-product-section--accent')).toContainText('7.2.1');
+    await expect(premium.getByRole('link', { name: 'Deschide documentația' })).toHaveAttribute('href', 'https://example.test/manual');
+    await expect(premium.locator('[data-zion-section="files"]')).toContainText('ZIP');
+    await expect(premium.locator('[data-zion-section="upsells"]')).toContainText(available.name);
+    await expect(premium.locator('[data-zion-section="cross_sells"]')).toContainText(external.name);
+    await premium.getByText('Cum instalez?').click();
+    await expect(premium.getByText('Descarcă arhiva.')).toBeVisible();
+    await expect(premium.getByText('Linie fără răspuns')).toHaveCount(0);
+    await expect(premium.getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+
+    await page.goto(exhausted.permalink);
+    await expect(page.locator('.zion-product-summary__availability')).toContainText(/out of stock/i);
+    await expect(page.locator('#zion-purchase, [data-zion-sticky]')).toHaveCount(0);
+    await page.goto(grouped.permalink);
+    await expect(page.locator('#zion-purchase input.qty')).toHaveCount(1);
+    await expect(page.locator('#zion-purchase').getByRole('link', { name: available.name, exact: true })).toBeVisible();
+    await expect(page.locator('.zion-buy-now, [data-zion-sticky]')).toHaveCount(0);
+    await page.goto(external.permalink);
+    await expect(page.locator('#zion-purchase form')).toHaveAttribute('action', 'https://example.test/partner');
+    await expect(page.getByRole('button', { name: 'Partener test' })).toBeVisible();
+    await expect(page.locator('.zion-buy-now, [data-zion-sticky]')).toHaveCount(0);
+
+    for (const width of [390, 1440]) {
+      const guest = await browser.newContext({ baseURL, viewport: { width, height: 850 } });
+      try {
+        const productPage = await guest.newPage();
+        await productPage.goto(variable.permalink);
+        const form = productPage.locator('form.variations_form');
+        const material = form.locator('select');
+        const sticky = productPage.locator('[data-zion-sticky]');
+        const buy = form.getByRole('button', { name: 'Cumpără acum' });
+        await expect(productPage.locator('.zion-product-page--minimal')).toBeVisible();
+        await expect(sticky).toHaveText('Alege opțiunile');
+        await expect(buy).toBeDisabled();
+        await sticky.click();
+        await expect(material).toBeFocused();
+        const unavailable = material.locator('option', { hasText: 'PETG' });
+        if (await unavailable.count() && !(await unavailable.isDisabled())) {
+          await material.selectOption({ label: 'PETG' });
+          await expect(sticky).toHaveText('Alege opțiunile');
+          await expect(buy).toBeDisabled();
+          await expect(form.locator('.woocommerce-variation-availability')).toContainText(/out of stock/i);
+        }
+        await material.selectOption({ label: 'PLA' });
+        await expect(sticky).toHaveText('Adaugă în coș');
+        await expect(buy).toBeEnabled();
+        await form.locator('input.qty').fill('2');
+        expect(await productPage.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+        await sticky.click();
+        await expect(productPage.getByText(/added to your cart/i).first()).toBeVisible();
+        await productPage.goto('/cart/');
+        await expect(productPage.locator('.wc-block-cart-items').getByText(/Zion variable test/).first()).toBeVisible();
+        await expect(productPage.locator('.wc-block-cart-items input').first()).toHaveValue('2');
+        if (width === 1440) {
+          await productPage.goto(variable.permalink);
+          await material.selectOption({ label: 'PLA' });
+          await expect(buy).toBeEnabled();
+          await buy.click();
+          await expect(productPage).toHaveURL(/\/checkout\/?$/);
+        }
+      } finally {
+        await guest.close();
+      }
+    }
+
+    const noScript = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 850 } });
+    try {
+      const productPage = await noScript.newPage();
+      await productPage.goto(variable.permalink);
+      await expect(productPage.getByText(/Activează JavaScript/)).toBeVisible();
+      await expect(productPage.locator('[data-zion-sticky]')).toHaveAttribute('href', '#zion-purchase');
+      await productPage.goto('/product/suport-modular-3d/');
+      await expect(productPage.locator('.zion-product-media .woocommerce-product-gallery')).toHaveCSS('opacity', '1');
+      await productPage.getByRole('button', { name: 'Cumpără acum' }).click();
+      await expect(productPage).toHaveURL(/\/checkout\/?$/);
+    } finally {
+      await noScript.close();
+    }
+  } finally {
+    await importSettings(page, original);
+    for (const product of products.reverse()) {
+      const response = await page.request.delete(`${endpoint}/${product.id}?force=true`, { headers });
+      expect(response.ok()).toBe(true);
+    }
   }
 });
 

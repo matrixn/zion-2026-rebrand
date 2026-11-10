@@ -90,7 +90,7 @@ test('Site Editor opens the theme templates and template parts as native blocks'
     ['wp_template', '404', 'core/search'],
     ['wp_template', 'archive-product', 'woocommerce/product-collection'],
     ['wp_template', 'product-search-results', 'woocommerce/product-collection'],
-    ['wp_template', 'single-product', 'woocommerce/add-to-cart-form'],
+    ['wp_template', 'single-product', 'zion/product-page'],
     ['wp_template_part', 'header', 'core/navigation'],
     ['wp_template_part', 'footer', 'core/search'],
   ];
@@ -109,14 +109,31 @@ for (const width of [390, 1440]) {
     await page.setViewportSize({ width, height: 850 });
     await page.goto('/product/zion-catalog-tools/');
     await expect(page.locator('.zion-product-summary').getByRole('heading', { name: 'Zion Catalog Tools' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Related products' })).toBeVisible();
-    const images = page.locator('.zion-product img');
+    const images = page.locator('.zion-product-media .woocommerce-product-gallery__image img');
     await images.evaluateAll(elements => {
       for (const image of elements) image.loading = 'eager';
     });
     await expect.poll(() => images.evaluateAll(elements =>
-      elements.length > 1 && elements.every(image => image.complete && image.naturalWidth > 0),
+      elements.length > 0 && elements.every(image => image.complete && image.naturalWidth > 0),
     )).toBe(true);
+    await page.addStyleTag({ content: '[data-zion-section="related"] { display: none }' });
     await expect(page).toHaveScreenshot(`product-${width}.png`, { fullPage: true, maxDiffPixelRatio: 0.01 });
+  });
+
+  test(`physical product presentation at ${width}px @visual`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 850 });
+    await page.goto('/product/suport-modular-3d/');
+    await expect(page.locator('.zion-product-page--physical').getByRole('heading', { name: 'Suport modular 3D', exact: true })).toBeVisible();
+    const image = page.locator('.zion-product-media .woocommerce-product-gallery__image img').first();
+    await expect(image).toBeVisible();
+    await expect.poll(() => image.evaluate(element => element.complete && element.naturalWidth > 0)).toBe(true);
+    await expect(page.locator('#zion-purchase').getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    await page.addStyleTag({ content: '[data-zion-section="related"] { display: none }' });
+    await expect(page).toHaveScreenshot(`product-physical-${width}.png`, { fullPage: true, maxDiffPixelRatio: 0.01 });
+    await page.locator('.zion-product-media .woocommerce-product-gallery__trigger').click();
+    await expect(page.locator('.pswp--open').first()).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.pswp--open')).toHaveCount(0);
   });
 }

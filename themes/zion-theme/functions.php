@@ -10,6 +10,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/includes/class-zion-theme-settings.php';
 require_once __DIR__ . '/includes/settings-runtime.php';
 require_once __DIR__ . '/includes/product-card.php';
+require_once __DIR__ . '/includes/product-page.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/includes/control-center.php';
 }
@@ -19,6 +20,9 @@ if ( is_admin() ) {
  */
 function zion_theme_setup(): void {
 	add_theme_support( 'woocommerce' );
+	add_theme_support( 'wc-product-gallery-zoom' );
+	add_theme_support( 'wc-product-gallery-lightbox' );
+	add_theme_support( 'wc-product-gallery-slider' );
 	add_editor_style( 'assets/dist/zion.css' );
 }
 add_action( 'after_setup_theme', 'zion_theme_setup' );

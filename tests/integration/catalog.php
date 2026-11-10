@@ -71,4 +71,15 @@ try {
 zion_core_test_assert( $zion_core_hidden, 'WooCommerce hidden products stay hidden' );
 zion_core_test_assert( $zion_core_visible, 'A visible product can belong to both stores' );
 require __DIR__ . '/classification.php';
+$zion_core_detail_fields = get_registered_meta_keys( 'post', 'product' );
+zion_core_test_assert(
+	isset( $zion_core_detail_fields['_zion_product_faq'] ) && false === $zion_core_detail_fields['_zion_product_faq']['show_in_rest'] &&
+	'string' === $zion_core_detail_fields['_zion_product_version']['type'],
+	'Zion editorial product fields are registered without exposing editable REST metadata'
+);
+zion_core_test_assert(
+	'' === sanitize_meta( '_zion_product_documentation', 'javascript:alert(1)', 'post', 'product' ) &&
+	'https://example.test/manual' === sanitize_meta( '_zion_product_documentation', 'https://example.test/manual', 'post', 'product' ),
+	'Zion documentation metadata accepts public HTTP URLs and rejects unsafe schemes'
+);
 WP_CLI::success( 'Catalog integration passed.' );

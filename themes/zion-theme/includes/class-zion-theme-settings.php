@@ -21,7 +21,7 @@ final class Zion_Theme_Settings {
 	 * @return array
 	 */
 	public static function registry(): array {
-		static $fields = array(
+		static $fields   = array(
 			'motion'                  => array(
 				'label'       => 'Mișcare',
 				'description' => 'Urmează preferința vizitatorului sau dezactivează întotdeauna tranzițiile decorative Zion.',
@@ -421,9 +421,153 @@ final class Zion_Theme_Settings {
 				'contexts'    => array( 'global' ),
 			),
 		);
-		static $cards  = null;
-		$cards       ??= self::card_fields();
-		return $fields + $cards;
+		static $cards    = null;
+		$cards         ??= self::card_fields();
+		static $products = null;
+		$products      ??= self::product_fields();
+		return $fields + $cards + $products;
+	}
+
+	/**
+	 * Ordered product page sections.
+	 *
+	 * @return array
+	 */
+	public static function product_sections(): array {
+		return array(
+			'breadcrumb'     => 'Breadcrumb',
+			'hero'           => 'Galerie și rezumat',
+			'description'    => 'Descriere',
+			'specifications' => 'Specificații',
+			'compatibility'  => 'Compatibilitate',
+			'benefits'       => 'Beneficii',
+			'files'          => 'Fișiere și formate',
+			'version'        => 'Versiune software',
+			'changelog'      => 'Changelog',
+			'documentation'  => 'Documentație',
+			'faq'            => 'FAQ',
+			'reviews'        => 'Recenzii',
+			'related'        => 'Produse asociate',
+			'upsells'        => 'Upsells',
+			'cross_sells'    => 'Cross-sells',
+		);
+	}
+
+	/**
+	 * Ordered components in the purchase summary.
+	 *
+	 * @return array
+	 */
+	public static function product_summary(): array {
+		return array(
+			'title'             => 'Titlu',
+			'price'             => 'Preț',
+			'short_description' => 'Descriere scurtă',
+			'availability'      => 'Disponibilitate',
+			'purchase'          => 'Formular WooCommerce',
+			'meta'              => 'SKU și categorii',
+		);
+	}
+
+	/**
+	 * Register product layout options in the existing settings schema.
+	 *
+	 * @return array
+	 */
+	private static function product_fields(): array {
+		$common  = array(
+			'section'  => 'product',
+			'contexts' => array( 'global', 'shop', 'product' ),
+		);
+		$choices = array(
+			'preset'       => array(
+				'Preset pagină',
+				'Auto folosește vitrina produsului și tipul fizic sau virtual pentru produsele fără o vitrină unică.',
+				'auto',
+				array(
+					'auto'     => 'Auto',
+					'physical' => 'Physical 3D',
+					'software' => 'Software',
+					'minimal'  => 'Minimal',
+					'premium'  => 'Premium',
+				),
+			),
+			'style'        => array(
+				'Stilul componentelor',
+				'Stil aplicat rezumatului și secțiunilor informative.',
+				'preset',
+				array(
+					'preset' => 'Conform presetului',
+					'plain'  => 'Simplu',
+					'panel'  => 'Panouri',
+					'accent' => 'Contur accent',
+				),
+			),
+			'gallery_side' => array(
+				'Poziția galeriei',
+				'Pe mobil galeria rămâne deasupra rezumatului.',
+				'left',
+				array(
+					'left'  => 'Stânga',
+					'right' => 'Dreapta',
+				),
+			),
+		);
+		$fields  = array();
+		foreach ( $choices as $key => $choice ) {
+			$fields[ 'product_' . $key ] = $common + array(
+				'label'       => $choice[0],
+				'description' => $choice[1],
+				'type'        => 'choice',
+				'default'     => $choice[2],
+				'allowed'     => $choice[3],
+			);
+		}
+		$sections = self::product_sections();
+		$summary  = self::product_summary();
+		foreach ( array(
+			'section_order'   => array( 'Ordinea secțiunilor', $sections ),
+			'summary_order'   => array( 'Ordinea în rezumat', $summary ),
+			'accent_sections' => array( 'Secțiuni accentuate', array( 'none' => 'Niciuna' ) + $sections ),
+		) as $key => $list ) {
+			$fields[ 'product_' . $key ] = $common + array(
+				'label'       => $list[0],
+				'description' => ( 'accent_sections' === $key ? 'Alege cheile secțiunilor care primesc accent vizual. ' : 'Separă cheile prin virgulă. Secțiunile omise urmează în ordinea implicită. ' ) . implode( ', ', array_keys( $list[1] ) ) . '.',
+				'type'        => 'ordered_keys',
+				'default'     => 'accent_sections' === $key ? 'none' : implode( ',', array_keys( $list[1] ) ),
+				'allowed'     => $list[1],
+			);
+		}
+		unset( $sections['hero'], $sections['related'], $summary['meta'] );
+		$extra = array(
+			'gallery'    => 'Galerie imagini',
+			'zoom'       => 'Zoom galerie',
+			'lightbox'   => 'Lightbox galerie',
+			'variations' => 'Selector variații',
+			'quantity'   => 'Cantitate',
+			'buy_now'    => 'Cumpără acum',
+			'sticky'     => 'Bară de cumpărare',
+		);
+		foreach ( $sections + $summary + $extra as $key => $label ) {
+			$fields[ 'product_show_' . $key ] = $common + array(
+				'label'       => $label,
+				'description' => match ( $key ) {
+					'variations' => 'Ascunderea selectorului ascunde formularul pentru produse variabile.',
+					'quantity' => 'Cantitatea implicită WooCommerce rămâne în formular. Cantitățile produselor grupate rămân vizibile.',
+					'buy_now' => 'Adaugă produsul prin formularul WooCommerce și deschide finalizarea comenzii după o adăugare reușită.',
+					'sticky' => 'Folosește același formular WooCommerce, inclusiv variația și cantitatea selectate.',
+					default => 'Urmează presetul sau controlează afișarea explicit. Secțiunile fără date sunt omise.',
+				},
+				'type'        => 'choice',
+				'default'     => 'preset',
+				'allowed'     => array(
+					'preset' => 'Conform presetului',
+					'show'   => 'Afișează',
+					'hide'   => 'Ascunde',
+				),
+			);
+		}
+		return $fields;
 	}
 
 	/**
