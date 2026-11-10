@@ -2,7 +2,7 @@
 /**
  * Rebuild menu destinations on a cloned staging site using native blocks.
  *
- * Usage: wp eval-file scripts/staging-editorial.php [apply|services [apply]|overview [apply]]
+ * Usage: wp eval-file scripts/staging-editorial.php [apply|services [apply]|overview [apply]|details [apply]]
  * Take a database snapshot before passing apply. Elementor metadata is retained.
  *
  * @package Zion_Theme
@@ -160,7 +160,10 @@ if ( 'services' === $zion_theme_stage_mode ) {
 if ( 'overview' === $zion_theme_stage_mode ) {
 	$zion_theme_stage_paths = array_keys( $zion_theme_stage_services, '', true );
 }
-$zion_theme_stage_apply = 'apply' === ( in_array( $zion_theme_stage_mode, array( 'services', 'overview' ), true ) ? ( $args[1] ?? '' ) : $zion_theme_stage_mode );
+if ( 'details' === $zion_theme_stage_mode ) {
+	$zion_theme_stage_paths = array_keys( array_filter( $zion_theme_stage_services ) );
+}
+$zion_theme_stage_apply = 'apply' === ( in_array( $zion_theme_stage_mode, array( 'services', 'overview', 'details' ), true ) ? ( $args[1] ?? '' ) : $zion_theme_stage_mode );
 foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 	$zion_theme_stage_page    = get_page_by_path( $zion_theme_stage_path );
 	$zion_theme_stage_title   = $zion_theme_stage_page ? $zion_theme_stage_page->post_title : 'Servicii';

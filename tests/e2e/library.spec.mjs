@@ -47,9 +47,10 @@ for (const width of [390, 1440]) {
     for (const service of services) {
       await page.goto(service.url);
       await expect(page.locator('main.zion-service-main h1')).toBeVisible();
-      await expect(page.locator('.zion-service-copy .zion-kicker')).toContainText(service.title);
-      await expect(page.getByRole('heading', { name: 'Ce poate include proiectul' })).toBeVisible();
-      await expect(page.locator('.zion-service-end a[href$="/contact/"]')).toBeVisible();
+      await expect(page.locator('.zion-overview-lead .zion-overview-label')).toContainText(service.title);
+      await expect(page.locator('.zion-detail-screen')).toBeVisible();
+      await expect(page.locator('#beneficii .zion-service-card')).toHaveCount(4);
+      await expect(page.locator('.zion-detail-end a[href*="/contact/?serviciu="]')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     }
   });

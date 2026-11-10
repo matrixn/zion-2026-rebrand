@@ -113,64 +113,83 @@ function zion_theme_service_landing( string $slug = '' ): string {
 	if ( '' === $slug ) {
 		return zion_theme_services_overview();
 	}
-	$services    = zion_theme_services();
-	$contact     = home_url( '/contact/' );
-	$target      = 'aplicatii-practice';
-		$service = $services[ $slug ];
-		$story   = zion_theme_service_stories()[ $slug ];
-		$code    = sprintf( '%02d', 1 + array_search( $slug, array_keys( $services ), true ) );
-		$label   = $code . ' / ' . $service[0];
-		$hero    = $story[1];
-		$lead    = $service[1];
-		$mark    = $story[0];
-		$body    = zion_theme_service_group(
-			'zion-service-section',
-			zion_theme_service_text( 'Ce poate include proiectul', 2 ) .
-			zion_theme_service_cards( array_fill_keys( array_slice( $service, 2 ), '' ) )
-		);
-		$body   .= zion_theme_service_group(
-			'zion-service-section',
-			zion_theme_service_text( 'Aplicații practice', 2 ) .
-			zion_theme_service_cards(
-				array(
-					$story[2] => $story[3],
-					$story[4] => $story[5],
-					$story[6] => $story[7],
-				)
-			),
-			$target
-		);
-	$process     = array(
-		'Înțelegem obiectivul' => 'Discutăm rezultatul dorit și materialele, datele sau sistemele de care dispunem.',
-		'Propunem o direcție'  => 'Alegem prima versiune pe care o putem construi și verifica împreună.',
-		'Construim și testăm'  => 'Validăm soluția în condițiile în care urmează să fie folosită.',
+	$services = zion_theme_services();
+	$service  = $services[ $slug ];
+	$story    = zion_theme_service_stories()[ $slug ];
+	$detail   = zion_theme_service_detail_copy()[ $slug ];
+	$code     = sprintf( '%02d', 1 + array_search( $slug, array_keys( $services ), true ) );
+	$query    = array(
+		'pluginuri-si-integrari'  => 'pluginuri-integrari',
+		'aplicatii-windows-linux' => 'aplicatii-desktop',
 	);
-	$body       .= zion_theme_service_group( 'zion-service-section zion-service-process', zion_theme_service_text( 'Cum colaborăm', 2 ) . zion_theme_service_cards( $process ) );
-	$intro       = zion_theme_service_group(
-		'zion-service-hero',
+	$contact  = add_query_arg( 'serviciu', $query[ $slug ] ?? $slug, home_url( '/contact/' ) );
+	$heading  = get_comment_delimited_block_content(
+		'core/heading',
+		array( 'level' => 1 ),
+		'<h1 class="wp-block-heading">' . esc_html( $detail['hero'][0] ) . '<br><em>' . esc_html( $detail['hero'][1] ) . '</em></h1>'
+	);
+	$intro    = zion_theme_service_group(
+		'zion-overview-band zion-overview-hero zion-overview-split zion-detail-hero',
 		zion_theme_service_group(
-			'zion-service-copy',
-			zion_theme_service_text( $label, 0, 'zion-kicker' ) .
-			zion_theme_service_text( $hero, 1 ) .
-			zion_theme_service_text( $lead, 0, 'zion-lead' ) .
+			'zion-overview-lead',
+			zion_theme_service_text( $code . ' / ' . $service[0], 0, 'zion-overview-label' ) .
+			$heading .
+			zion_theme_service_text( $detail['lead'] ) .
 			zion_theme_service_buttons(
 				array(
-					'Discută proiectul'  => $contact,
-					'Descoperă mai mult' => '#' . $target,
+					'Discută proiectul ↗'   => $contact,
+					'Descoperă serviciul ↓' => '#beneficii',
 				)
 			)
 		) .
-		zion_theme_service_group( 'zion-service-blueprint', zion_theme_service_text( $code, 0, 'zion-service-code' ) . zion_theme_service_text( $mark, 0, 'zion-kicker' ) )
-	);
-	$links       = array(
-		'Contactează-ne'   => $contact,
-		'Toate serviciile' => home_url( '/servicii/' ),
-	);
-	return zion_theme_service_group(
-		'zion-service-landing',
-		$intro . $body . zion_theme_service_group(
-			'zion-service-section zion-service-end',
-			zion_theme_service_text( 'Hai să discutăm ce vrei să construiești', 2 ) . zion_theme_service_buttons( $links )
+		zion_theme_service_group(
+			'zion-detail-scene',
+			zion_theme_service_group(
+				'zion-detail-screen',
+				zion_theme_service_text( $detail['hero'][2], 0, 'zion-detail-symbol' ) .
+				zion_theme_service_text( $detail['hero'][3], 0, 'zion-detail-caption' )
+			)
 		)
 	);
+	$benefits = zion_theme_service_group(
+		'zion-overview-band zion-detail-benefits',
+		zion_theme_service_text( 'Beneficiile tale', 0, 'zion-overview-label' ) .
+		zion_theme_service_text( $detail['headings'][0], 2 ) .
+		zion_theme_service_text( $service[1], 0, 'zion-detail-intro' ) .
+		zion_theme_service_cards( $detail['benefits'] ),
+		'beneficii'
+	);
+	$examples = zion_theme_service_group(
+		'zion-overview-band zion-detail-examples',
+		zion_theme_service_text( 'Din idee în practică', 0, 'zion-overview-label' ) .
+		zion_theme_service_text( $detail['headings'][1], 2 ) .
+		zion_theme_service_cards(
+			array(
+				$story[2] => $story[3],
+				$story[4] => $story[5],
+				$story[6] => $story[7],
+			)
+		),
+		'aplicatii-practice'
+	);
+	$process  = zion_theme_service_group(
+		'zion-overview-band zion-overview-process zion-detail-process',
+		zion_theme_service_text( 'Proces de colaborare', 0, 'zion-overview-label' ) .
+		zion_theme_service_text( $detail['headings'][2], 2 ) .
+		zion_theme_service_cards( $detail['steps'] )
+	);
+	$end      = zion_theme_service_group(
+		'zion-overview-band zion-overview-end zion-detail-end',
+		zion_theme_service_text( 'Hai să începem', 0, 'zion-overview-label' ) .
+		zion_theme_service_text( $detail['headings'][3], 2 ) .
+		zion_theme_service_text( 'Spune-ne ce ai nevoie și vedem ce putem construi împreună.' ) .
+		zion_theme_service_buttons(
+			array(
+				'Solicită o discuție ↗' => $contact,
+				'Scrie pe WhatsApp ↗'   => 'https://wa.me/40770675597',
+				'Toate serviciile'      => home_url( '/servicii/' ),
+			)
+		)
+	);
+	return zion_theme_service_group( 'zion-services-overview zion-service-detail', $intro . $benefits . $examples . $process . $end );
 }
