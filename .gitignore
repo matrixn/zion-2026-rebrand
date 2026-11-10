@@ -43,3 +43,4 @@ Desktop.ini
 /.wp-env.override.json
 /playwright-report/
 /test-results/
+/build/
