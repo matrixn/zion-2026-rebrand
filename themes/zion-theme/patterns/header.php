@@ -1,0 +1,19 @@
+<?php
+/**
+ * Title: Zion header
+ * Slug: zion-theme/header
+ * Inserter: no
+ *
+ * @package Zion_Theme
+ */
+
+?>
+<!-- wp:group {"className":"zion-shell zion-header"} -->
+<div class="wp-block-group zion-shell zion-header">
+<!-- wp:site-title {"level":0,"className":"zion-wordmark"} /-->
+<!-- wp:navigation {"overlayMenu":"mobile","className":"zion-navigation","layout":{"type":"flex","justifyContent":"right"}} -->
+<!-- wp:navigation-link {"label":"Magazin 3D","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-3d' ) ); ?>","kind":"custom"} /-->
+<!-- wp:navigation-link {"label":"Magazin Software","url":"<?php echo esc_url( zion_theme_shop_url( 'magazin-software' ) ); ?>","kind":"custom"} /-->
+<!-- /wp:navigation -->
+</div>
+<!-- /wp:group -->

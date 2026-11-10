@@ -1,0 +1,41 @@
+name: Zion checks
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - run: npm install --global npm@11.16.0
+      - run: npm ci
+      - run: composer install --no-interaction --prefer-dist
+      - run: npm run build
+      - run: git diff --exit-code -- themes/zion-theme/assets/dist/
+      - run: composer lint
+      - run: composer test
+      - run: npm run env:start
+      - run: npm run demo:test
+      - run: npm run test:integration
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-results
+          path: test-results/

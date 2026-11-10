@@ -1,0 +1,48 @@
+{
+  "shops": {
+    "3d": {
+      "title": "Magazin 3D",
+      "description": "Piese funcționale, prototipuri și modele pentru printare.",
+      "slug": "magazin-3d"
+    },
+    "software": {
+      "title": "Magazin Software",
+      "description": "Pluginuri și instrumente pentru aplicații și magazine online.",
+      "slug": "magazin-software"
+    }
+  },
+  "products": [
+    {
+      "sku": "ZION-DEMO-3D-01",
+      "name": "Suport modular 3D",
+      "shop": "3d",
+      "price": "89.00",
+      "virtual": false,
+      "description": "Suport demonstrativ printat 3D pentru organizarea cablurilor."
+    },
+    {
+      "sku": "ZION-DEMO-3D-02",
+      "name": "Prototip carcasă 3D",
+      "shop": "3d",
+      "price": "129.00",
+      "virtual": false,
+      "description": "Model fizic demonstrativ pentru validarea dimensiunilor."
+    },
+    {
+      "sku": "ZION-DEMO-SW-01",
+      "name": "Zion Catalog Tools",
+      "shop": "software",
+      "price": "149.00",
+      "virtual": true,
+      "description": "Plugin demonstrativ pentru organizarea unui catalog WooCommerce."
+    },
+    {
+      "sku": "ZION-DEMO-SW-02",
+      "name": "Zion Workflow Kit",
+      "shop": "software",
+      "price": "199.00",
+      "virtual": true,
+      "description": "Pachet demonstrativ de instrumente pentru fluxuri digitale."
+    }
+  ]
+}

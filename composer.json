@@ -1,0 +1,20 @@
+{
+  "name": "matrixn/zion-theme",
+  "description": "Development tools for the Zion Theme monorepo.",
+  "license": "GPL-2.0-or-later",
+  "type": "project",
+  "require": { "php": ">=8.3" },
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.1",
+    "phpunit/phpunit": "^11.5",
+    "wp-coding-standards/wpcs": "^3.2"
+  },
+  "config": {
+    "allow-plugins": { "dealerdirect/phpcodesniffer-composer-installer": true },
+    "platform": { "php": "8.3.0" }
+  },
+  "scripts": {
+    "lint": "@php vendor/bin/phpcs",
+    "test": "@php vendor/bin/phpunit"
+  }
+}

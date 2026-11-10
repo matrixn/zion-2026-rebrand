@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/wp-env.json",
+  "core": "https://wordpress.org/wordpress-6.9.4.zip",
+  "phpVersion": "8.3",
+  "mariadbVersion": "10.11",
+  "port": 8916,
+  "testsPort": 8917,
+  "plugins": ["https://downloads.wordpress.org/plugin/woocommerce.10.8.1.zip", "./plugins/zion-core"],
+  "themes": ["./themes/zion-theme"],
+  "mappings": {
+    "wp-content/zion-config": "./config",
+    "wp-content/zion-scripts": "./scripts",
+    "wp-content/zion-tests": "./tests"
+  },
+  "config": {
+    "WP_ENVIRONMENT_TYPE": "local",
+    "WP_DEBUG": true,
+    "WP_DEBUG_DISPLAY": false
+  }
+}

@@ -37,3 +37,9 @@ pnpm-debug.log*
 Thumbs.db
 Desktop.ini
 *.swp
+
+# Monorepo development output and local overrides
+/vendor/
+/.wp-env.override.json
+/playwright-report/
+/test-results/

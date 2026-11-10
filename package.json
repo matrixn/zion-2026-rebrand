@@ -1,0 +1,20 @@
+{
+  "name": "zion-theme-workspace",
+  "private": true,
+  "engines": { "node": ">=24.18.0", "npm": ">=11.16.0" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "demo": "wp-env run cli wp eval-file wp-content/zion-scripts/seed-demo.php",
+    "demo:test": "wp-env run tests-cli wp eval-file wp-content/zion-scripts/seed-demo.php",
+    "test:integration": "wp-env run tests-cli wp eval-file wp-content/zion-tests/integration/catalog.php",
+    "test:e2e": "playwright test",
+    "test:visual:update": "playwright test --grep @visual --update-snapshots"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0",
+    "@wordpress/env": "12.1.0",
+    "lightningcss": "1.32.0"
+  }
+}

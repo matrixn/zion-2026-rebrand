@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<ruleset name="Zion">
+  <file>themes/zion-theme</file>
+  <file>plugins/zion-core</file>
+  <file>scripts</file>
+  <file>tests</file>
+  <arg name="extensions" value="php"/>
+  <rule ref="WordPress"/>
+  <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+    <properties>
+      <property name="prefixes" type="array">
+        <element value="zion_theme"/>
+        <element value="zion_core"/>
+        <element value="ZionTheme"/>
+      </property>
+    </properties>
+  </rule>
+</ruleset>
