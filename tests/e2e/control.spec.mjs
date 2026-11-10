@@ -83,17 +83,26 @@ test('Control Center persists validated settings and applies inheritance on publ
     await field(page, 'catalog_category_filter').selectOption('0');
     await field(page, 'catalog_filter_layout').selectOption('drawer');
     await field(page, 'catalog_width').selectOption('wide');
+    await field(page, 'catalog_page_size').fill('1');
+    await field(page, 'catalog_load_mode').selectOption('manual');
     await save(page);
     await page.goto('/magazin-software/');
     const shopAction = page.locator('.zion-catalog-native .wp-block-woocommerce-product-button').first();
     await expect(shopAction).toBeVisible();
     await expect(page.locator('.zion-catalog-native.zion-catalog-list.zion-catalog-drawer.alignwide')).toBeVisible();
-    await page.getByRole('button', { name: 'Filter products' }).click();
-    const filters = page.getByRole('dialog', { name: 'Product Filters' });
+    await page.getByRole('button', { name: 'Filtrează produsele' }).click();
+    const filters = page.getByRole('dialog', { name: 'Filtre de produse' });
     await expect(filters).toBeVisible();
-    await expect(filters.getByRole('heading', { name: 'Product categories' })).toHaveCount(0);
+    await expect(filters.getByRole('heading', { name: 'Categorii de produse' })).toHaveCount(0);
     await page.keyboard.press('Escape');
     await expect(filters).toBeHidden();
+    const more = page.locator('[data-zion-load="manual"] a');
+    await more.scrollIntoViewIfNeeded();
+    await expect(page.locator('.zion-catalog-native .wc-block-product')).toHaveCount(1);
+    const documentStart = await page.evaluate(() => performance.timeOrigin);
+    await more.click();
+    await expect(page.locator('.zion-catalog-native .wc-block-product')).toHaveCount(2);
+    expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentStart);
     await page.goto('/magazin-3d/');
     await expect(page.locator('.zion-catalog-native.zion-catalog-grid.zion-catalog-sidebar')).toBeVisible();
     await expect(page.locator('.zion-catalog-native').getByRole('checkbox', { name: /Prototipuri demo/ })).toBeVisible();
@@ -110,7 +119,7 @@ test('Control Center persists validated settings and applies inheritance on publ
     const products = await (await page.request.get('/wp-json/wc/store/v1/products?slug=zion-catalog-tools')).json();
     await page.goto('/product/zion-catalog-tools/');
     await expect(page.locator('.wp-block-woocommerce-product-meta')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Adaugă în coș', exact: true })).toBeVisible();
     await openSection(page, 'tools', products[0].id);
     await field(page, 'product_meta').selectOption('1');
     await field(page, 'product_related').selectOption('0');
@@ -266,7 +275,7 @@ test('all card presets fit desktop and mobile and store overrides control the sh
     await expect(dialog).toBeHidden();
     await expect(quickView).toBeFocused();
     await card.getByRole('heading').getByRole('link').click();
-    await expect(page.getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Adaugă în coș', exact: true })).toBeVisible();
 
     await page.goto('/magazin-software/');
     await expect(card).toHaveClass(/zion-product-card--horizontal/);
@@ -347,10 +356,10 @@ test('product presets and native purchases work with real variations, mobile and
     await premium.getByText('Cum instalez?').click();
     await expect(premium.getByText('Descarcă arhiva.')).toBeVisible();
     await expect(premium.getByText('Linie fără răspuns')).toHaveCount(0);
-    await expect(premium.getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+    await expect(premium.getByRole('button', { name: 'Adaugă în coș', exact: true })).toBeVisible();
 
     await page.goto(exhausted.permalink);
-    await expect(page.locator('.zion-product-summary__availability')).toContainText(/out of stock/i);
+    await expect(page.locator('.zion-product-summary__availability')).toContainText(/stoc epuizat/i);
     await expect(page.locator('#zion-purchase, [data-zion-sticky]')).toHaveCount(0);
     await page.goto(grouped.permalink);
     await expect(page.locator('#zion-purchase input.qty')).toHaveCount(1);
@@ -380,15 +389,18 @@ test('product presets and native purchases work with real variations, mobile and
           await material.selectOption({ label: 'PETG' });
           await expect(sticky).toHaveText('Alege opțiunile');
           await expect(buy).toBeDisabled();
-          await expect(form.locator('.woocommerce-variation-availability')).toContainText(/out of stock/i);
+          await expect(form.locator('.woocommerce-variation-availability')).toContainText(/stoc epuizat/i);
         }
         await material.selectOption({ label: 'PLA' });
         await expect(sticky).toHaveText('Adaugă în coș');
+        await expect(form.locator('.woocommerce-variation-price')).toContainText('89');
+        const documentStart = await productPage.evaluate(() => performance.timeOrigin);
         await expect(buy).toBeEnabled();
         await form.locator('input.qty').fill('2');
         expect(await productPage.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
         await sticky.click();
-        await expect(productPage.getByText(/added to your cart/i).first()).toBeVisible();
+        await expect(productPage.locator('.zion-purchase-notice').getByText(/adăugate în coș/i)).toBeVisible();
+        expect(await productPage.evaluate(() => performance.timeOrigin)).toBe(documentStart);
         await productPage.goto('/cart/');
         await expect(productPage.locator('.wc-block-cart-items').getByText(/Zion variable test/).first()).toBeVisible();
         await expect(productPage.locator('.wc-block-cart-items input').first()).toHaveValue('2');

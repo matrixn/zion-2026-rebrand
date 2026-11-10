@@ -44,20 +44,22 @@ test('variable products participate in native filters and keep their variation f
   await expect(page.locator('form.variations_form select[name="attribute_pa_zion-scale-material"]')).toBeVisible();
 });
 
-test('load more keeps the filters and expands only the requested result page', async ({ page }) => {
+test('scrolling to the next batch loads products without a new document', async ({ page }) => {
   await page.goto(`${threeD}?categories=zion-scale-shared&orderby=date`);
   const first = await ids(page);
   expect(first).toHaveLength(12);
-  await page.getByRole('link', { name: 'Încarcă mai multe' }).click();
-  await expect(page).toHaveURL(/zion_more=24/);
+  const documentStart = await page.evaluate(() => performance.timeOrigin);
+  await page.getByRole('link', { name: 'Încarcă mai multe' }).scrollIntoViewIfNeeded();
+  await expect(page).toHaveURL(/zion_more=(24|36|48|60|72|84|96)/);
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentStart);
   expect(new URL(page.url()).searchParams.get('categories')).toBe('zion-scale-shared');
   expect(new URL(page.url()).searchParams.get('orderby')).toBe('date');
   const next = await ids(page);
-  expect(next).toHaveLength(24);
+  expect(next.length).toBeGreaterThanOrEqual(24);
   expect(next.slice(0, 12)).toEqual(first);
-  expect(new Set(next).size).toBe(24);
+  expect(new Set(next).size).toBe(next.length);
   await page.getByLabel('Sortează').selectOption('price');
-  await page.getByRole('button', { name: 'Aplică sortarea' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Sortarea a fost actualizată.' })).toBeVisible();
   expect(new URL(page.url()).searchParams.has('zion_more')).toBe(false);
   await expect(page.locator('.zion-catalog-native .wc-block-product')).toHaveCount(12);
 });

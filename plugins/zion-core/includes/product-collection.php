@@ -300,6 +300,22 @@ function zion_core_storefront_sort_form( string $url, string $sort, string $page
 }
 
 /**
+ * Load AJAX controls for the native archive toolbar and Zion storefronts.
+ */
+function zion_core_enqueue_catalog_controls(): void {
+	wp_enqueue_script_module( 'zion-catalog', plugins_url( 'assets/catalog.js', dirname( __DIR__ ) . '/zion-core.php' ), array( '@wordpress/interactivity-router' ), '1.1.0' );
+}
+add_filter(
+	'render_block_woocommerce/catalog-sorting',
+	static function ( string $html ): string {
+		if ( $html && current_theme_supports( 'woocommerce' ) && wp_is_block_theme() ) {
+			zion_core_enqueue_catalog_controls();
+		}
+		return $html;
+	}
+);
+
+/**
  * Build and render one paginated native collection for a dedicated storefront.
  *
  * @param array $options Normalized shortcode arguments.
@@ -331,6 +347,7 @@ function zion_core_render_storefront_collection( array $options, array $display 
 			'mobile'          => 1,
 			'page_size'       => $options['limit'],
 			'load_more'       => true,
+			'load_mode'       => 'auto',
 			'width'           => 'content',
 			'gap'             => 'regular',
 			'filter_layout'   => 'sidebar',
@@ -430,7 +447,7 @@ function zion_core_render_storefront_collection( array $options, array $display 
 	}
 	$content .= '<div class="zion-catalog-results"><div class="zion-catalog-toolbar">' .
 		zion_core_storefront_sort_form( $url, $sort, $page_key ) . '<!-- zion-catalog-count --></div>' .
-		$cards . '<!-- zion-catalog-more -->' . $pagination . $empty . '</div></div></div>';
+		$cards . $pagination . '<!-- zion-catalog-more -->' . $empty . '</div></div></div>';
 
 	$results = null;
 	$capture = static function ( array $posts, WP_Query $wp_query ) use ( &$results, $shop ): array {
@@ -480,8 +497,9 @@ function zion_core_render_storefront_collection( array $options, array $display 
 	$more = '';
 	if ( $display['load_more'] && $total > $limit && $limit < 96 && absint( zion_core_storefront_parameter( $page_key ) ) < 2 ) {
 		$more_url = add_query_arg( 'zion_more', min( 96, $limit + $base_limit ), remove_query_arg( $page_key ) );
-		$more     = '<p class="zion-catalog-more"><a class="wp-element-button" href="' . esc_url( $more_url ) . '">' .
+		$more     = '<p class="zion-catalog-more" data-zion-load="' . esc_attr( 'manual' === $display['load_mode'] ? 'manual' : 'auto' ) . '"><a class="wp-element-button" href="' . esc_url( $more_url ) . '">' .
 			esc_html__( 'Încarcă mai multe', 'zion-core' ) . '</a></p>';
 	}
+	zion_core_enqueue_catalog_controls();
 	return str_replace( array( '<!-- zion-catalog-count -->', '<!-- zion-catalog-more -->' ), array( $count, $more ), $html );
 }

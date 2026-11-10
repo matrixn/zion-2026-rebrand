@@ -59,20 +59,26 @@ test('both storefronts are isolated and a software product reaches the native ca
   await page.goto('/magazin-software/');
   await expect(page.getByRole('heading', { name: 'Suport modular 3D', exact: true })).toHaveCount(0);
   await page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }).getByRole('link').click();
-  await page.getByRole('button', { name: 'Add to cart', exact: true }).click();
-  await page.getByRole('link', { name: /view cart/i }).first().click();
+  const documentStart = await page.evaluate(() => performance.timeOrigin);
+  await page.getByRole('button', { name: 'Adaugă în coș', exact: true }).click();
+  await expect(page.locator('.zion-purchase-notice')).toContainText('a fost adăugat în coș');
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentStart);
+  await page.getByRole('link', { name: /vezi coșul/i }).first().click();
   await expect(page.getByRole('link', { name: 'Zion Catalog Tools' })).toBeVisible();
-  await page.getByRole('link', { name: /proceed to checkout/i }).click();
+  await page.getByRole('link', { name: /continuă la finalizarea comenzii/i }).click();
   await expect(page).toHaveURL(/\/checkout\/?$/);
-  await expect(page.getByRole('form', { name: 'Checkout', exact: true })).toBeVisible();
+  const checkout = page.getByRole('form', { name: 'Finalizare comandă', exact: true });
+  await expect(checkout).toBeVisible();
+  await expect(checkout.getByRole('textbox', { name: 'Adresă de e-mail' })).toBeVisible();
+  await expect(checkout.getByRole('button', { name: 'Plasează comanda' })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
 test('the shared card adds a simple product through the native WooCommerce button', async ({ page }) => {
   await page.goto('/magazin-software/');
   const card = page.locator('.zion-product-card').filter({ has: page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }) });
-  await card.getByRole('button', { name: /Add to cart/ }).click();
-  await expect(card.getByRole('link', { name: /view cart/i })).toBeVisible();
-  await card.getByRole('link', { name: /view cart/i }).click();
+  await card.getByRole('button', { name: /Adaugă în coș/ }).click();
+  await expect(card.getByRole('link', { name: /vezi coșul/i })).toBeVisible();
+  await card.getByRole('link', { name: /vezi coșul/i }).click();
   await expect(page.getByRole('link', { name: 'Zion Catalog Tools', exact: true }).last()).toBeVisible();
 });

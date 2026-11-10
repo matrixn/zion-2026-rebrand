@@ -1375,3 +1375,19 @@ body:has(.zion-product-page--sticky) {
 		translate: none;
 	}
 }
+
+.zion-shop-notice:not(:empty) {
+	position: fixed;
+	inset-inline-end: 1rem;
+	inset-block-end: 1rem;
+	z-index: 100;
+	max-inline-size: calc(100vw - 2rem);
+	padding: .65rem 1rem;
+	border: 1px solid var(--wp--preset--color--accent);
+	background: var(--wp--preset--color--surface);
+	color: var(--wp--preset--color--text);
+}
+
+.zion-purchase-notice:not(:empty) {
+	margin-block-start: .75rem;
+}

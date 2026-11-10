@@ -12,6 +12,7 @@ require_once __DIR__ . '/includes/settings-runtime.php';
 require_once __DIR__ . '/includes/site-layout.php';
 require_once __DIR__ . '/includes/product-card.php';
 require_once __DIR__ . '/includes/product-page.php';
+require_once __DIR__ . '/includes/commerce-translations.php';
 require_once __DIR__ . '/includes/component-library.php';
 require_once __DIR__ . '/includes/services.php';
 require_once __DIR__ . '/includes/seo.php';

@@ -112,7 +112,10 @@ try {
 		array(
 			'source'      => 'plugins/zion-core',
 			'files'       => array( 'zion-core.php' ),
-			'directories' => array( 'includes' => array( 'php' ) ),
+			'directories' => array(
+				'includes' => array( 'php' ),
+				'assets'   => array( 'js' ),
+			),
 		)
 	);
 } catch ( Throwable $zion_theme_error ) {

@@ -145,13 +145,25 @@ final class Zion_Theme_Settings {
 			),
 			'catalog_load_more'       => array(
 				'label'       => 'Încarcă mai multe',
-				'description' => 'Oferă extinderea primei pagini până la 96 de produse, cu reîncărcare. Paginarea numerică rămâne disponibilă.',
+				'description' => 'Încarcă următoarele produse fără reîncărcarea paginii. Paginarea numerică rămâne disponibilă.',
 				'section'     => 'woo',
 				'type'        => 'bool',
 				'default'     => true,
 				'allowed'     => array(
 					'0' => 'Ascunde',
 					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_load_mode'       => array(
+				'label'       => 'Mod de încărcare',
+				'description' => 'Încarcă automat când vizitatorul ajunge la finalul listei sau doar la apăsarea butonului.',
+				'section'     => 'woo',
+				'type'        => 'choice',
+				'default'     => 'auto',
+				'allowed'     => array(
+					'auto'   => 'Automat la derulare',
+					'manual' => 'Buton manual',
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
 			),

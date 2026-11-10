@@ -142,6 +142,7 @@ function zion_theme_storefront_display( array $display, string $shop ): array {
 		'mobile'         => 'catalog_columns_mobile',
 		'page_size'      => 'catalog_page_size',
 		'load_more'      => 'catalog_load_more',
+		'load_mode'      => 'catalog_load_mode',
 		'gap'            => 'catalog_gap',
 		'width'          => 'catalog_width',
 		'sort'           => 'catalog_sort',

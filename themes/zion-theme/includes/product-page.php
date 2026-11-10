@@ -164,10 +164,15 @@ function zion_theme_product_purchase( WC_Product $item, array $show ): string {
 	if ( ! $tags->next_tag( 'FORM' ) ) {
 		return '';
 	}
+	$ajax = $item->is_type( array( 'simple', 'variable', 'grouped' ) );
+	if ( $ajax ) {
+		wp_enqueue_script( 'zion-product-purchase', get_theme_file_uri( 'assets/blocks/product-purchase.js' ), array(), wp_get_theme()->get( 'Version' ), true );
+	}
 	$classes = 'zion-purchase' . ( $show['quantity'] || $item->is_type( 'grouped' ) ? '' : ' zion-hide-quantity' );
 	$note    = $item->is_type( 'variable' ) ? '<noscript><style>.zion-purchase .variations_button{display:none}</style><p>' .
 		esc_html__( 'Activează JavaScript pentru a selecta și cumpăra o variație.', 'zion-theme' ) . '</p></noscript>' : '';
-	return '<div id="zion-purchase" class="' . esc_attr( $classes ) . '">' . $form . $note . '</div>';
+	return '<div id="zion-purchase" class="' . esc_attr( $classes ) . '">' . $form . $note .
+		( $ajax ? '<div class="zion-purchase-notice" role="status" aria-live="polite"></div>' : '' ) . '</div>';
 }
 
 /**

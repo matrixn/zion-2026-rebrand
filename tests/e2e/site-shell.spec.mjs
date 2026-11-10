@@ -30,7 +30,7 @@ for (const width of [390, 1440]) {
     expect(timings.dcl).toBeLessThan(8000);
     const header = page.locator('.zion-header');
     await expect(header.locator('.wc-block-mini-cart__button')).toHaveCount(1);
-    await expect(header.getByRole('link', { name: 'Login' })).toHaveAttribute('href', /\/my-account\/$/);
+    await expect(header.getByRole('link', { name: 'Autentificare' })).toHaveAttribute('href', /\/my-account\/$/);
     expect(requests.filter(path => /\/wc\/store\/v1\/products\/?$/.test(path))).toHaveLength(0);
     const trigger = header.locator('.zion-header-search summary');
     await trigger.focus();
@@ -42,8 +42,8 @@ for (const width of [390, 1440]) {
     await expect(page).toHaveURL(/post_type=product/);
     const card = page.locator('.zion-product-card').filter({ has: page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }) });
     await expect(card).toBeVisible();
-    await card.getByRole('button', { name: /Add to cart/i }).click();
-    const cart = header.getByRole('button', { name: /Number of items in the cart: 1/ });
+    await card.getByRole('button', { name: /Adaugă în coș/i }).click();
+    const cart = header.getByRole('button', { name: /Număr de produse în coș: 1/ });
     await expect(cart).toBeVisible();
     await expect(header.locator('.wc-block-mini-cart__badge')).toHaveText('1');
     await cart.focus();

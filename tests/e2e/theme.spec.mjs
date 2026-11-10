@@ -134,7 +134,7 @@ for (const width of [390, 1440]) {
     const image = page.locator('.zion-product-media .woocommerce-product-gallery__image img').first();
     await expect(image).toBeVisible();
     await expect.poll(() => image.evaluate(element => element.complete && element.naturalWidth > 0)).toBe(true);
-    await expect(page.locator('#zion-purchase').getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+    await expect(page.locator('#zion-purchase').getByRole('button', { name: 'Adaugă în coș', exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     await page.addStyleTag({ content: '[data-zion-section="related"] { display: none }' });
     await expect(page).toHaveScreenshot(`product-physical-${width}.png`, { fullPage: true, maxDiffPixelRatio: 0.01 });

@@ -17,6 +17,7 @@ function zion_theme_register_product_card(): void {
 			'api_version'     => 3,
 			'title'           => __( 'Card produs Zion', 'zion-theme' ),
 			'category'        => 'widgets',
+			'supports'        => array( 'interactivity' => array( 'clientNavigation' => true ) ),
 			'uses_context'    => array( 'postId', 'postType' ),
 			'attributes'      => array(
 				'shop'       => array( 'type' => 'string' ),

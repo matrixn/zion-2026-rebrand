@@ -30,3 +30,46 @@
 		}
 	});
 })();
+
+document.addEventListener('submit', async event => {
+  const form = event.target;
+  const notice = form.closest('#zion-purchase')?.querySelector('.zion-purchase-notice');
+  const button = event.submitter;
+  if (!notice || !form.matches('form.cart') || button?.hasAttribute('formaction') || event.defaultPrevented) return;
+
+  const action = new URL(form.action);
+  if (action.origin !== location.origin || form.method.toLowerCase() !== 'post') return;
+  event.preventDefault();
+  if (form.getAttribute('aria-busy') === 'true') return;
+
+  const fields = new FormData(form, button ?? undefined);
+  const disabled = button?.disabled;
+  form.setAttribute('aria-busy', 'true');
+  if (button) button.disabled = true;
+  notice.textContent = 'Se adaugă în coș…';
+
+  try {
+    const response = await fetch(action, { method: 'POST', body: fields, credentials: 'same-origin' });
+    if (!response.ok) throw new Error('WooCommerce request failed');
+    if (response.redirected && new URL(response.url).pathname !== action.pathname) {
+      location.assign(response.url);
+      return;
+    }
+
+    const result = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const messages = [...result.querySelectorAll('.woocommerce-error, .woocommerce-message, .woocommerce-info, .wc-block-components-notice-banner')];
+    notice.replaceChildren(...messages);
+    if (!result.querySelector('.woocommerce-error, .wc-block-components-notice-banner.is-error')) {
+      if (!notice.textContent) notice.textContent = 'Produsul a fost adăugat în coș.';
+      document.body.dispatchEvent(new CustomEvent('wc-blocks_added_to_cart', {
+        bubbles: true,
+        detail: { preserveCartData: false },
+      }));
+    }
+  } catch {
+    notice.textContent = 'Nu am putut confirma adăugarea. Verifică coșul înainte de a încerca din nou.';
+  } finally {
+    form.removeAttribute('aria-busy');
+    if (button) button.disabled = disabled;
+  }
+});

@@ -19,8 +19,10 @@ test('native filters combine with sorting, reset and browser history', async ({ 
   await expect(catalog(page).getByRole('status')).toHaveText('1 produs');
   await expect(catalog(page).getByRole('heading', { name: 'Zion Catalog Tools' })).toHaveCount(0);
 
+  const documentStart = await page.evaluate(() => performance.timeOrigin);
   await page.getByLabel('Sortează').selectOption('date');
-  await page.getByRole('button', { name: 'Aplică sortarea' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Sortarea a fost actualizată.' })).toBeVisible();
+  expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentStart);
   const sorted = new URL(page.url());
   expect(sorted.searchParams.get('orderby')).toBe('date');
   expect(sorted.searchParams.get('categories')).toBe('prototipuri-demo');
@@ -64,8 +66,8 @@ for (const width of [390, 768, 1024, 1440]) {
 test('the mobile filter drawer opens and dismisses by keyboard', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 850 });
   await page.goto('/magazin-3d/');
-  const open = catalog(page).getByRole('button', { name: 'Filter products' });
-  const dialog = catalog(page).getByRole('dialog', { name: 'Product Filters' });
+  const open = catalog(page).getByRole('button', { name: 'Filtrează produsele' });
+  const dialog = catalog(page).getByRole('dialog', { name: 'Filtre de produse' });
   await open.focus();
   await page.keyboard.press('Enter');
   await expect(dialog).toBeVisible();
