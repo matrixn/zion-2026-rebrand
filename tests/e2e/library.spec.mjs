@@ -46,9 +46,10 @@ for (const width of [390, 1440]) {
     );
     for (const service of services) {
       await page.goto(service.url);
-      await expect(page.getByRole('heading', { level: 1, name: service.title, exact: true })).toBeVisible();
+      await expect(page.locator('main.zion-service-main h1')).toBeVisible();
+      await expect(page.locator('.zion-service-copy .zion-kicker')).toContainText(service.title);
       await expect(page.getByRole('heading', { name: 'Ce poate include proiectul' })).toBeVisible();
-      await expect(page.locator('.zion-library-cta a')).toBeVisible();
+      await expect(page.locator('.zion-service-end a[href$="/contact/"]')).toBeVisible();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     }
   });
@@ -57,7 +58,7 @@ for (const width of [390, 1440]) {
 test('frontend assets follow rendered components and WooCommerce emits native Product schema once', async ({ page }) => {
   await page.goto('/jurnal/');
   await expect(page.locator('#zion-collections-css, #zion-library-content-css, #zion-card-js, #zion-library-editor-js')).toHaveCount(0);
-  await page.goto('/printare-3d/');
+  await page.goto('/servicii/');
   await expect(page.locator('#zion-library-content-css')).toHaveCount(1);
   await expect(page.locator('#zion-collections-css, #zion-card-js, #zion-library-editor-js')).toHaveCount(0);
   await expect(page.locator('head meta[name="description"]')).toHaveCount(1);

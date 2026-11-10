@@ -43,6 +43,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 ## Servicii 1.1.2
 
 - Pagina Servicii și cele șapte pagini individuale au pattern-uri Gutenberg editabile și template-ul **Zion · Servicii**. Layouturile includ panoul grafic, exemple practice, etapele colaborării și legături spre Contact. Pagina generală include și FAQ.
+- Testele din browser urmăresc legăturile din pagina principală până la fiecare dintre cele șapte pagini, unde verifică titlul, template-ul și butonul de contact.
 - Pentru o clonă de staging, fă un backup și previzualizează schimbările cu `wp eval-file scripts/staging-editorial.php services`. Adaugă `apply` pentru a înlocui conținutul paginilor de servicii și a aplica template-ul. Rutele existente sunt păstrate.
 
 ## Magazin 1.1.1
