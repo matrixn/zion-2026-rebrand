@@ -15,6 +15,7 @@ require_once __DIR__ . '/includes/product-page.php';
 require_once __DIR__ . '/includes/commerce-translations.php';
 require_once __DIR__ . '/includes/component-library.php';
 require_once __DIR__ . '/includes/services.php';
+require_once __DIR__ . '/includes/service-landings.php';
 require_once __DIR__ . '/includes/navigation.php';
 require_once __DIR__ . '/includes/seo.php';
 if ( is_admin() ) {

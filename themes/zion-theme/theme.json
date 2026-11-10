@@ -130,6 +130,13 @@
       }
     }
   },
+  "customTemplates": [
+    {
+      "name": "service-landing",
+      "title": "Zion · Servicii",
+      "postTypes": ["page"]
+    }
+  ],
   "templateParts": [
     {
       "name": "header",

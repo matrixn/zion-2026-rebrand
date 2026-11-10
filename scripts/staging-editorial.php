@@ -2,7 +2,7 @@
 /**
  * Rebuild menu destinations on a cloned staging site using native blocks.
  *
- * Usage: wp eval-file scripts/staging-editorial.php [apply]
+ * Usage: wp eval-file scripts/staging-editorial.php [apply|services [apply]]
  * Take a database snapshot before passing apply. Elementor metadata is retained.
  *
  * @package Zion_Theme
@@ -124,7 +124,7 @@ function zion_theme_stage_widgets( array $items ): string {
 	return $blocks;
 }
 
-$zion_theme_stage_paths = array_merge(
+$zion_theme_stage_paths    = array_merge(
 	array_values( zion_theme_service_paths() ),
 	array(
 		'printare-3d',
@@ -142,13 +142,29 @@ $zion_theme_stage_paths = array_merge(
 		'magazin-software',
 	)
 );
-$zion_theme_stage_apply = 'apply' === ( $args[0] ?? '' );
+$zion_theme_stage_services = array();
+foreach ( zion_theme_service_paths() as $zion_theme_stage_key => $zion_theme_stage_canonical ) {
+	$zion_theme_stage_route                               = ! get_page_by_path( $zion_theme_stage_canonical ) && get_page_by_path( $zion_theme_stage_key )
+		? $zion_theme_stage_key
+		: $zion_theme_stage_canonical;
+	$zion_theme_stage_services[ $zion_theme_stage_route ] = $zion_theme_stage_key;
+}
+$zion_theme_stage_services['servicii'] = '';
+if ( ! isset( $zion_theme_stage_services['printare-3d'] ) ) {
+	$zion_theme_stage_services['printare-3d'] = '';
+}
+$zion_theme_stage_only_services = 'services' === ( $args[0] ?? '' );
+if ( $zion_theme_stage_only_services ) {
+	$zion_theme_stage_paths = array_keys( $zion_theme_stage_services );
+}
+$zion_theme_stage_apply = 'apply' === ( $args[ $zion_theme_stage_only_services ? 1 : 0 ] ?? '' );
 foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 	$zion_theme_stage_page    = get_page_by_path( $zion_theme_stage_path );
 	$zion_theme_stage_title   = $zion_theme_stage_page ? $zion_theme_stage_page->post_title : 'Servicii';
 	$zion_theme_stage_content = '';
-	if ( 'servicii' === $zion_theme_stage_path ) {
-		$zion_theme_stage_content = zion_theme_stage_block( 'paragraph', '<p>De la proiectare și fabricație 3D la aplicații și automatizări. Alege serviciul potrivit și spune-ne ce vrei să construiești.</p>' ) . '<!-- wp:zion/services-grid /--><!-- wp:zion/cta /-->';
+	$zion_theme_stage_landing = isset( $zion_theme_stage_services[ $zion_theme_stage_path ] );
+	if ( $zion_theme_stage_landing ) {
+		$zion_theme_stage_content = zion_theme_service_landing( $zion_theme_stage_services[ $zion_theme_stage_path ] );
 	} elseif ( 'pluginuri-woocommerce' === $zion_theme_stage_path ) {
 		$zion_theme_stage_content = zion_theme_stage_block( 'paragraph', '<p>Explorează pluginurile și aplicațiile Zion sau deschide magazinul pentru licențe și descărcări.</p>' );
 		foreach ( array( 'magazin-software', 'zion-sms-confirmation-woocommerce', 'pluginuri-woocommerce/zion-privacy', 'zion-multi-currency-for-woocommerce', 'zion-releasestation-git-deployment-automatizat-pentru-synology-dsm', 'zion-releasestation-automated-git-deployment-for-synology-dsm' ) as $zion_theme_stage_child_path ) {
@@ -170,15 +186,12 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 		if ( 'contact' === $zion_theme_stage_path ) {
 			$zion_theme_stage_content .= zion_theme_stage_block( 'paragraph', '<p><a href="mailto:contact@zion3d.ro">Scrie la contact@zion3d.ro</a> sau sună la <a href="tel:+40770675597">+40 770 67 55 97</a>.</p>' );
 		}
-		if ( $zion_theme_stage_content && ( in_array( $zion_theme_stage_path, zion_theme_service_paths(), true ) || 'printare-3d' === $zion_theme_stage_path ) ) {
-			$zion_theme_stage_content .= '<!-- wp:zion/cta /-->';
-		}
 	}
 	if ( ! $zion_theme_stage_content || ( ! $zion_theme_stage_page && 'servicii' !== $zion_theme_stage_path ) ) {
 		WP_CLI::warning( 'Necesită verificare: ' . $zion_theme_stage_path );
 		continue;
 	}
-	if ( ! str_starts_with( $zion_theme_stage_path, 'magazin-' ) ) {
+	if ( ! $zion_theme_stage_landing && ! str_starts_with( $zion_theme_stage_path, 'magazin-' ) ) {
 		$zion_theme_stage_content = zion_theme_stage_block( 'group', '<div class="wp-block-group zion-editorial-panel">' . $zion_theme_stage_content . '</div>', array( 'className' => 'zion-editorial-panel' ) );
 	}
 	WP_CLI::log( sprintf( '%s %s: %d bytes', $zion_theme_stage_apply ? 'Apply' : 'Preview', $zion_theme_stage_path, strlen( $zion_theme_stage_content ) ) );
@@ -191,7 +204,7 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 					'post_name'    => basename( $zion_theme_stage_path ),
 					'post_parent'  => $zion_theme_stage_page ? $zion_theme_stage_page->post_parent : 0,
 					'post_title'   => $zion_theme_stage_title,
-					'post_status'  => 'publish',
+					'post_status'  => $zion_theme_stage_landing && $zion_theme_stage_page ? $zion_theme_stage_page->post_status : 'publish',
 					'post_content' => $zion_theme_stage_content,
 				)
 			),
@@ -199,6 +212,9 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 		);
 		if ( is_wp_error( $zion_theme_stage_result ) ) {
 			WP_CLI::error( $zion_theme_stage_result->get_error_message() );
+		}
+		if ( $zion_theme_stage_landing ) {
+			update_post_meta( $zion_theme_stage_result, '_wp_page_template', 'service-landing' );
 		}
 		delete_post_meta( $zion_theme_stage_result, '_elementor_edit_mode' );
 		foreach ( array( 'elementor_canvas', 'elementor_header_footer' ) as $zion_theme_stage_legacy_template ) {

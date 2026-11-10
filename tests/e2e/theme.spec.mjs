@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const routes = [
   { url: '/', heading: /ideile devin realitate/i },
+  { url: '/servicii/', heading: 'De la o idee la ceva ce poți folosi.', block: '.zion-service-main .zion-service-hero' },
   { url: '/magazin-3d/', heading: 'Magazin 3D' },
   { url: '/magazin-software/', heading: 'Magazin Software' },
   { url: '/jurnal/', heading: 'Jurnal' },

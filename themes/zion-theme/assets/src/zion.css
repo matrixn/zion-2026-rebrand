@@ -1501,3 +1501,124 @@ body:has(.zion-product-page--sticky) {
   outline-offset: 2px;
 }
 .zion-editorial-panel :is(pre, code) { overflow-wrap: anywhere; }
+.zion-service-landing {
+	margin-block: var(--wp--preset--spacing--section);
+}
+
+.zion-service-landing > .zion-service-section {
+	margin-block-start: var(--wp--preset--spacing--section);
+	scroll-margin-top: 7rem;
+}
+
+.zion-service-hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+	gap: var(--wp--preset--spacing--regular);
+	align-items: stretch;
+}
+
+.zion-service-copy,
+.zion-service-blueprint,
+.zion-service-end {
+	border: 1px solid var(--wp--preset--color--deep);
+	background: var(--wp--preset--color--surface);
+	padding: clamp(1.25rem, 4vw, 3.5rem);
+}
+
+.zion-service-copy > h1 {
+	font-size: clamp(2.5rem, 6vw, 5.6rem);
+	line-height: 0.98;
+	margin-block: 0.45em;
+	text-wrap: balance;
+}
+
+.zion-service-blueprint {
+	display: grid;
+	place-content: center;
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	min-height: 13rem;
+	text-align: center;
+	margin-block: 0;
+	background-image:
+		linear-gradient(to right, var(--wp--preset--color--deep) 1px, transparent 1px),
+		linear-gradient(to bottom, var(--wp--preset--color--deep) 1px, transparent 1px);
+	background-size: 2rem 2rem;
+}
+
+.zion-service-blueprint::before,
+.zion-service-blueprint::after {
+	content: "";
+	position: absolute;
+	inset: 18% 24%;
+	border: 1px solid var(--wp--preset--color--deep);
+	transform: rotate(-12deg);
+	z-index: -1;
+}
+
+.zion-service-blueprint::after {
+	inset: 23% 28%;
+	transform: rotate(12deg);
+}
+
+.zion-service-blueprint > .zion-service-code {
+	color: var(--wp--preset--color--accent);
+	font: 750 clamp(3rem, 8vw, 8rem) / 1 var(--wp--preset--font-family--mono);
+	margin: 0;
+}
+
+.zion-service-landing .is-style-outline > .wp-element-button {
+	color: var(--wp--preset--color--accent);
+}
+
+.zion-service-landing :where(a, summary):focus-visible {
+	outline: 2px solid var(--wp--preset--color--accent);
+	outline-offset: 4px;
+}
+
+.zion-service-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+	gap: var(--wp--preset--spacing--regular);
+}
+
+.zion-service-landing .zion-services-grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.zion-service-landing .zion-services-grid > :last-child:nth-child(odd) {
+	grid-column: 1 / -1;
+}
+
+.zion-service-grid > .zion-service-card,
+.zion-service-faq > details {
+	margin-block: 0;
+	border: 1px solid var(--wp--preset--color--deep);
+	background: var(--wp--preset--color--surface);
+	padding: clamp(1rem, 2.2vw, 2rem);
+	overflow-wrap: anywhere;
+}
+
+.zion-service-card > p:empty {
+	display: none;
+}
+
+.zion-service-faq > details + details {
+	margin-block-start: 0.5rem;
+}
+
+.zion-service-faq summary {
+	cursor: pointer;
+}
+
+.zion-service-end {
+	border-inline-start: 0.25rem solid var(--wp--preset--color--accent);
+}
+
+@media (max-width: 780px) {
+	.zion-service-hero,
+	.zion-service-landing .zion-services-grid {
+		grid-template-columns: 1fr;
+	}
+}

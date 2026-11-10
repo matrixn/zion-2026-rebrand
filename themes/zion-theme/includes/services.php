@@ -56,20 +56,21 @@ function zion_theme_service_url( string $slug ): string {
  */
 function zion_theme_register_services(): void {
 	register_block_pattern_category( 'zion-library', array( 'label' => __( 'Zion · Componente', 'zion-theme' ) ) );
+	register_block_pattern(
+		'zion-theme/services-directory',
+		array(
+			'title'      => __( 'Zion · Pagina Servicii', 'zion-theme' ),
+			'categories' => array( 'zion-library' ),
+			'content'    => zion_theme_service_landing(),
+		)
+	);
 	foreach ( zion_theme_services() as $slug => $service ) {
-		$content  = '<!-- wp:paragraph {"className":"zion-lead"} --><p class="zion-lead">' . esc_html( $service[1] ) . '</p><!-- /wp:paragraph -->';
-		$content .= '<!-- wp:heading --><h2 class="wp-block-heading">' . esc_html__( 'Ce poate include proiectul', 'zion-theme' ) . '</h2><!-- /wp:heading -->';
-		$content .= '<!-- wp:list --><ul class="wp-block-list">';
-		foreach ( array_slice( $service, 2 ) as $item ) {
-			$content .= '<!-- wp:list-item --><li>' . esc_html( $item ) . '</li><!-- /wp:list-item -->';
-		}
-		$content .= '</ul><!-- /wp:list --><!-- wp:zion/cta /-->';
 		register_block_pattern(
 			'zion-theme/service-' . $slug,
 			array(
 				'title'      => $service[0],
 				'categories' => array( 'zion-library' ),
-				'content'    => $content,
+				'content'    => zion_theme_service_landing( $slug ),
 			)
 		);
 	}
@@ -86,20 +87,22 @@ function zion_theme_create_service_pages(): array {
 		'created' => 0,
 		'failed'  => 0,
 	);
-	foreach ( zion_theme_services() as $slug => $service ) {
-		if ( zion_theme_service_url( $slug ) || get_page_by_path( $slug ) ) {
+	$pages  = array( 'servicii' => array( 'Servicii', 'Producție 3D, software și automatizare.' ) ) + zion_theme_services();
+	foreach ( $pages as $slug => $service ) {
+		if ( get_page_by_path( $slug ) || ( 'servicii' !== $slug && zion_theme_service_url( $slug ) ) ) {
 			continue;
 		}
-		$pattern = WP_Block_Patterns_Registry::get_instance()->get_registered( 'zion-theme/service-' . $slug );
+		$pattern = WP_Block_Patterns_Registry::get_instance()->get_registered( 'servicii' === $slug ? 'zion-theme/services-directory' : 'zion-theme/service-' . $slug );
 		$id      = wp_insert_post(
 			wp_slash(
 				array(
-					'post_type'    => 'page',
-					'post_status'  => 'publish',
-					'post_name'    => $slug,
-					'post_title'   => $service[0],
-					'post_excerpt' => $service[1],
-					'post_content' => $pattern['content'],
+					'post_type'     => 'page',
+					'post_status'   => 'publish',
+					'post_name'     => $slug,
+					'post_title'    => $service[0],
+					'post_excerpt'  => $service[1],
+					'post_content'  => $pattern['content'],
+					'page_template' => 'service-landing',
 				)
 			),
 			true
