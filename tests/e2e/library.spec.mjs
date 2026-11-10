@@ -59,7 +59,8 @@ test('frontend assets follow rendered components and WooCommerce emits native Pr
   await page.goto('/jurnal/');
   await expect(page.locator('#zion-collections-css, #zion-library-content-css, #zion-card-js, #zion-library-editor-js')).toHaveCount(0);
   await page.goto('/servicii/');
-  await expect(page.locator('#zion-library-content-css')).toHaveCount(1);
+  await expect(page.locator('.zion-overview-card a')).toHaveCount(7);
+  await expect(page.locator('#zion-library-content-css')).toHaveCount(0);
   await expect(page.locator('#zion-collections-css, #zion-card-js, #zion-library-editor-js')).toHaveCount(0);
   await expect(page.locator('head meta[name="description"]')).toHaveCount(1);
   await page.goto('/');
