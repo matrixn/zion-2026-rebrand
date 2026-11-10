@@ -59,9 +59,20 @@ function zion_theme_item_shop( int $id, string $type ): string {
  * @return bool|int|string
  */
 function zion_theme_setting( string $key, ?string $shop = null ): bool|int|string {
+	return zion_theme_setting_with_source( $key, $shop )['value'];
+}
+
+/**
+ * Resolve a setting with its source for shortcode compatibility.
+ *
+ * @param string      $key Setting identifier.
+ * @param string|null $shop Explicit storefront.
+ * @return array
+ */
+function zion_theme_setting_with_source( string $key, ?string $shop = null ): array {
 	$id   = is_singular( Zion_Theme_Settings::ITEM_TYPES ) ? get_queried_object_id() : 0;
 	$type = $id ? (string) get_post_type( $id ) : '';
-	return Zion_Theme_Settings::resolve( zion_theme_settings_config(), $key, $shop ?? zion_theme_item_shop( $id, $type ), $type, $id )['value'];
+	return Zion_Theme_Settings::resolve( zion_theme_settings_config(), $key, $shop ?? zion_theme_item_shop( $id, $type ), $type, $id );
 }
 
 /**
@@ -125,6 +136,33 @@ add_filter( 'do_shortcode_tag', 'zion_theme_control_shortcode', 10, 3 );
 function zion_theme_storefront_display( array $display, string $shop ): array {
 	$display['layout']          = zion_theme_setting( 'catalog_layout', $shop );
 	$display['category_filter'] = $display['category_filter'] && zion_theme_setting( 'catalog_category_filter', $shop );
+	$map                        = array(
+		'desktop'        => 'catalog_columns_desktop',
+		'tablet'         => 'catalog_columns_tablet',
+		'mobile'         => 'catalog_columns_mobile',
+		'page_size'      => 'catalog_page_size',
+		'load_more'      => 'catalog_load_more',
+		'gap'            => 'catalog_gap',
+		'width'          => 'catalog_width',
+		'sort'           => 'catalog_sort',
+		'filters'        => 'catalog_filters',
+		'filter_layout'  => 'catalog_filter_layout',
+		'price_filter'   => 'catalog_price_filter',
+		'stock_filter'   => 'catalog_stock_filter',
+		'sale_filter'    => 'catalog_sale_filter',
+		'brand_filter'   => 'catalog_brand_filter',
+		'attributes'     => 'catalog_attributes',
+		'active_filters' => 'catalog_active_filters',
+		'reset_filters'  => 'catalog_reset_filters',
+		'hide_empty'     => 'catalog_hide_empty',
+		'counts'         => 'catalog_counts',
+	);
+	foreach ( $map as $key => $setting ) {
+		$resolved = zion_theme_setting_with_source( $setting, $shop );
+		if ( ! isset( $display[ $key ] ) || 'default' !== $resolved['source'] ) {
+			$display[ $key ] = $resolved['value'];
+		}
+	}
 	return $display;
 }
 add_filter( 'zion_core_catalog_display', 'zion_theme_storefront_display', 10, 2 );

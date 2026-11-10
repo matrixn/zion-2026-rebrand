@@ -6,4 +6,4 @@ Tema compune catalogul, căutarea de produse și pagina de produs din blocuri Wo
 
 Înainte de actualizarea versiunilor de referință, rulează build-ul, WPCS, PHPUnit, integrarea și Playwright. Verifică editorul de site și diferențele vizuale. Pentru o lansare pe un magazin existent, verifică pe staging metodele de plată și de livrare, taxele, tipurile reale de produse și extensiile active.
 
-Faza 0.4 completează clasificarea și filtrele de bază ale vitrinelor. Setările care țin de blocuri și CSS folosesc structura și clasele din șabloanele Zion. Păstrează clasele Zion relevante dacă înlocuiești blocurile în Site Editor. Controalele WooCommerce devin active după activarea pluginurilor necesare. Filtrele avansate și reconstruirea paginilor Elementor sunt etape ulterioare.
+Faza 0.5 conectează vitrinele Zion la Product Collection și Product Filters. La actualizarea WooCommerce, verifică în special parametrii de filtrare, numărătoarea fațetelor, paginarea, drawer-ul și vizibilitatea produselor pe ambele vitrine. Setările Zion folosesc structura și clasele șabloanelor și necesită pluginurile active. Reconstruirea paginilor Elementor rămâne o etapă ulterioară.

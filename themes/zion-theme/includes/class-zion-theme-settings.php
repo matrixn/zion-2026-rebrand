@@ -81,6 +81,7 @@ final class Zion_Theme_Settings {
 					'1' => 'Afișează',
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
 			),
 			'catalog_layout'          => array(
 				'label'       => 'Layout vitrină',
@@ -93,6 +94,234 @@ final class Zion_Theme_Settings {
 					'list' => 'Listă',
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_columns_desktop' => array(
+				'label'       => 'Coloane desktop',
+				'description' => 'Numărul de coloane în grilă la peste 1024 px.',
+				'section'     => 'woo',
+				'type'        => 'int',
+				'default'     => 3,
+				'allowed'     => array(
+					'min' => 2,
+					'max' => 5,
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_columns_tablet'  => array(
+				'label'       => 'Coloane tabletă',
+				'description' => 'Numărul de coloane între 601 și 1024 px.',
+				'section'     => 'woo',
+				'type'        => 'int',
+				'default'     => 2,
+				'allowed'     => array(
+					'min' => 1,
+					'max' => 4,
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_columns_mobile'  => array(
+				'label'       => 'Coloane mobil',
+				'description' => 'Numărul de coloane la cel mult 600 px.',
+				'section'     => 'woo',
+				'type'        => 'int',
+				'default'     => 1,
+				'allowed'     => array(
+					'min' => 1,
+					'max' => 2,
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_page_size'       => array(
+				'label'       => 'Produse pe pagină',
+				'description' => 'Limita aplicată în colecția nativă WooCommerce.',
+				'section'     => 'woo',
+				'type'        => 'int',
+				'default'     => 12,
+				'allowed'     => array(
+					'min' => 1,
+					'max' => 48,
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_load_more'       => array(
+				'label'       => 'Încarcă mai multe',
+				'description' => 'Oferă extinderea primei pagini până la 96 de produse, cu reîncărcare. Paginarea numerică rămâne disponibilă.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_gap'             => array(
+				'label'       => 'Spațiere între carduri',
+				'description' => 'Alege spațiul din grilă sau listă.',
+				'section'     => 'woo',
+				'type'        => 'choice',
+				'default'     => 'regular',
+				'allowed'     => array(
+					'compact' => 'Compactă',
+					'regular' => 'Standard',
+					'wide'    => 'Generosă',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_width'           => array(
+				'label'       => 'Lățimea catalogului',
+				'description' => 'Catalogul poate folosi lățimea conținutului sau lățimea extinsă din temă.',
+				'section'     => 'woo',
+				'type'        => 'choice',
+				'default'     => 'content',
+				'allowed'     => array(
+					'content' => 'Conținut',
+					'wide'    => 'Extinsă',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_sort'            => array(
+				'label'       => 'Sortare implicită',
+				'description' => 'Vizitatorul poate schimba ordinea. Recomandate afișează întâi produsele evidențiate în WooCommerce.',
+				'section'     => 'woo',
+				'type'        => 'choice',
+				'default'     => 'menu_order',
+				'allowed'     => array(
+					'featured'   => 'Recomandate',
+					'date'       => 'Cele mai noi',
+					'price'      => 'Preț crescător',
+					'price-desc' => 'Preț descrescător',
+					'popularity' => 'Popularitate',
+					'rating'     => 'Rating',
+					'menu_order' => 'Ordine manuală',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_filters'         => array(
+				'label'       => 'Afișează filtrele',
+				'description' => 'Controlează panoul de filtrare al vitrinei.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_filter_layout'   => array(
+				'label'       => 'Poziția filtrelor',
+				'description' => 'Bara laterală se deschide ca drawer pe mobil.',
+				'section'     => 'woo',
+				'type'        => 'choice',
+				'default'     => 'sidebar',
+				'allowed'     => array(
+					'sidebar' => 'Bară laterală',
+					'drawer'  => 'Drawer',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_price_filter'    => array(
+				'label'       => 'Filtru de preț',
+				'description' => 'Afișează intervalul de preț calculat de WooCommerce.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_stock_filter'    => array(
+				'label'       => 'Filtru de disponibilitate',
+				'description' => 'Afișează stările de stoc disponibile.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_sale_filter'     => array(
+				'label'       => 'Filtru de reduceri',
+				'description' => 'Adaugă comutatorul pentru produse cu reducere activă.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_brand_filter'    => array(
+				'label'       => 'Filtru de brand',
+				'description' => 'Afișează filtrul dacă taxonomia Brand există și WooCommerce o poate folosi.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_attributes'      => array(
+				'label'       => 'Atribute filtrabile',
+				'description' => 'Folosește auto, none sau maximum șase sluguri de atribute globale WooCommerce, separate de virgulă, de exemplu material,format.',
+				'section'     => 'woo',
+				'type'        => 'slugs',
+				'default'     => 'auto',
+				'allowed'     => array( 'max' => 6 ),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_active_filters'  => array(
+				'label'       => 'Filtre active',
+				'description' => 'Afișează selecțiile active ca etichete care pot fi eliminate.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_reset_filters'   => array(
+				'label'       => 'Resetare filtre',
+				'description' => 'Afișează un link care golește filtrele și păstrează sortarea.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
+			),
+			'catalog_hide_empty'      => array(
+				'label'       => 'Ascunde opțiunile fără rezultate',
+				'description' => 'Folosește opțiunea WooCommerce pentru categorii, branduri, atribute și stoc.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Afișează',
+					'1' => 'Ascunde',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+				'requires'    => 'catalog_filters',
 			),
 			'catalog_density'         => array(
 				'label'       => 'Densitatea cardurilor',
@@ -241,6 +470,13 @@ final class Zion_Theme_Settings {
 						$value = (int) $value;
 					}
 					$valid = is_int( $value ) && $value >= $field['allowed']['min'] && $value <= $field['allowed']['max'];
+					break;
+				case 'slugs':
+					if ( $form && is_string( $value ) ) {
+						$value = implode( ',', array_unique( array_map( 'trim', explode( ',', strtolower( $value ) ) ) ) );
+					}
+					$valid = is_string( $value ) && preg_match( '/^[a-z0-9_-]{1,28}(?:,[a-z0-9_-]{1,28})*$/D', $value ) &&
+						count( explode( ',', $value ) ) <= $field['allowed']['max'];
 					break;
 				default:
 					$valid = is_string( $value ) && array_key_exists( $value, $field['allowed'] );

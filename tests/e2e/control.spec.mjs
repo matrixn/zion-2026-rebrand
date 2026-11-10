@@ -81,15 +81,22 @@ test('Control Center persists validated settings and applies inheritance on publ
     await field(page, 'product_meta').selectOption('0');
     await field(page, 'catalog_layout').selectOption('list');
     await field(page, 'catalog_category_filter').selectOption('0');
+    await field(page, 'catalog_filter_layout').selectOption('drawer');
+    await field(page, 'catalog_width').selectOption('wide');
     await save(page);
     await page.goto('/magazin-software/');
-    const classicAction = page.locator('.woocommerce ul.products li.product .button[data-product_id]').first();
-    await expect(classicAction).toBeVisible();
-    await expect(page.locator('.zion-storefront-list')).toBeVisible();
-    await expect(page.getByLabel('Categorie produse')).toHaveCount(0);
+    const shopAction = page.locator('.zion-catalog-native .wp-block-woocommerce-product-button').first();
+    await expect(shopAction).toBeVisible();
+    await expect(page.locator('.zion-catalog-native.zion-catalog-list.zion-catalog-drawer.alignwide')).toBeVisible();
+    await page.getByRole('button', { name: 'Filter products' }).click();
+    const filters = page.getByRole('dialog', { name: 'Product Filters' });
+    await expect(filters).toBeVisible();
+    await expect(filters.getByRole('heading', { name: 'Product categories' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(filters).toBeHidden();
     await page.goto('/magazin-3d/');
-    await expect(page.locator('.zion-storefront-list')).toHaveCount(0);
-    await expect(page.getByLabel('Categorie produse')).toBeVisible();
+    await expect(page.locator('.zion-catalog-native.zion-catalog-grid.zion-catalog-sidebar')).toBeVisible();
+    await expect(page.locator('.zion-catalog-native').getByRole('checkbox', { name: /Prototipuri demo/ })).toBeVisible();
 
     const pages = await (await page.request.get('/wp-json/wp/v2/pages?slug=magazin-software')).json();
     await openSection(page, 'tools', pages[0].id);
@@ -98,7 +105,7 @@ test('Control Center persists validated settings and applies inheritance on publ
     await save(page);
     await page.goto('/magazin-software/');
     await expect(page.locator('.zion-page-home a')).toHaveText('← Acasă');
-    await expect(classicAction).toBeHidden();
+    await expect(shopAction).toBeHidden();
 
     const products = await (await page.request.get('/wp-json/wc/store/v1/products?slug=zion-catalog-tools')).json();
     await page.goto('/product/zion-catalog-tools/');
@@ -151,8 +158,7 @@ test('Control Center persists validated settings and applies inheritance on publ
     await field(page, 'catalog_counts').selectOption('0');
     await save(page);
     await page.goto('/magazin-3d/');
-    await expect(page.locator('.woocommerce-result-count')).toBeAttached();
-    await expect(page.locator('.woocommerce-result-count')).toBeHidden();
+    await expect(page.locator('.woocommerce-result-count')).toHaveCount(0);
     await page.goto('/shop/');
     await expect(page.locator('.woocommerce-result-count')).toBeAttached();
     await expect(page.locator('.woocommerce-result-count')).toBeHidden();

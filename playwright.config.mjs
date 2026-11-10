@@ -5,9 +5,10 @@ export default defineConfig({
   snapshotPathTemplate: '{testDir}/snapshots/{arg}{ext}',
   forbidOnly: Boolean(process.env.CI),
   projects: [
-    { name: 'storefront', testIgnore: ['**/control.spec.mjs', '**/classification.spec.mjs'] },
+    { name: 'storefront', testIgnore: ['**/control.spec.mjs', '**/classification.spec.mjs', '**/catalog-scale.spec.mjs'] },
     { name: 'control', testMatch: '**/control.spec.mjs', dependencies: ['storefront'] },
     { name: 'classification', testMatch: '**/classification.spec.mjs', dependencies: ['control'] },
+    ...(process.env.ZION_CATALOG_SCALE === '1' ? [{ name: 'catalog-scale', testMatch: '**/catalog-scale.spec.mjs' }] : []),
   ],
   use: {
     baseURL: process.env.ZION_TEST_URL || 'http://localhost:8917',

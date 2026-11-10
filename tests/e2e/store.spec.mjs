@@ -38,7 +38,7 @@ test('mobile navigation opens and reaches the 3D storefront', async ({ page }) =
 test('3D storefront has a stable product grid @visual', async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 850 });
   await page.goto('/magazin-3d/');
-  await expect(page.getByRole('link', { name: 'Suport modular 3D' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Suport modular 3D', exact: true })).toBeVisible();
   await expect(page).toHaveScreenshot('catalog-3d-1024.png', {
     fullPage: true,
     maxDiffPixelRatio: 0.01,
@@ -50,12 +50,12 @@ test('both storefronts are isolated and a software product reaches the native ca
   page.on('pageerror', error => errors.push(error.message));
 
   await page.goto('/magazin-3d/');
-  await expect(page.getByRole('link', { name: 'Suport modular 3D' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Zion Catalog Tools' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Suport modular 3D', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true })).toHaveCount(0);
 
   await page.goto('/magazin-software/');
-  await expect(page.getByRole('link', { name: 'Suport modular 3D' })).toHaveCount(0);
-  await page.getByRole('link', { name: 'Zion Catalog Tools' }).click();
+  await expect(page.getByRole('heading', { name: 'Suport modular 3D', exact: true })).toHaveCount(0);
+  await page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }).getByRole('link').click();
   await page.getByRole('button', { name: 'Add to cart', exact: true }).click();
   await page.getByRole('link', { name: /view cart/i }).first().click();
   await expect(page.getByRole('link', { name: 'Zion Catalog Tools' })).toBeVisible();

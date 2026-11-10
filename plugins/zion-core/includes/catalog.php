@@ -20,7 +20,7 @@ function zion_core_catalog_options( array|string $attributes ): array {
 	return array(
 		'shop'    => in_array( $shop, array( '3d', 'software' ), true ) ? $shop : '',
 		'limit'   => is_numeric( $limit ) ? max( 1, min( 48, (int) $limit ) ) : 12,
-		'columns' => is_numeric( $columns ) ? max( 1, min( 4, (int) $columns ) ) : 3,
+		'columns' => is_numeric( $columns ) ? max( 1, min( 5, (int) $columns ) ) : 3,
 	);
 }
 
@@ -36,14 +36,19 @@ function zion_core_catalog( array|string $attributes ): string {
 		return '';
 	}
 
-	$display     = apply_filters(
+	$display = apply_filters(
 		'zion_core_catalog_display',
 		array(
 			'category_filter' => zion_core_current_shop() === $options['shop'],
 			'layout'          => 'grid',
+			'desktop'         => $options['columns'],
+			'page_size'       => $options['limit'],
 		),
 		$options['shop']
 	);
+	if ( zion_core_current_shop() === $options['shop'] && zion_core_has_storefront_blocks() && ! is_admin() && ! wp_is_serving_rest_request() ) {
+		return zion_core_render_storefront_collection( $options, $display );
+	}
 	$show_filter = true === ( $display['category_filter'] ?? false );
 	$list        = 'list' === ( $display['layout'] ?? '' );
 	$category    = $show_filter ? zion_core_catalog_category() : 0;

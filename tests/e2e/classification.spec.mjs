@@ -109,9 +109,8 @@ test('the bulk classifier filters, previews, applies once and records both outco
       await expect(page.getByRole('heading', { name: published.name, exact: true })).toBeVisible();
       await expect(page.getByRole('heading', { name: draft.name, exact: true })).toHaveCount(0);
     }
-    await page.goto('/magazin-3d/');
-    await page.getByLabel('Categorie produse').selectOption(String(category));
-    await page.getByRole('button', { name: 'Filtrează', exact: true }).click();
+    await page.goto(`/magazin-3d/?zion_category=${category}`);
+    await expect(page).toHaveURL(/categories=prototipuri-demo/);
     await expect(page.getByRole('heading', { name: published.name, exact: true })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Prototip carcasă 3D', exact: true })).toHaveCount(0);
   } finally {
