@@ -1657,13 +1657,7 @@ body:has(.zion-product-page--sticky) {
 	--overview-fg: var(--wp--preset--color--text);
 }
 
-.zion-services-overview > .zion-overview-hero {
-	background-image:
-		radial-gradient(ellipse at 82% 29%, color-mix(in srgb, var(--wp--preset--color--accent) 11%, transparent), transparent 52%),
-		linear-gradient(90deg, var(--wp--preset--color--surface) 1px, transparent 1px),
-		linear-gradient(var(--wp--preset--color--surface) 1px, transparent 1px);
-	background-size: auto, 4rem 4rem, 4rem 4rem;
-}
+
 
 .zion-overview-hero .zion-overview-split {
 	align-items: center;
@@ -2008,4 +2002,260 @@ body:has(.zion-product-page--sticky) {
 	.zion-detail-benefits .zion-service-grid,
 	.zion-detail-examples .zion-service-grid,
 	.zion-detail-process .zion-service-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Technical backdrop on every band of the service landings. */
+.zion-services-overview > .zion-overview-band {
+	--circuit-line: color-mix(in srgb, var(--overview-fg, var(--wp--preset--color--ink)) 8%, transparent);
+	--circuit-signal: color-mix(in srgb, var(--wp--preset--color--accent) 48%, var(--wp--preset--color--ink));
+	position: relative;
+	isolation: isolate;
+}
+
+.zion-services-overview > :is(.zion-overview-hero, .zion-overview-end, .zion-detail-examples) {
+	--circuit-signal: var(--wp--preset--color--accent);
+}
+
+.zion-services-overview > .zion-overview-band::before,
+.zion-services-overview > .zion-overview-band::after {
+	content: "";
+	position: absolute;
+	z-index: -1;
+	inset: -7rem min(0px, calc((100% - 100vw) / 2));
+	pointer-events: none;
+}
+
+.zion-services-overview > .zion-overview-band::before {
+	background-image:
+		linear-gradient(90deg, var(--circuit-line) 1px, transparent 1px),
+		linear-gradient(var(--circuit-line) 1px, transparent 1px);
+	background-size: 3rem 3rem;
+	mask-image: linear-gradient(90deg, #0003, #000 72%);
+}
+
+.zion-services-overview > .zion-overview-band::after {
+	background-image:
+		radial-gradient(ellipse 4.8rem 1px at 9rem 3rem, var(--circuit-signal), transparent),
+		radial-gradient(ellipse 1px 4.8rem at 6rem 15rem, var(--circuit-signal), transparent),
+		radial-gradient(ellipse 4rem 1px at 14rem 12rem, var(--circuit-signal), transparent),
+		radial-gradient(ellipse 6rem 2px at 9rem 3rem, color-mix(in srgb, var(--circuit-signal) 50%, transparent), transparent);
+	background-size: 27rem 21rem;
+	opacity: .48;
+}
+
+.zion-services-overview > .zion-overview-hero::after { opacity: .86; }
+
+@media (prefers-reduced-motion: no-preference) {
+	:where(body:not(.zion-motion-reduced)) .zion-services-overview > .zion-overview-band::after {
+		animation: zion-circuit-signals 19s linear infinite;
+	}
+
+	@supports (animation-timeline: scroll()) {
+		.zion-services-overview { --circuit-scroll: scroll(root block); }
+
+		:where(body:not(.zion-motion-reduced)) .zion-services-overview > .zion-overview-band::before {
+			animation: zion-circuit-depth auto linear both;
+			animation-timeline: var(--circuit-scroll);
+		}
+
+		:where(body:not(.zion-motion-reduced)) .zion-services-overview > .zion-overview-band::after {
+			animation: zion-circuit-signals 19s linear infinite, zion-circuit-depth auto linear both;
+			animation-timeline: auto, var(--circuit-scroll);
+		}
+	}
+}
+
+@keyframes zion-circuit-signals {
+	from { background-position: 0 0, 0 0, 0 0, 0 0; }
+	to { background-position: 54rem 0, 0 -42rem, -54rem 0, 54rem 0; }
+}
+
+@keyframes zion-circuit-depth {
+	from { transform: translateY(-6rem); }
+	to { transform: translateY(6rem); }
+}
+
+.zion-footer.zion-nexus {
+	--nexus-rule: color-mix(in srgb, var(--wp--preset--color--text) 17%, transparent);
+	--nexus-accent: var(--wp--preset--color--accent);
+	background:
+		radial-gradient(ellipse at 84% 18%, color-mix(in srgb, var(--nexus-accent) 10%, transparent), transparent 38%),
+		var(--wp--preset--color--ink);
+	border-block-start: 1px solid var(--nexus-accent);
+	color: var(--wp--preset--color--text);
+	padding-block: 1.25rem 2.25rem;
+}
+
+.zion-nexus-shell > * { margin-block: 0; }
+
+.zion-nexus-status,
+.zion-nexus-steps,
+.zion-nexus-blueprint,
+.zion-nexus .zion-kicker {
+	font-family: var(--wp--preset--font-family--mono);
+	font-size: .76rem;
+	letter-spacing: .1em;
+}
+
+.zion-nexus-status {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: .6rem 1rem;
+	border-block-end: 1px solid var(--nexus-rule);
+	padding-block: 0 1rem;
+	color: var(--wp--preset--color--muted);
+}
+
+.zion-nexus-status > * { margin: 0; }
+.zion-nexus-status > :first-child { color: var(--nexus-accent); }
+.zion-nexus-status > :first-child::before { content: "●"; margin-inline-end: .7em; }
+
+.zion-nexus-hero {
+	display: grid;
+	align-items: center;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	gap: clamp(2rem, 5vw, 5rem);
+	padding-block: clamp(3rem, 7vw, 7rem);
+}
+
+.zion-nexus-hero > * { margin-block: 0; }
+
+.zion-nexus-title {
+	font-size: clamp(2.75rem, 6.3vw, 7rem);
+	font-weight: 800;
+	line-height: .95;
+	letter-spacing: -.07em;
+	margin-block: .22em;
+}
+
+.zion-nexus-title em { color: var(--nexus-accent); font-style: normal; }
+.zion-nexus-intro > p:not(.zion-kicker) { max-inline-size: 52ch; color: var(--wp--preset--color--muted); }
+.zion-nexus-intro strong { color: var(--wp--preset--color--text); }
+.zion-nexus .is-style-outline > .wp-block-button__link { color: var(--wp--preset--color--text); }
+.zion-nexus .is-style-outline > .wp-block-button__link:hover { color: var(--wp--preset--color--ink); }
+
+.zion-nexus-blueprint {
+	position: relative;
+	display: grid;
+	place-content: center;
+	aspect-ratio: 1.35;
+	min-inline-size: 0;
+	background: radial-gradient(circle at center,
+		color-mix(in srgb, var(--nexus-accent) 9%, transparent),
+		transparent 36%,
+		color-mix(in srgb, var(--nexus-accent) 26%, transparent) 36.5%,
+		transparent 37.25% 55%,
+		var(--nexus-rule) 55.5%,
+		transparent 56.2%
+	);
+	color: var(--nexus-accent);
+}
+
+.zion-nexus-blueprint::before {
+	content: "";
+	position: absolute;
+	inset: 50% auto auto 50%;
+	width: 42%;
+	aspect-ratio: 1;
+	transform: translate(-50%, -50%) rotate(-12deg);
+	border: 1px solid color-mix(in srgb, var(--nexus-accent) 40%, transparent);
+	border-radius: 25%;
+	box-shadow: 0 0 3rem color-mix(in srgb, var(--nexus-accent) 11%, transparent);
+}
+
+.zion-nexus-blueprint::after {
+	content: "";
+	width: clamp(5rem, 10vw, 7rem);
+	aspect-ratio: 1;
+	background: var(--nexus-accent);
+	mask: url("../nexus-cube.svg") center / contain no-repeat;
+}
+
+.zion-nexus-blueprint span {
+	position: absolute;
+	padding: .45em .65em;
+	background: var(--wp--preset--color--ink);
+	border: 1px solid var(--nexus-rule);
+}
+
+.zion-nexus-blueprint span:nth-child(1) { inset: 10% auto auto 7%; }
+.zion-nexus-blueprint span:nth-child(2) { inset: 22% 5% auto auto; }
+.zion-nexus-blueprint span:nth-child(3) { inset: auto 11% 12% auto; }
+
+.zion-nexus-steps {
+	padding-block: 1rem;
+	border-block: 1px solid var(--nexus-rule);
+	color: var(--nexus-accent);
+	text-align: center;
+	line-height: 2;
+	word-spacing: .18em;
+}
+
+.zion-nexus-resources { padding-block: clamp(2.5rem, 6vw, 5rem); }
+
+.zion-nexus-resources > h2 {
+	font-size: clamp(2rem, 4vw, 3.75rem);
+	letter-spacing: -.04em;
+	line-height: 1.05;
+	margin-block: .3em;
+}
+
+.zion-nexus-directory {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 1px;
+	background: var(--nexus-rule);
+	border: 1px solid var(--nexus-rule);
+}
+
+.zion-nexus-column {
+	margin: 0;
+	padding: clamp(1.05rem, 2vw, 2rem);
+	background: var(--wp--preset--color--ink);
+}
+
+.zion-nexus-column > h3 { font-size: 1.25rem; margin-block: .35rem 1rem; }
+.zion-nexus-column nav { align-items: flex-start; gap: .55rem; font-size: .9rem; }
+.zion-nexus-column a { color: var(--wp--preset--color--muted); overflow-wrap: anywhere; }
+.zion-nexus-column a:hover { color: var(--nexus-accent); }
+.zion-nexus-subgroup { border-block-start: 1px solid var(--nexus-rule); padding-block-start: .75rem; }
+.zion-nexus-partners { font-size: .85rem; gap: .65rem 1.25rem; }
+.zion-nexus-network {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	border-block: 1px solid var(--nexus-rule);
+	padding-block: 1.25rem;
+}
+.zion-nexus-network > * { margin-block: 0; }
+.zion-nexus-signature { padding-block-end: .85rem; }
+
+.zion-nexus-wordmark {
+	font-size: clamp(4rem, 15vw, 13rem);
+	line-height: .9;
+	letter-spacing: -.085em;
+	font-weight: 800;
+	margin-block: .18em 0;
+	color: color-mix(in srgb, var(--wp--preset--color--text) 20%, var(--wp--preset--color--ink));
+}
+
+.zion-nexus-wordmark strong { color: var(--nexus-accent); }
+
+.zion-nexus .zion-footer-meta { border-color: var(--nexus-rule); }
+.zion-nexus .zion-footer-search { max-width: 24rem; margin-block-start: 1rem; }
+
+@media (max-width: 900px) {
+	.zion-nexus-directory { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+	.zion-nexus-hero { grid-template-columns: minmax(0, 1fr); }
+	.zion-nexus-blueprint { max-block-size: 17rem; }
+}
+
+@media (max-width: 520px) {
+	.zion-nexus-directory { grid-template-columns: minmax(0, 1fr); }
 }

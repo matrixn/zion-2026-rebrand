@@ -82,3 +82,34 @@ test('frontend assets follow rendered components and WooCommerce emits native Pr
   expect(schemas[0].name).toBe('Zion Catalog Tools');
   expect(schemas[0].offers).toBeTruthy();
 });
+
+test('Nexus footer and service circuit adapt to viewport and reduced motion', async ({ page }) => {
+  const backdrop = (selector) => page.locator(selector).evaluate(band => {
+    const grid = getComputedStyle(band, '::before');
+    const signal = getComputedStyle(band, '::after');
+    return { grid: grid.transform, signal: signal.backgroundPosition, animation: signal.animationName };
+  });
+
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 850 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/servicii/');
+    const footer = page.locator('footer .zion-nexus');
+    await expect(footer.locator('.zion-nexus-column')).toHaveCount(4);
+    await expect(footer.getByRole('link', { name: 'PORNEȘTE UN PROIECT' })).toHaveAttribute('href', /\/contact\/$/);
+    await expect(footer.getByRole('link', { name: 'ANPC' })).toHaveAttribute('href', 'https://anpc.ro/');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+
+    const hero = '.zion-services-overview > .zion-overview-hero';
+    const content = '.zion-services-overview > .zion-overview-band:nth-child(2)';
+    const initial = await backdrop(hero);
+    expect(initial.animation).toContain('zion-circuit-signals');
+    await expect.poll(async () => (await backdrop(hero)).signal).not.toBe(initial.signal);
+    await page.locator(content).scrollIntoViewIfNeeded();
+    await expect.poll(async () => (await backdrop(hero)).grid).not.toBe(initial.grid);
+    expect((await backdrop(content)).animation).toContain('zion-circuit-signals');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    expect((await backdrop(hero)).animation).toBe('none');
+    expect((await backdrop(content)).animation).toBe('none');
+  }
+});
