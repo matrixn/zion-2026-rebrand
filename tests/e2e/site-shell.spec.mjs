@@ -44,6 +44,8 @@ for (const width of [390, 1440]) {
     const card = page.locator('.zion-product-card').filter({ has: page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }) });
     await expect(card).toBeVisible();
     await card.getByRole('button', { name: /Adaugă în coș/i }).click();
+    await expect(card.getByRole('link', { name: /vezi coșul/i })).toBeVisible();
+    await page.waitForLoadState('networkidle');
     const cart = header.getByRole('button', { name: /Număr de produse în coș: 1/ });
     await expect(cart).toBeVisible();
     await expect(header.locator('.wc-block-mini-cart__badge')).toHaveText('1');

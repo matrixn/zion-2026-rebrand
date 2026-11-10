@@ -10,10 +10,11 @@ test('native filters combine with sorting, reset and browser history', async ({ 
   const category = catalog(page).getByRole('checkbox', { name: /Prototipuri demo/ });
   let releaseFilter;
   const pendingFilter = new Promise(resolve => { releaseFilter = resolve; });
-  await page.route('**/magazin-3d/**', async route => {
+  const holdFilter = async route => {
     if (new URL(route.request().url()).searchParams.has('categories')) await pendingFilter;
     await route.continue();
-  });
+  };
+  await page.route('**/magazin-3d/**', holdFilter);
   await category.click();
   try {
     await expect(page.locator('.zion-commerce-progress')).toHaveText('Se încarcă…');
@@ -21,6 +22,7 @@ test('native filters combine with sorting, reset and browser history', async ({ 
     releaseFilter();
   }
   await expect(page).toHaveURL(/categories=prototipuri-demo/);
+  await page.unroute('**/magazin-3d/**', holdFilter);
   expect(new URL(page.url()).searchParams.get('orderby')).toBe('price');
   await expect(cards(page)).toHaveCount(1);
   await expect(catalog(page).getByRole('heading', { name: 'Suport modular 3D' })).toBeVisible();

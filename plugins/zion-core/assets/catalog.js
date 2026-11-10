@@ -8,6 +8,7 @@ let navigation = 0;
 let observed;
 let noticeTimeout;
 let waitForScroll = true;
+let scrollCheck = 0;
 
 const notice = document.createElement('div');
 notice.className = 'zion-shop-notice';
@@ -58,13 +59,26 @@ store('zion/catalog', {
 
 const observer = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
   for (const entry of entries) {
-    if (entry.target === observed && entry.isIntersecting && !waitForScroll && !loading && !routerPending) {
-      observer.unobserve(entry.target);
-      observed = undefined;
-      navigate(entry.target.dataset.zionNext, '', true).catch(() => {});
-    }
+    if (entry.target === observed && entry.isIntersecting) checkMore();
   }
 }) : null;
+
+function checkMore() {
+  if (!observed || waitForScroll || loading || routerPending ||
+      observed.getBoundingClientRect().top >= window.innerHeight) return;
+  const next = observed;
+  observer?.unobserve(next);
+  observed = undefined;
+  navigate(next.dataset.zionNext, '', true).catch(() => {});
+}
+
+function queueScrollCheck() {
+  if (waitForScroll || scrollCheck) return;
+  scrollCheck = requestAnimationFrame(() => {
+    scrollCheck = 0;
+    checkMore();
+  });
+}
 
 function observeMore() {
   const next = document.querySelector(`${catalog} [data-zion-next]`);
@@ -84,7 +98,9 @@ function resumeMore() {
   if (observed) observer?.unobserve(observed);
   observed = undefined;
   observeMore();
+  queueScrollCheck();
 }
+window.addEventListener('scroll', queueScrollCheck, { passive: true });
 window.addEventListener('wheel', resumeMore, { passive: true });
 window.addEventListener('touchmove', resumeMore, { passive: true });
 window.addEventListener('pointerdown', event => {

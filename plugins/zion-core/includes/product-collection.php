@@ -313,7 +313,7 @@ function zion_core_enqueue_catalog_controls(): void {
 				'import' => 'dynamic',
 			),
 		),
-		'1.1.1-r4'
+		'1.1.1-r5'
 	);
 }
 add_filter(
