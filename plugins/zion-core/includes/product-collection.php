@@ -303,7 +303,7 @@ function zion_core_storefront_sort_form( string $url, string $sort, string $page
  * Load AJAX controls for the native archive toolbar and Zion storefronts.
  */
 function zion_core_enqueue_catalog_controls(): void {
-	wp_enqueue_script_module( 'zion-catalog', plugins_url( 'assets/catalog.js', dirname( __DIR__ ) . '/zion-core.php' ), array( '@wordpress/interactivity', '@wordpress/interactivity-router' ), '1.1.1' );
+	wp_enqueue_script_module( 'zion-catalog', plugins_url( 'assets/catalog.js', dirname( __DIR__ ) . '/zion-core.php' ), array( '@wordpress/interactivity', '@wordpress/interactivity-router' ), '1.1.1-r2' );
 }
 add_filter(
 	'render_block_woocommerce/catalog-sorting',

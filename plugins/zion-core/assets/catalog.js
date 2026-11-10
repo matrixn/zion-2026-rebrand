@@ -7,6 +7,7 @@ let loading = false;
 let navigation = 0;
 let observed;
 let noticeTimeout;
+let waitForScroll = false;
 
 const notice = document.createElement('div');
 notice.className = 'zion-shop-notice';
@@ -50,7 +51,7 @@ watch(() => {
 
 const observer = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
   for (const entry of entries) {
-    if (entry.isIntersecting && !loading && !routerPending) {
+    if (entry.target === observed && entry.isIntersecting && !waitForScroll && !loading && !routerPending) {
       observer.unobserve(entry.target);
       observed = undefined;
       navigate(entry.target.dataset.zionNext, '', true).catch(() => {});
@@ -66,6 +67,26 @@ function observeMore() {
     observed = next;
   }
 }
+
+// The browser can restore a position next to the sentinel during Back/Forward.
+// Keep that history entry intact until the visitor scrolls again.
+window.addEventListener('popstate', () => { waitForScroll = true; });
+function resumeMore() {
+  if (!waitForScroll) return;
+  waitForScroll = false;
+  if (observed) observer?.unobserve(observed);
+  observed = undefined;
+  observeMore();
+}
+window.addEventListener('wheel', resumeMore, { passive: true });
+window.addEventListener('touchmove', resumeMore, { passive: true });
+window.addEventListener('pointerdown', event => {
+  if (event.target === document.documentElement) resumeMore();
+}, { passive: true });
+window.addEventListener('keydown', event => {
+  if (['ArrowDown', 'PageDown', 'End', ' '].includes(event.key) &&
+      !event.target.closest('input, select, textarea, button, [contenteditable="true"]')) resumeMore();
+});
 
 function sort(form) {
   const url = new URL(form.getAttribute('action') || location.pathname, location.href);

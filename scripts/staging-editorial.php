@@ -63,7 +63,7 @@ function zion_theme_stage_editorial( string $html ): string {
 		return '';
 	}
 	$path   = new DOMXPath( $doc );
-	$nodes  = $path->query( '//body//*[self::h1 or self::h2 or self::h3 or self::h4 or self::p or self::li or self::pre or self::a][not(ancestor::h1 or ancestor::h2 or ancestor::h3 or ancestor::h4 or ancestor::p or ancestor::li or ancestor::pre)]' );
+	$nodes  = $path->query( '//*[self::h1 or self::h2 or self::h3 or self::h4 or self::p or self::li or self::pre or self::a][not(ancestor::h1 or ancestor::h2 or ancestor::h3 or ancestor::h4 or ancestor::p or ancestor::li or ancestor::pre)]' );
 	$output = '';
 	foreach ( $nodes as $node ) {
 		$tag  = $node->nodeName; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- Native DOM API.

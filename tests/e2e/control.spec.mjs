@@ -493,7 +493,7 @@ test('site chrome, journal pagination and page overrides use the native editor a
     const submenu = header.getByRole('button', { name: /Software/ }).first();
     await submenu.focus();
     await page.keyboard.press('Enter');
-    await expect(header.locator('.wp-block-navigation__submenu-container').filter({ has: header.getByRole('link', { name: 'Magazin Software', includeHidden: true }) })).toHaveCSS('display', 'grid');
+    await expect(header.locator('.wp-block-navigation__submenu-container').filter({ has: page.getByRole('link', { name: 'Magazin Software', includeHidden: true }) })).toHaveCSS('display', 'grid');
     await expect(header.getByRole('link', { name: 'Magazin Software' })).toBeVisible();
     await page.keyboard.press('Escape');
     await page.evaluate(() => window.scrollTo(0, 480));

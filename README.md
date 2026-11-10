@@ -42,7 +42,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 
 ## Magazin 1.1.1
 
-- [x] Încărcare automată la derulare în cele două vitrine. În **Aspect → Zion Theme → WooCommerce** poți alege derularea automată sau doar paginarea numerică, global, per vitrină sau per pagină. Paginarea rămâne accesibilă în ambele moduri. Extinderea Ajax afișează maximum 96 de produse în lista curentă. Paginarea nativă continuă de acolo.
+- [x] Încărcare automată la derulare în cele două vitrine. În **Aspect → Zion Theme → WooCommerce** poți alege derularea automată sau doar paginarea numerică, global, per vitrină sau per pagină. Extinderea Ajax afișează maximum 96 de produse în lista curentă. Butoanele de paginare rămân disponibile cât timp există alte pagini. Înapoi și Înainte păstrează selecția și lotul de produse din istoricul browserului.
 - [x] Sortarea pornește la selectare, păstrează filtrele și confirmă actualizarea printr-un mesaj scurt. În vitrine, formularul și linkurile funcționează și cu JavaScript dezactivat.
 - [x] Pagina produsului adaugă în coș prin Ajax, inclusiv pentru variații. WooCommerce gestionează selecția, prețul, stocul și răspunsurile formularului. Acțiunea „Cumpără acum” continuă către checkout.
 - [x] Etichetele uzuale WooCommerce au o traducere implicită în română, inclusiv pentru mini-coș, coș și formularul de comandă. Pentru catalogul complet al mesajelor și al țărilor, setează **Limba site-ului → Română** și instalează pachetele WordPress și WooCommerce. Textele extensiilor și ale metodelor de plată configurate se traduc în setările lor.
@@ -51,6 +51,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Carduri cu descrieri scurte, categorie și disponibilitate în presetul Classic. Galeria nativă are o imagine mare și o bandă de miniaturi sub ea.
 - [x] Navigația implicită urmează structura Zion 3D, cu submeniuri pentru servicii și software. Linkurile interne folosesc paginile publicate pe instalarea curentă. Meniul rămâne editabil în Site Editor.
 - [x] Comandă de reconstrucție pentru paginile de pe staging: după un export al bazei de date, rulează `wp eval-file scripts/staging-editorial.php` pentru previzualizare și adaugă `apply` doar pe clonă. Comanda păstrează URL-urile și folosește blocuri native; nu transferă CSS, JavaScript, formulare sau widgeturi Elementor.
+- [x] Pe staging au fost reconstruite 20 de pagini, inclusiv cele șapte servicii, paginile de prezentare software, FAQ și cele două vitrine. Pagina Contact oferă e-mail și telefon. Verificarea checkoutului se oprește înainte de trimiterea unei comenzi.
 
 ## Migrare XStore și Elementor
 

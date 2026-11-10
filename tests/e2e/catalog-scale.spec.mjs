@@ -22,6 +22,7 @@ test('native combined filters paginate the 1,000-product fixture without crossin
   expect(next).toHaveLength(12);
   expect(next.every(id => !first.includes(id))).toBe(true);
   await page.goBack();
+  await expect(page).not.toHaveURL(/zion_more=/);
   expect(await ids(page)).toEqual(first);
   await page.goForward();
   expect(await ids(page)).toEqual(next);
