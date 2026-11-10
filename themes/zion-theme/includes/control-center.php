@@ -335,11 +335,9 @@ function zion_theme_render_control_page(): void {
 		<h2><?php echo esc_html( $sections[ $section ] ); ?></h2>
 		<?php zion_theme_control_notices( $config, $section, $updated ); ?>
 
-		<?php if ( in_array( $section, array( 'general', 'design', 'header', 'footer', 'blog', 'pages' ), true ) ) : ?>
-			<p>Culorile, fonturile, meniurile și structura șabloanelor se gestionează în <a href="<?php echo esc_url( admin_url( 'site-editor.php' ) ); ?>">Site Editor</a>.</p>
-		<?php endif; ?>
+		<?php zion_theme_control_editor_links( $section ); ?>
 		<?php if ( 'general' === $section ) : ?>
-			<p>Alege o secțiune pentru a configura tema. Valorile explicite au prioritate în ordinea produs sau pagină → vitrină → global → implicit.</p>
+			<p>Alege o secțiune pentru a configura tema. Valorile explicite au prioritate în ordinea produs, pagină sau articol → vitrină → global → implicit.</p>
 			<p>Versiunea temei: <strong><?php echo esc_html( wp_get_theme()->get( 'Version' ) ); ?></strong>. Schema setărilor: <strong><?php echo esc_html( (string) Zion_Theme_Settings::VERSION ); ?></strong>.</p>
 		<?php endif; ?>
 		<?php if ( 'woo' === $section && class_exists( 'WooCommerce' ) ) : ?>
@@ -353,6 +351,34 @@ function zion_theme_render_control_page(): void {
 		<?php endif; ?>
 	</div>
 	<?php
+}
+
+/**
+ * Link directly to the native editor for the blocks managed there.
+ *
+ * @param string $section Control Center section.
+ */
+function zion_theme_control_editor_links( string $section ): void {
+	$views = match ( $section ) {
+		'header' => array( array( 'wp_template_part', 'header', 'Editează Header, logo, meniu și CTA' ) ),
+		'footer' => array( array( 'wp_template_part', 'footer', 'Editează Footer, contact și linkuri sociale' ) ),
+		'blog' => array( array( 'wp_template', 'home', 'Editează Jurnal' ), array( 'wp_template', 'single', 'Editează șablonul de articol' ) ),
+		'pages' => array( array( 'wp_template', 'page', 'Editează șablonul de pagină' ), array( 'wp_template_part', 'page-sidebar', 'Editează bara laterală' ) ),
+		default => array(),
+	};
+	if ( in_array( $section, array( 'general', 'design' ), true ) ) {
+		echo '<p><a href="' . esc_url( admin_url( 'site-editor.php' ) ) . '">Deschide Site Editor</a></p>';
+	}
+	foreach ( $views as $view ) {
+		$url = add_query_arg(
+			array(
+				'p'      => '/' . $view[0] . '/' . rawurlencode( get_stylesheet() . '//' . $view[1] ),
+				'canvas' => 'edit',
+			),
+			admin_url( 'site-editor.php' )
+		);
+		echo '<p><a href="' . esc_url( $url ) . '">' . esc_html( $view[2] ) . '</a></p>';
+	}
 }
 
 /**
@@ -395,15 +421,15 @@ function zion_theme_control_notices( array $config, string $section, string $upd
  */
 function zion_theme_render_control_tools( int $id, string $type ): void {
 	?>
-	<h3>Setări pentru un produs sau o pagină</h3>
+	<h3>Setări pentru un produs, o pagină sau un articol</h3>
 	<form action="<?php echo esc_url( admin_url( 'themes.php' ) ); ?>" method="get">
 		<input type="hidden" name="page" value="zion-theme">
 		<input type="hidden" name="section" value="tools">
-		<label for="zion-item">ID produs sau pagină</label>
+		<label for="zion-item">ID produs, pagină sau articol</label>
 		<input id="zion-item" name="item" type="number" min="1" required value="<?php echo $id ? esc_attr( (string) $id ) : ''; ?>">
 		<button type="submit" class="button">Deschide setările</button>
 	</form>
-	<p class="description">Poți folosi și acțiunea „Setări Zion” din lista de pagini sau produse.</p>
+	<p class="description">Poți folosi și acțiunea „Setări Zion” din lista de pagini, articole sau produse.</p>
 	<?php if ( $id && ! $type ) : ?>
 		<div class="notice notice-warning"><p>Elementul nu există, nu este o pagină sau un produs sau nu poate fi editat cu acest cont.</p></div>
 	<?php endif; ?>

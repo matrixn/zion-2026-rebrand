@@ -4,14 +4,15 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 0.7** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 0.8** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 0.7** cu taxonomia `zion_shop`, clasificare individuală și în masă și câmpuri editoriale pentru produse.
+- [x] **Zion Core 0.8** cu taxonomia `zion_shop`, clasificare individuală și în masă și câmpuri editoriale pentru produse.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
+- [x] **Navigație și șabloane generale** cu logo și CTA în Site Editor, căutare de produse, cont și mini-coș nativ, footer Zion Nexus, jurnal configurabil și sidebar editabil.
 - [x] **Catalog demonstrativ** cu două vitrine, patru produse fictive ilustrate și fluxul WooCommerce nativ pentru produs, coș și checkout.
 - [x] **Mediu local și de test** cu WordPress, WooCommerce, Docker, wp-env, WP-CLI și date demo încărcate printr-o comandă repetabilă.
 - [x] **Calitate și CI** cu build CSS, WPCS, PHPUnit, verificări de integrare, teste Playwright și workflow GitHub Actions.
@@ -27,7 +28,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] **0.5 · Catalog și filtre.** Layout și filtre pe vitrină, sortare și paginare nativă, teste pentru combinații și benchmark local cu 1.000 de produse demo.
 - [x] **0.6 · Carduri de produs.** Cinci preseturi, controale de afișare și acțiuni WooCommerce verificate pentru produse simple, virtuale, descărcabile, variabile, grupate și externe.
 - [x] **0.7 · Pagina de produs.** Patru preseturi, configurare globală, pe vitrină și pe produs, date editoriale în Zion Core și cumpărare nativă verificată pe mobil și desktop.
-- [ ] **0.8 · Navigație, footer, blog și pagini.** Completează căutarea, contul și mini-coșul, navigația extinsă, footerul Zion Nexus și opțiunile editoriale.
+- [x] **0.8 · Navigație, footer, blog și pagini.** Header configurabil, căutare și mini-coș WooCommerce, footer Zion Nexus și opțiuni editoriale cu suprascrieri per articol sau pagină.
 - [ ] **0.9 · Homepage și bibliotecă de componente.** Completează secțiunile pentru cele șapte servicii, ecosistemul Zion, recenzii și articole recente.
   - [ ] Creează paginile pentru printare și proiectare 3D, software personalizat, SaaS, pluginuri și integrări, aplicații Windows/Linux și integrări AI.
   - [ ] Creează blocuri dinamice și shortcode-uri pentru grile, recomandări, produse noi, reduceri, produse asociate, servicii, CTA și recenzii.
@@ -51,8 +52,8 @@ Comanda compilează CSS-ul și creează în `build/` două arhive independente. 
 
 | Arhivă | Instalare în WordPress |
 | --- | --- |
-| `zion-theme-0.7.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
-| `zion-core-0.7.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine și paginile de produs. |
+| `zion-theme-0.8.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
+| `zion-core-0.8.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine și paginile de produs. |
 
 Arhivele includ fișierele necesare rulării. Datele demonstrative, testele, sursele CSS și dependențele de dezvoltare se află în repo. Directorul `build/` este ignorat de Git.
 
@@ -99,6 +100,10 @@ Wishlist și Compare afișează controalele modulelor YITH compatibile când sho
 Configurează presetul, stilul, ordinea și vizibilitatea din **Aspect → Zion Theme → Pagini individuale produse**. Setările din **Magazin 3D** sau **Magazin Software** pot suprascrie nivelul global. Pentru un produs anume, deschide **Setări Zion** din lista de produse sau selectează produsul în **Instrumente**.
 
 Completează conținutul editorial în **Produse → Editează → Informații produs Zion**. Folosește atributele WooCommerce pentru specificații și datele native pentru preț, variații, stoc, descărcări, upsells și cross-sells. [Ghidul paginilor de produs](docs/product-pages.md)
+
+## Navigație, footer și șabloane editoriale
+
+În **Aspect → Zion Theme**, secțiunile **Header și navigație**, **Footer**, **Blog și articole** și **Pagini standard** conțin setările de afișare și linkuri directe spre șabloanele și părțile editabile. [Ghidul de configurare](docs/site-navigation.md)
 
 ## Test de catalog cu 1.000 de produse
 

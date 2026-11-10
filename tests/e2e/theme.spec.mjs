@@ -93,6 +93,7 @@ test('Site Editor opens the theme templates and template parts as native blocks'
     ['wp_template', 'single-product', 'zion/product-page'],
     ['wp_template_part', 'header', 'core/navigation'],
     ['wp_template_part', 'footer', 'core/search'],
+    ['wp_template_part', 'page-sidebar', 'core/search'],
   ];
   for (const [type, slug, block] of editorViews) {
     await test.step(slug, async () => {

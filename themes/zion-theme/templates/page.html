@@ -1,8 +1,19 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
 <!-- wp:group {"tagName":"main","className":"zion-content","layout":{"type":"constrained"}} -->
 <main class="wp-block-group zion-content">
+<!-- wp:group {"align":"wide","className":"zion-standard-header"} -->
+<div class="wp-block-group alignwide zion-standard-header">
+<!-- wp:zion/editorial {"part":"breadcrumb"} /-->
 <!-- wp:post-title {"level":1,"className":"zion-section-title zion-page-title"} /-->
-<!-- wp:post-content {"align":"wide","layout":{"type":"constrained"}} /-->
+<!-- wp:post-featured-image {"className":"zion-page-image"} /-->
+</div>
+<!-- /wp:group -->
+<!-- wp:group {"align":"wide","className":"zion-standard-layout"} -->
+<div class="wp-block-group alignwide zion-standard-layout">
+<!-- wp:post-content /-->
+<!-- wp:template-part {"slug":"page-sidebar","tagName":"aside"} /-->
+</div>
+<!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

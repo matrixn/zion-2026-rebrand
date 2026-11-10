@@ -127,7 +127,7 @@ test('Control Center persists validated settings and applies inheritance on publ
     await save(page);
     await page.goto('/product/zion-catalog-tools/');
     await expect(page.locator('header a.zion-current-shop').first()).toHaveText('Magazin Software');
-    await expect(page.getByRole('link', { name: /Înapoi sus/ })).toHaveAttribute('href', '#zion-top');
+    await expect(page.getByRole('link', { name: /Înapoi sus/ })).toHaveAttribute('href', '#zion-page-top');
 
     await openSection(page, 'blog');
     await expect(field(page, 'reading_speed')).toBeHidden();
@@ -422,6 +422,103 @@ test('product presets and native purchases work with real variations, mobile and
     for (const product of products.reverse()) {
       const response = await page.request.delete(`${endpoint}/${product.id}?force=true`, { headers });
       expect(response.ok()).toBe(true);
+    }
+  }
+});
+
+test('site chrome, journal pagination and page overrides use the native editor and templates', async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const nonce = await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text();
+  const headers = { 'X-WP-Nonce': nonce };
+  const fixtures = [];
+  const create = async (type, data) => {
+    const route = `/wp-json/wp/v2/${type}`;
+    const response = await page.request.post(route, { headers, data: { status: 'publish', ...data } });
+    expect(response.status(), await response.text()).toBe(201);
+    const entry = await response.json();
+    fixtures.push(`${route}/${entry.id}?force=true`);
+    return entry;
+  };
+  try {
+    const parent = await create('pages', { title: 'Părinte Zion test', content: '<p>Conținut părinte.</p>' });
+    const child = await create('pages', { title: 'Pagină Zion test', parent: parent.id, content: '<p>Conținut pagină test.</p>' });
+    const related = await create('posts', { title: 'Articol asociat Zion test', content: '<p>Conținut editorial.</p>', categories: [1] });
+    const article = await create('posts', {
+      title: 'Articol Zion test', content: '<p>Text de probă pentru setările și timpul de citire.</p>',
+      categories: [1], excerpt: 'Rezumat test distinct', comment_status: 'open',
+    });
+    await importSettings(page, JSON.stringify({
+      version: 2,
+      global: {
+        header_sticky: true, header_transparent: true, header_mega: true, header_cta: true,
+        footer_cta: false, footer_resources: false, back_to_top: true,
+        blog_layout: 'list', blog_per_page: 1, page_breadcrumb: true,
+      },
+      shops: {},
+      items: {
+        page: { [child.id]: { page_sidebar: true, page_width: 'full', page_header: 'panel', page_title: false, header_cart: false } },
+        post: { [article.id]: { blog_author: false, blog_date: false, blog_excerpt: false, blog_comments: false, reading_time: true } },
+      },
+    }));
+
+    await openSection(page, 'header');
+    const editor = await page.getByRole('link', { name: /Editează Header/ }).getAttribute('href');
+    expect(new URL(editor).searchParams.get('p')).toBe('/wp_template_part/zion-theme//header');
+    await openSection(page, 'pages');
+    const sidebarEditor = await page.getByRole('link', { name: /Editează bara laterală/ }).getAttribute('href');
+    expect(new URL(sidebarEditor).searchParams.get('p')).toBe('/wp_template_part/zion-theme//page-sidebar');
+
+    await page.setViewportSize({ width: 1440, height: 850 });
+    await page.goto('/');
+    await expect(page.locator('body')).toHaveClass(/zion-header-transparent/);
+    const header = page.locator('.wp-site-blocks > header');
+    await expect(header).toHaveCSS('position', 'sticky');
+    await expect(header.getByRole('link', { name: 'Explorează vitrinele' })).toBeVisible();
+    const submenu = header.getByRole('button', { name: /Explorează/ }).first();
+    await submenu.focus();
+    await page.keyboard.press('Enter');
+    await expect(header.locator('.wp-block-navigation__submenu-container')).toHaveCSS('display', 'grid');
+    await expect(header.getByRole('link', { name: 'Toate produsele' })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.evaluate(() => window.scrollTo(0, 480));
+    expect(await header.evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(0);
+    await expect(page.locator('footer .zion-footer-cta, footer .zion-footer-resources')).toHaveCount(0);
+    await expect(page.locator('footer .zion-footer-copyright')).toContainText('Zion');
+    const backTop = page.getByRole('link', { name: /Înapoi sus/ });
+    await expect(backTop).toHaveAttribute('href', '#zion-page-top');
+    await backTop.click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThanOrEqual(1);
+
+    await page.goto('/jurnal/');
+    await expect(page.locator('body')).toHaveClass(/zion-blog-list/);
+    await expect(page.locator('.zion-post-card')).toHaveCount(1);
+    await expect(page.locator('.wp-block-query-pagination-next')).toBeVisible();
+    await page.goto(article.link);
+    await expect(page.locator('main .zion-blog-author, main .zion-blog-date, main .zion-blog-excerpt, main .zion-blog-comments')).toHaveCount(0);
+    await expect(page.locator('main .zion-reading-time')).toHaveText('1 min de citit');
+    await expect(page.locator('.zion-article-related').getByRole('link', { name: 'Articol asociat Zion test' })).toHaveAttribute('href', related.link);
+    await expect(page.getByRole('link', { name: 'Distribuie prin e-mail' })).toHaveAttribute('href', /^mailto:/);
+    await expect(page.getByRole('button', { name: 'Copiază linkul' })).toBeVisible();
+
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 850 });
+      await page.goto(child.link);
+      await expect(page.locator('body')).toHaveClass(/zion-page-width-full/);
+      await expect(page.locator('.zion-standard-header')).toHaveClass(/zion-standard-header/);
+      await expect(page.locator('.zion-page-title, .zion-header-cart')).toHaveCount(0);
+      await expect(page.locator('aside .zion-page-sidebar')).toBeVisible();
+      await expect(page.getByRole('navigation', { name: 'Fir de navigare' }).getByRole('link', { name: 'Părinte Zion test' })).toHaveAttribute('href', parent.link);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    }
+    await page.goto('/cart/');
+    await expect(page.locator('.zion-page-sidebar, .zion-page-breadcrumb')).toHaveCount(0);
+  } finally {
+    await importSettings(page, original);
+    for (const route of fixtures.reverse()) {
+      expect((await page.request.delete(route, { headers })).ok()).toBe(true);
     }
   }
 });

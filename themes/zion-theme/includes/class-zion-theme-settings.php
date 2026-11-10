@@ -13,7 +13,7 @@ final class Zion_Theme_Settings {
 	public const VERSION          = 2;
 	public const MAX_IMPORT_BYTES = 262144;
 	public const SHOPS            = array( '3d', 'software' );
-	public const ITEM_TYPES       = array( 'page', 'product' );
+	public const ITEM_TYPES       = array( 'page', 'product', 'post' );
 
 	/**
 	 * Definitions shared by storage, forms and the frontend resolver.
@@ -373,7 +373,7 @@ final class Zion_Theme_Settings {
 			),
 			'reading_time'            => array(
 				'label'       => 'Timp estimat de citire',
-				'description' => 'Adaugă estimarea lângă data publicării pe pagina unui articol.',
+				'description' => 'Afișează estimarea în articol și pe cardul din jurnal.',
 				'section'     => 'blog',
 				'type'        => 'bool',
 				'default'     => false,
@@ -381,7 +381,7 @@ final class Zion_Theme_Settings {
 					'0' => 'Ascunde',
 					'1' => 'Afișează',
 				),
-				'contexts'    => array( 'global' ),
+				'contexts'    => array( 'global', 'post' ),
 			),
 			'reading_speed'           => array(
 				'label'       => 'Cuvinte pe minut',
@@ -393,7 +393,7 @@ final class Zion_Theme_Settings {
 					'min' => 100,
 					'max' => 400,
 				),
-				'contexts'    => array( 'global' ),
+				'contexts'    => array( 'global', 'post' ),
 				'requires'    => 'reading_time',
 			),
 			'page_home_link'          => array(
@@ -425,7 +425,133 @@ final class Zion_Theme_Settings {
 		$cards         ??= self::card_fields();
 		static $products = null;
 		$products      ??= self::product_fields();
-		return $fields + $cards + $products;
+		static $site     = null;
+		$site          ??= self::site_fields();
+		return $fields + $cards + $products + $site;
+	}
+
+	/**
+	 * Presentation settings for navigation, editorial content and pages.
+	 *
+	 * @return array
+	 */
+	private static function site_fields(): array {
+		$groups = array(
+			'header' => array(
+				'header_sticky'      => array( 'Header fix', 'Păstrează headerul la vedere la derulare.', false ),
+				'header_transparent' => array( 'Header transparent pe homepage', 'Afișează headerul transparent deasupra secțiunii introductive.', false ),
+				'header_mega'        => array( 'Submeniuri late', 'Afișează submeniurile de primul nivel în coloane pe desktop. Editează linkurile în blocul Navigație.', false ),
+				'header_search'      => array( 'Căutare produse', 'Afișează formularul WooCommerce pentru căutare în catalog.', true ),
+				'header_account'     => array( 'Cont WooCommerce', 'Afișează accesul la Contul meu când pagina este configurată în WooCommerce.', true ),
+				'header_cart'        => array( 'Mini-coș', 'Afișează mini-coșul nativ WooCommerce.', true ),
+				'header_cart_badge'  => array( 'Badge cantitate coș', 'Afișează cantitatea calculată de mini-coșul WooCommerce.', true, 'header_cart' ),
+				'header_cta'         => array( 'Buton principal', 'Afișează butonul al cărui text și link se editează în Header din Site Editor.', false ),
+			),
+			'footer' => array(
+				'footer_cta'       => array( 'CTA Zion Nexus', 'Afișează grupul principal de acțiuni din Footer.', true ),
+				'footer_contact'   => array( 'Contact', 'Afișează grupul Contact din Footer când are conținut.', true ),
+				'footer_resources' => array( 'Resurse și navigație', 'Afișează grupul de resurse din Footer.', true ),
+				'footer_social'    => array( 'Rețele sociale', 'Afișează linkurile sociale configurate în blocul Social Icons.', true ),
+				'footer_legal'     => array( 'Linkuri legale', 'Afișează linkurile către paginile legale configurate.', true ),
+				'footer_copyright' => array( 'Copyright', 'Afișează linia de copyright editabilă din Footer.', true ),
+				'footer_search'    => array( 'Căutare în subsol', 'Afișează formularul de căutare generală.', true ),
+			),
+			'blog'   => array(
+				'blog_image'      => array( 'Imagine reprezentativă', 'Afișează imaginea în jurnal și în articol.', true ),
+				'blog_categories' => array( 'Categorii', 'Afișează categoriile articolului.', true ),
+				'blog_date'       => array( 'Data publicării', 'Afișează data nativă a articolului.', true ),
+				'blog_author'     => array( 'Autor', 'Afișează autorul WordPress.', true ),
+				'blog_excerpt'    => array( 'Rezumat', 'Afișează rezumatul pe card și în articol când există.', true ),
+				'blog_related'    => array( 'Articole asociate', 'Afișează până la trei articole din categorii comune.', true ),
+				'blog_share'      => array( 'Distribuire', 'Afișează partajarea prin e-mail și copierea linkului.', true ),
+				'blog_comments'   => array( 'Comentarii', 'Afișează comentariile și formularul conform regulilor WordPress.', true ),
+			),
+			'pages'  => array(
+				'page_breadcrumb' => array( 'Breadcrumb', 'Afișează legăturile către pagina principală și paginile părinte.', false ),
+				'page_title'      => array( 'Titlul paginii', 'Afișează titlul WordPress în antetul paginii.', true ),
+				'page_image'      => array( 'Imagine reprezentativă', 'Afișează imaginea reprezentativă din editorul paginii.', true ),
+				'page_sidebar'    => array( 'Bară laterală', 'Afișează Template Part-ul Bara laterală în paginile standard.', false ),
+			),
+		);
+		$fields = array();
+		foreach ( $groups as $section => $items ) {
+			$contexts = match ( $section ) {
+				'header', 'pages' => array( 'global', 'page' ),
+				'blog' => array( 'global', 'post' ),
+				default => array( 'global' ),
+			};
+			foreach ( $items as $key => $item ) {
+				$fields[ $key ] = array(
+					'label'       => $item[0],
+					'description' => $item[1],
+					'default'     => $item[2],
+					'section'     => $section,
+					'contexts'    => $contexts,
+					'type'        => 'bool',
+					'allowed'     => array(
+						'0' => 'Nu',
+						'1' => 'Da',
+					),
+				);
+				if ( isset( $item[3] ) ) {
+					$fields[ $key ]['requires'] = $item[3];
+				}
+			}
+		}
+		$fields['blog_layout']   = array(
+			'label'       => 'Aspect jurnal',
+			'description' => 'Alege grila sau lista pentru jurnal și arhivele articolelor.',
+			'section'     => 'blog',
+			'contexts'    => array( 'global' ),
+			'type'        => 'choice',
+			'default'     => 'grid',
+			'allowed'     => array(
+				'grid' => 'Grilă',
+				'list' => 'Listă',
+			),
+		);
+		$fields['blog_per_page'] = array(
+			'label'       => 'Articole pe pagină',
+			'description' => 'Suprascrie limita WordPress pentru jurnal și arhivele articolelor când este configurată explicit.',
+			'section'     => 'blog',
+			'contexts'    => array( 'global' ),
+			'type'        => 'int',
+			'default'     => 10,
+			'allowed'     => array(
+				'min' => 1,
+				'max' => 48,
+			),
+		);
+		foreach ( array(
+			'page_width'  => array(
+				'Lățime pagină',
+				'boxed',
+				array(
+					'boxed' => 'Boxed',
+					'full'  => 'Full-width',
+				),
+			),
+			'page_header' => array(
+				'Stil antet pagină',
+				'simple',
+				array(
+					'simple' => 'Simplu',
+					'panel'  => 'Panou',
+					'hidden' => 'Ascuns',
+				),
+			),
+		) as $key => $choice ) {
+			$fields[ $key ] = array(
+				'label'       => $choice[0],
+				'description' => 'Se aplică șablonului standard Zion și poate fi suprascrisă per pagină.',
+				'section'     => 'pages',
+				'contexts'    => array( 'global', 'page' ),
+				'type'        => 'choice',
+				'default'     => $choice[1],
+				'allowed'     => $choice[2],
+			);
+		}
+		return $fields;
 	}
 
 	/**

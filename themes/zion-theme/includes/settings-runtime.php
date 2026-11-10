@@ -217,22 +217,18 @@ function zion_theme_control_render( string $output, array $block ): string {
 			return $links->get_updated_html();
 		}
 	}
-	if ( in_array( 'zion-footer-links', $classes, true ) && zion_theme_setting( 'back_to_top' ) ) {
+	if ( in_array( 'zion-footer-links', $classes, true ) && ! in_array( 'zion-footer-resources', $classes, true ) && zion_theme_setting( 'back_to_top' ) ) {
 		$closing_tag = strrpos( $output, '</' );
 		if ( false !== $closing_tag ) {
-			$link = '<p class="zion-back-to-top"><a href="#zion-top">' . esc_html__( 'Înapoi sus', 'zion-theme' ) . ' ↑</a></p>';
+			$link = '<p class="zion-back-to-top"><a href="#zion-page-top">' . esc_html__( 'Înapoi sus', 'zion-theme' ) . ' ↑</a></p>';
 			return substr_replace( $output, $link, $closing_tag, 0 );
 		}
 	}
 	if ( in_array( 'zion-page-title', $classes, true ) && is_page() && zion_theme_setting( 'page_home_link' ) ) {
 		return '<p class="zion-page-home"><a href="' . esc_url( home_url( '/' ) ) . '">← ' . esc_html__( 'Acasă', 'zion-theme' ) . '</a></p>' . $output;
 	}
-	if ( in_array( 'zion-article-date', $classes, true ) && is_singular( 'post' ) && zion_theme_setting( 'reading_time' ) ) {
-		$content = (string) get_post_field( 'post_content', get_queried_object_id() );
-		$words   = preg_match_all( '/[\p{L}\p{N}]+/u', wp_strip_all_tags( strip_shortcodes( $content ) ) );
-		$minutes = max( 1, (int) ceil( $words / zion_theme_setting( 'reading_speed' ) ) );
-		/* translators: %d: estimated minutes to read the article. */
-		return $output . '<p class="zion-reading-time">' . esc_html( sprintf( __( '%d min de citit', 'zion-theme' ), $minutes ) ) . '</p>';
+	if ( in_array( 'zion-article-date', $classes, true ) && ! in_array( 'zion-blog-date', $classes, true ) && is_singular( 'post' ) ) {
+		return $output . zion_theme_article_reading_time( get_queried_object_id() );
 	}
 	return $output;
 }

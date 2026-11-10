@@ -2,10 +2,32 @@
 <!-- wp:group {"tagName":"main","className":"zion-content","layout":{"type":"constrained"}} -->
 <main class="wp-block-group zion-content">
 <!-- wp:post-title {"level":1,"className":"zion-section-title"} /-->
-<!-- wp:post-date {"className":"zion-kicker zion-article-date"} /-->
-<!-- wp:post-featured-image {"align":"wide"} /-->
+<!-- wp:post-date {"className":"zion-kicker zion-article-date zion-blog-date"} /-->
+<!-- wp:post-author-name {"className":"zion-blog-author"} /-->
+<!-- wp:zion/editorial {"part":"reading_time"} /-->
+<!-- wp:post-featured-image {"align":"wide","className":"zion-blog-image"} /-->
+<!-- wp:post-excerpt {"className":"zion-blog-excerpt"} /-->
 <!-- wp:post-content {"layout":{"type":"constrained"}} /-->
-<!-- wp:post-terms {"term":"category"} /-->
+<!-- wp:post-terms {"term":"category","className":"zion-blog-categories"} /-->
+<!-- wp:zion/editorial {"part":"share"} /-->
+<!-- wp:zion/editorial {"part":"related"} /-->
+<!-- wp:comments {"className":"zion-blog-comments"} -->
+<div class="wp-block-comments zion-blog-comments">
+<!-- wp:comments-title /-->
+<!-- wp:comment-template -->
+<!-- wp:comment-author-name /-->
+<!-- wp:comment-date /-->
+<!-- wp:comment-content /-->
+<!-- wp:comment-reply-link /-->
+<!-- /wp:comment-template -->
+<!-- wp:comments-pagination -->
+<!-- wp:comments-pagination-previous /-->
+<!-- wp:comments-pagination-numbers /-->
+<!-- wp:comments-pagination-next /-->
+<!-- /wp:comments-pagination -->
+<!-- wp:post-comments-form /-->
+</div>
+<!-- /wp:comments -->
 </main>
 <!-- /wp:group -->
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
