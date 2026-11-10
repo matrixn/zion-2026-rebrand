@@ -7,3 +7,4 @@
 - Use WordPress Coding Standards, capability checks for privileged operations, context-appropriate escaping and native APIs for persistence.
 - Keep dependencies pinned through lockfiles and the root wp-env configuration. Use synthetic data in local/test instances. Keep production data and credentials outside the repository.
 - Run the build, WPCS, PHPUnit, integration checks and Playwright before committing changes to the storefront. Use the tests instance for automated browser checks.
+- Finish every project change by updating README, generating both versioned WordPress ZIPs with `npm run package`, committing the change and pushing to `main`. Report the commit and the archive paths. Keep component version headers in sync with releases.

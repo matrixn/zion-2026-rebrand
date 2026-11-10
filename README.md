@@ -78,6 +78,13 @@ npm run test:e2e
 
 Folosește `npm run test:visual:update` pentru actualizarea intenționată a capturilor, apoi verifică diferențele înainte de commit. GitHub Actions rulează verificările pe push și pull request.
 
+## Flux de livrare
+
+1. Actualizează README-ul cu schimbarea și starea checklistului.
+2. Rulează verificările relevante și `npm run package`. La o lansare, actualizează mai întâi versiunea în antetul fiecărei componente lansate.
+3. Creează commitul și publică-l pe `main`.
+4. Comunică linkul commitului și căile către cele două arhive versionate din `build/`.
+
 Vezi [arhitectura și convențiile](docs/architecture.md) și [compatibilitatea și migrarea](docs/compatibility.md).
 
 ## Structura proiectului
