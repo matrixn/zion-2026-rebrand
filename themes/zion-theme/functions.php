@@ -7,6 +7,12 @@
 
 defined( 'ABSPATH' ) || exit;
 
+require_once __DIR__ . '/includes/class-zion-theme-settings.php';
+require_once __DIR__ . '/includes/settings-runtime.php';
+if ( is_admin() ) {
+	require_once __DIR__ . '/includes/control-center.php';
+}
+
 /**
  * Declare theme support and load component styles in the editor.
  */

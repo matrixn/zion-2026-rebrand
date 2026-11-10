@@ -95,8 +95,9 @@ try {
 		'zion-theme',
 		array(
 			'source'      => 'themes/zion-theme',
-			'files'       => array( 'style.css', 'functions.php', 'theme.json', 'assets/dist/zion.css' ),
+			'files'       => array( 'style.css', 'functions.php', 'theme.json', 'assets/dist/zion.css', 'assets/admin/control-center.js' ),
 			'directories' => array(
+				'includes'  => array( 'php' ),
 				'parts'     => array( 'html' ),
 				'patterns'  => array( 'php' ),
 				'templates' => array( 'html' ),

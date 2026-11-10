@@ -4,7 +4,8 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 0.2** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 0.3** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
 - [x] **Zion Core 0.1** cu taxonomia `zion_shop` și shortcode-ul `[zion_catalog]`. Un produs poate apărea în oricare dintre cele două vitrine sau în ambele.
@@ -18,7 +19,7 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după ce funcționalitatea este verificată.
 
 - [x] **0.2 · Tema nativă.** Șabloane pentru căutare, arhive și WooCommerce, presetări în editor, navigație la tastatură și verificări la 390, 768, 1024 și 1440 px.
-- [ ] **0.3 · Zion Control Center.** Adaugă registrul setărilor, panoul WordPress, validarea, resetarea și importul/exportul JSON. Testează prioritatea dintre setările globale, vitrină și produs sau pagină.
+- [x] **0.3 · Zion Control Center.** Registru unic, panou nativ WordPress, validare, resetare, import/export JSON și teste pentru precedență, permisiuni și migrarea schemei.
 - [ ] **0.4 · Administrarea vitrinelor.** Completează clasificarea produselor cu identificarea celor neclasificate și operații în masă cu previzualizare și jurnal.
 - [ ] **0.5 · Catalog și filtre.** Adaugă layout configurabil, filtre native WooCommerce și teste pentru combinațiile de filtre, sortare și paginare. Măsoară performanța cu cel puțin 1.000 de produse demo.
 - [ ] **0.6 · Carduri de produs.** Adaugă preseturi și controale pentru imagini, badge-uri, informații și acțiuni, inclusiv pentru produsele variabile, grupate și externe.
@@ -47,7 +48,7 @@ Comanda compilează CSS-ul și creează în `build/` două arhive independente. 
 
 | Arhivă | Instalare în WordPress |
 | --- | --- |
-| `zion-theme-0.2.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
+| `zion-theme-0.3.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
 | `zion-core-0.1.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine. |
 
 Arhivele includ fișierele necesare rulării. Datele demonstrative, testele, sursele CSS și dependențele de dezvoltare se află în repo. Directorul `build/` este ignorat de Git.
@@ -68,6 +69,14 @@ Deschide [site-ul local](http://localhost:8916/) sau [Site Editor](http://localh
 
 Seed-ul include și [Jurnalul](http://localhost:8916/jurnal/), [catalogul WooCommerce](http://localhost:8916/shop/) și un [produs demonstrativ](http://localhost:8916/product/zion-catalog-tools/). Pentru un site fără seed, alege pagina de articole din **Setări → Citire** ca să apară linkul Jurnal în navigația implicită. Footerul afișează linkul de confidențialitate după ce alegi și publici pagina respectivă în WordPress.
 
+## Zion Control Center
+
+Deschide **Aspect → Zion Theme** cu un cont care are capabilitatea `edit_theme_options`. Pentru o pagină sau un produs, folosește acțiunea **Setări Zion** din lista de conținut sau introdu ID-ul în **Instrumente**. Valoarea explicită de pe element are prioritate, apoi vitrina, valoarea globală și valoarea implicită. Alege **Moștenește** pentru a elimina valoarea explicită.
+
+Panoul controlează prezentarea și comportamentele Zion, precum densitatea și acțiunile cardurilor, metadatele și produsele asociate, timpul de citire sau reducerea mișcării. Site Editor gestionează culorile, fonturile, meniurile și structura șabloanelor. WooCommerce gestionează datele comerciale.
+
+În **Instrumente**, descarcă exportul JSON înainte de modificări ample. Importul validează configurația integral înainte de a o înlocui. Override-urile folosesc ID-uri locale, deci importă-le în aceeași instalare. Poți reseta o secțiune din propriul formular sau confirma resetarea tuturor setărilor din **Instrumente**. Vezi [arhitectura](docs/architecture.md) pentru schema și regulile de moștenire.
+
 ## Verificări
 
 ```sh
@@ -83,6 +92,8 @@ npm run test:e2e
 Folosește `npm run test:visual:update` pentru actualizarea intenționată a capturilor, apoi verifică diferențele înainte de commit. GitHub Actions rulează verificările pe push și pull request.
 
 Matricea Playwright verifică 12 rute publice la 390, 768, 1024 și 1440 px. Suita mai verifică șabloanele în Site Editor, meniul mobil la tastatură, filtrarea nativă în catalog și traseul produs → coș → checkout.
+
+Testele Control Center rulează după cele ale vitrinei, în baza de date izolată wp-env. Verifică salvarea, moștenirea, efectele publice, importul/exportul, resetarea și accesul unui abonat. Pentru a rula doar aceste teste, folosește `npm run test:e2e -- --project=control --no-deps`.
 
 ## Flux de livrare
 
