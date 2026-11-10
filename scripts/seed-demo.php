@@ -116,6 +116,14 @@ foreach ( $zion_core_fixture['products'] as $zion_core_item ) {
 	}
 
 	$zion_core_product = wc_get_product( $zion_core_product_id );
+	if ( ! $zion_core_product->get_featured() ) {
+		$zion_core_product->set_featured( true );
+		$zion_core_product->save();
+	}
+	if ( 'ZION-DEMO-SW-02' === $zion_core_item['sku'] && '' === $zion_core_product->get_sale_price() ) {
+		$zion_core_product->set_sale_price( '179.00' );
+		$zion_core_product->save();
+	}
 	if ( ! $zion_core_product->get_image_id() ) {
 		$zion_core_image = WP_CONTENT_DIR . '/zion-config/demo-images/' . strtolower( $zion_core_item['sku'] ) . '.png';
 		WP_CLI::runcommand(
@@ -126,6 +134,12 @@ foreach ( $zion_core_fixture['products'] as $zion_core_item ) {
 			)
 		);
 	}
+}
+
+if ( function_exists( 'zion_theme_create_service_pages' ) ) {
+	require __DIR__ . '/seed-library.php';
+} else {
+	WP_CLI::runcommand( 'eval-file wp-content/zion-scripts/seed-library.php' );
 }
 
 WP_CLI::success( 'Zion demo ready.' );

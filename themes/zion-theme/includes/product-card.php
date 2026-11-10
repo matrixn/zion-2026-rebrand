@@ -19,10 +19,14 @@ function zion_theme_register_product_card(): void {
 			'category'        => 'widgets',
 			'uses_context'    => array( 'postId', 'postType' ),
 			'attributes'      => array(
-				'shop'  => array( 'type' => 'string' ),
-				'level' => array(
+				'shop'       => array( 'type' => 'string' ),
+				'level'      => array(
 					'type'    => 'integer',
 					'default' => 2,
+				),
+				'deferImage' => array(
+					'type'    => 'boolean',
+					'default' => false,
 				),
 			),
 			'editor_script'   => 'zion-card-editor',
@@ -31,6 +35,22 @@ function zion_theme_register_product_card(): void {
 	);
 }
 add_action( 'init', 'zion_theme_register_product_card' );
+
+/**
+ * Load the dialog behavior only for enabled Quick View actions.
+ */
+function zion_theme_enqueue_quick_view(): void {
+	wp_enqueue_script(
+		'zion-card',
+		get_theme_file_uri( 'assets/blocks/product-card.js' ),
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+}
 
 /**
  * Give Zion Core the shared card while retaining its standalone WooCommerce fallback.
@@ -42,6 +62,10 @@ add_action( 'init', 'zion_theme_register_product_card' );
 function zion_theme_catalog_product_card( string $template, string $shop ): string {
 	if ( ! in_array( $shop, Zion_Theme_Settings::SHOPS, true ) ) {
 		return $template;
+	}
+	if ( zion_theme_card_profile( $shop )['show']['quick_view'] ) {
+		// The native filter router can add cards after an initially empty result.
+		zion_theme_enqueue_quick_view();
 	}
 	return '<!-- wp:zion/product-card ' . serialize_block_attributes( array( 'shop' => $shop ) ) . ' /-->';
 }
@@ -95,16 +119,17 @@ function zion_theme_card_profile( string $shop ): array {
  * @param WC_Product $product Native WooCommerce product.
  * @param array      $show Visibility controls.
  * @param string     $url Product URL.
+ * @param bool       $defer Whether the image sits below the fold.
  * @return string
  */
-function zion_theme_card_image( WC_Product $product, array $show, string $url ): string {
+function zion_theme_card_image( WC_Product $product, array $show, string $url, bool $defer = false ): string {
 	$image_id = $product->get_image_id();
 	if ( ! $show['image'] || ( ! $image_id && ! $show['placeholder'] ) ) {
 		return '';
 	}
 	// Use an uncropped size so the configured fit controls the full photograph.
 	$size  = 'medium_large';
-	$image = $product->get_image( $size, array(), $show['placeholder'] );
+	$image = $product->get_image( $size, $defer ? array( 'loading' => 'lazy' ) : array(), $show['placeholder'] );
 	if ( '' === $image ) {
 		return '';
 	}
@@ -214,6 +239,7 @@ function zion_theme_card_extension( string $action, WC_Product $product ): strin
  * @return string
  */
 function zion_theme_card_quick_view( WC_Product $product, string $url, array $show ): string {
+	zion_theme_enqueue_quick_view();
 	$name = $product->get_name();
 	return '<a class="wp-element-button" data-zion-quick-view href="' . esc_url( $url ) . '" aria-haspopup="dialog">' . esc_html__( 'Quick View', 'zion-theme' ) . '</a>' .
 		'<dialog class="zion-product-card__dialog" aria-label="' . esc_attr( $name ) . '">' .
@@ -292,7 +318,7 @@ function zion_theme_render_product_card( array $attributes, string $content, WP_
 	$show    = $profile['show'];
 	$level   = 3 === ( $attributes['level'] ?? 2 ) ? 3 : 2;
 	$url     = $product->get_permalink();
-	$image   = zion_theme_card_image( $product, $show, $url );
+	$image   = zion_theme_card_image( $product, $show, $url, ! empty( $attributes['deferImage'] ) );
 	$items   = '';
 	foreach ( $profile['order'] as $key ) {
 		if ( $show[ $key ] ) {

@@ -59,17 +59,44 @@ $zion_core_visible = false;
 $zion_core_hidden  = false;
 try {
 	wp_set_object_terms( $zion_core_product->get_id(), array( '3d', 'software' ), 'zion_shop' );
-	$zion_core_hidden = ! str_contains( do_shortcode( '[zion_catalog shop="3d"]' ), $zion_core_product->get_name() );
+	$zion_core_hidden         = ! str_contains( do_shortcode( '[zion_catalog shop="3d"]' ), $zion_core_product->get_name() );
+	$zion_core_library_hidden = ! str_contains( do_shortcode( '[zion_products shop="3d"]' ), $zion_core_product->get_name() );
 	$zion_core_product->set_catalog_visibility( 'visible' );
 	$zion_core_product->save();
-	$zion_core_visible = str_contains( do_shortcode( '[zion_catalog shop="3d"]' ), $zion_core_product->get_name() )
+	$zion_core_visible         = str_contains( do_shortcode( '[zion_catalog shop="3d"]' ), $zion_core_product->get_name() )
 		&& str_contains( do_shortcode( '[zion_catalog shop="software"]' ), $zion_core_product->get_name() );
+	$zion_core_library_visible = str_contains( do_shortcode( '[zion_products shop="3d"]' ), $zion_core_product->get_name() );
+	$zion_core_product->set_status( 'draft' );
+	$zion_core_product->save();
+	$zion_core_library_draft_hidden = ! str_contains( do_shortcode( '[zion_products shop="3d"]' ), $zion_core_product->get_name() );
 } finally {
 	$zion_core_product->delete( true );
 }
 
 zion_core_test_assert( $zion_core_hidden, 'WooCommerce hidden products stay hidden' );
 zion_core_test_assert( $zion_core_visible, 'A visible product can belong to both stores' );
+zion_core_test_assert( $zion_core_library_hidden && $zion_core_library_visible, 'Embedded collections honor native WooCommerce catalog visibility' );
+zion_core_test_assert( $zion_core_library_draft_hidden, 'Embedded collections include published products only' );
+zion_core_test_assert( '' === do_shortcode( '[zion_products shop="invalid"]' ), 'An invalid library shop cannot fall back to all products' );
+zion_core_test_assert( ! str_contains( do_shortcode( '[zion_cta url="javascript:alert(1)"]' ), 'javascript:' ), 'CTA URLs reject unsafe schemes' );
+$zion_core_collection_limits = zion_core_collection_options(
+	array(
+		'limit'    => '900',
+		'columns'  => '900',
+		'paginate' => 'yes',
+	)
+);
+zion_core_test_assert(
+	24 === $zion_core_collection_limits['limit'] && 5 === $zion_core_collection_limits['columns'] && ! $zion_core_collection_limits['paginate'],
+	'Library limits are capped and pagination only accepts a known true value'
+);
+zion_core_test_assert(
+	array(
+		'created' => 0,
+		'failed'  => 0,
+	) === zion_theme_create_service_pages(),
+	'Provisioning service pages preserves all existing Gutenberg pages'
+);
 require __DIR__ . '/classification.php';
 $zion_core_detail_fields = get_registered_meta_keys( 'post', 'product' );
 zion_core_test_assert(

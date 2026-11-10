@@ -78,16 +78,32 @@ add_action( 'template_redirect', 'zion_core_redirect_legacy_category' );
 function zion_core_storefront_query_scope( array $query, WP_Block $block ): array {
 	$context = $block->context['query'] ?? array();
 	$shop    = $context['zionShop'] ?? '';
-	if ( ! is_string( $shop ) || ! isset( zion_core_shops()[ $shop ] ) ) {
+	$scoped  = is_string( $shop ) && isset( zion_core_shops()[ $shop ] );
+	if ( ( $scoped || ! empty( $context['zionLibrary'] ) ) && ! empty( $context['woocommerceOnSale'] ) && empty( $query['post__in'] ) ) {
+		// An empty inclusion list normally means no restriction in WP_Query.
+		$query['post__in'] = array( 0 );
+	}
+	if ( ! empty( $context['zionLibrary'] ) ) {
+		$query['post_status']           = 'publish';
+		$query['zion_storefront_query'] = 'library';
+		if ( empty( $context['zionPaginate'] ) ) {
+			$query['paged']         = 1;
+			$query['no_found_rows'] = true;
+		}
+		if ( isset( $context['zionRelatedIds'] ) ) {
+			$ids = is_array( $context['zionRelatedIds'] ) ? array_map( 'absint', array_filter( $context['zionRelatedIds'], 'is_numeric' ) ) : array();
+			if ( ! empty( $query['post__in'] ) ) {
+				$ids = array_intersect( $ids, $query['post__in'] );
+			}
+			$query['post__in'] = $ids ? array_values( $ids ) : array( 0 );
+		}
+	}
+	if ( ! $scoped ) {
 		return $query;
 	}
 
 	$query['zion_storefront_query'] = $shop;
 	$query['zion_featured_first']   = $context['zionFeaturedFirst'] ?? false;
-	if ( ! empty( $context['woocommerceOnSale'] ) && empty( $query['post__in'] ) ) {
-		// An empty inclusion list normally means no restriction in WP_Query.
-		$query['post__in'] = array( 0 );
-	}
 	// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- The private shop taxonomy is excluded by the core block's public-taxonomy picker.
 	$query['tax_query'] = array(
 		'relation' => 'AND',

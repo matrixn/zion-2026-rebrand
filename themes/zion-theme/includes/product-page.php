@@ -329,7 +329,7 @@ function zion_theme_product_section( string $key, WC_Product $item, array $profi
 		case 'hero':
 			return zion_theme_product_hero( $item, $profile );
 		case 'description':
-			return wp_kses_post( wpautop( $item->get_description() ) );
+			return trim( $item->get_description() ) ? zion_theme_product_native_block( 'core/post-content', $item ) : '';
 		case 'specifications':
 			ob_start();
 			wc_display_product_attributes( $item );
@@ -366,6 +366,7 @@ function zion_theme_render_product_page( array $attributes, string $content, WP_
 	if ( ! $item ) {
 		return '';
 	}
+	zion_theme_native_product_schema( $item );
 	$profile = zion_theme_product_profile( $item );
 	$show    = $profile['show'];
 	$classes = array( 'zion-product-page', 'alignwide', 'zion-product-page--' . $profile['preset'], 'zion-product-style--' . $profile['style'], 'zion-gallery--' . $profile['side'] );

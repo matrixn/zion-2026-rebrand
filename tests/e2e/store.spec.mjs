@@ -9,11 +9,14 @@ for (const width of [390, 768, 1024, 1440]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
 
     if (width === 390 || width === 1440) {
-      const images = page.locator('.zion-featured img');
-      await expect(images).toHaveCount(4);
-      await images.evaluateAll(elements => {
+      await expect(page.locator('.zion-featured img')).toHaveCount(4);
+      const images = page.locator('.zion-library-collection img');
+      await images.evaluateAll(async elements => {
         for (const image of elements) image.loading = 'eager';
+        await Promise.all(elements.map(image => image.decode()));
       });
+      for (const image of await images.all()) await image.scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollTo(0, 0));
       await expect.poll(() => images.evaluateAll(elements =>
         elements.every(image => image.complete && image.naturalWidth > 0),
       )).toBe(true);

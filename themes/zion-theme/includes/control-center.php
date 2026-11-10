@@ -439,6 +439,22 @@ function zion_theme_render_control_tools( int $id, string $type ): void {
 		<p><a href="<?php echo esc_url( zion_theme_control_url( 'tools' ) ); ?>">Înapoi la import, export și resetare totală</a></p>
 		<?php return; ?>
 	<?php endif; ?>
+	<?php if ( current_user_can( 'publish_pages' ) ) : ?>
+		<h3>Pagini servicii Zion</h3>
+		<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+			<input type="hidden" name="action" value="zion_create_service_pages">
+			<?php wp_nonce_field( 'zion_create_service_pages' ); ?>
+			<button type="submit" class="button">Creează paginile de servicii lipsă</button>
+		</form>
+		<p class="description">Paginile sunt publicate ca blocuri editabile. Paginile existente își păstrează conținutul.</p>
+		<?php
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Display counters from the authorized action's redirect.
+		if ( isset( $_GET['service_created'], $_GET['service_failed'] ) && is_string( $_GET['service_created'] ) && is_string( $_GET['service_failed'] ) ) {
+			echo '<p role="status">' . esc_html( sprintf( 'Pagini create: %1$d. Erori: %2$d.', absint( wp_unslash( $_GET['service_created'] ) ), absint( wp_unslash( $_GET['service_failed'] ) ) ) ) . '</p>';
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		?>
+	<?php endif; ?>
 
 	<hr>
 	<h3>Export și import</h3>

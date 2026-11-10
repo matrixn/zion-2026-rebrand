@@ -47,6 +47,23 @@
 	margin-block: 0;
 }
 
+.zion-home-recent .wp-block-post-template {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+	gap: var(--wp--preset--spacing--regular);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	body:not(.zion-motion-reduced) .zion-hero .zion-blueprint {
+		animation: zion-blueprint-in .6s ease-out;
+	}
+}
+
+@keyframes zion-blueprint-in {
+	from { opacity: .72; transform: translateY(5px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
 .zion-hero,
 .zion-section--grid,
 .zion-footer {

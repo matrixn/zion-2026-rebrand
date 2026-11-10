@@ -4,7 +4,7 @@
 		title: 'Card produs Zion',
 		category: 'widgets',
 		icon: 'cart',
-		attributes: { shop: { type: 'string' }, level: { type: 'integer', default: 2 } },
+		attributes: { shop: { type: 'string' }, level: { type: 'integer', default: 2 }, deferImage: { type: 'boolean', default: false } },
 		usesContext: ['postId', 'postType'],
 		edit: function () {
 			return element.createElement('div', editor.useBlockProps({ className: 'zion-card' }),

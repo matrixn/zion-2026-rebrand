@@ -75,10 +75,11 @@ test('keyboard can open and dismiss the mobile navigation', async ({ page }) => 
 test('Site Editor opens the theme templates and template parts as native blocks', async ({ page }) => {
   test.setTimeout(120_000);
   await page.goto('/wp-login.php');
-  await page.locator('#user_login').fill('admin');
-  await page.locator('#user_pass').fill('password');
-  await page.locator('#wp-submit').click();
-  await page.waitForURL('**/wp-admin/**');
+  const login = await page.request.post('/wp-login.php', {
+    maxRedirects: 0,
+    form: { log: 'admin', pwd: 'password', testcookie: '1' },
+  });
+  expect(login.status()).toBe(302);
 
   const editorViews = [
     ['wp_template', 'front-page', 'core/heading'],
@@ -99,7 +100,12 @@ test('Site Editor opens the theme templates and template parts as native blocks'
     await test.step(slug, async () => {
       await page.goto(`/wp-admin/site-editor.php?p=/${type}/${encodeURIComponent(`zion-theme//${slug}`)}&canvas=edit`);
       const canvas = page.frameLocator('iframe[name="editor-canvas"]');
-      await expect(canvas.locator(`[data-type="${block}"]`).first()).toBeVisible({ timeout: 15_000 });
+      const scope = block === 'core/search' && type === 'wp_template' ? 'main ' : '';
+      await expect(canvas.locator(`${scope}[data-type="${block}"]`).first()).toBeVisible({ timeout: 15_000 });
+      if (slug === 'front-page') {
+        await expect(canvas.locator('[data-type="zion/services-grid"]').first()).toBeVisible();
+        await expect(canvas.locator('[data-type="zion/featured-products"]').first()).toBeVisible();
+      }
       await expect(canvas.getByText('This block contains unexpected or invalid content.')).toHaveCount(0);
     });
   }
