@@ -471,7 +471,7 @@ body.zion-catalog-no-counts .zion-store .woocommerce-result-count,
 	grid-template-columns: minmax(0, 1fr);
 }
 
-.zion-catalog-native.zion-catalog-list .wc-block-product-template > li {
+.zion-catalog-native.zion-catalog-list .wc-block-product-template > li:not(:has(> .zion-product-card)) {
 	display: grid;
 	grid-template-columns: minmax(0, min(30%, 10rem)) minmax(0, 1fr);
 	column-gap: var(--wp--preset--spacing--regular);
@@ -483,7 +483,227 @@ body.zion-catalog-no-counts .zion-store .woocommerce-result-count,
 	margin: 0;
 }
 
-.zion-configured-catalog.zion-catalog-compact .zion-catalog-native .wc-block-product {
+:is(.zion-store, .zion-featured, .zion-catalog-native) .wc-block-product.wc-block-product:has(> .zion-product-card) {
+	padding: 0;
+	background: transparent;
+	border: 0;
+}
+
+.zion-product-card {
+	--card-ink: var(--wp--preset--color--text);
+	--card-subtle: var(--wp--preset--color--muted);
+	--card-surface: var(--wp--preset--color--surface);
+	--card-highlight: var(--wp--preset--color--accent);
+	--card-stroke: color-mix(in srgb, var(--card-highlight) 22%, transparent);
+	--card-inset: clamp(.625rem, 1.6vw, 1.25rem);
+	--card-gap: .65rem;
+	box-sizing: border-box;
+	display: grid;
+	align-content: start;
+	height: 100%;
+	min-width: 0;
+	gap: var(--card-gap);
+	padding: var(--card-inset);
+	border: 1px solid var(--card-stroke);
+	background: var(--card-surface);
+	color: var(--card-ink);
+	overflow-wrap: anywhere;
+}
+
+.zion-product-card--minimal {
+	--card-stroke: transparent;
+}
+
+.zion-product-card--minimal.zion-card-color-dark {
+	background: transparent;
+}
+
+.zion-product-card--premium {
+	--card-stroke: color-mix(in srgb, var(--card-highlight) 45%, transparent);
+	background: linear-gradient(160deg, var(--card-surface), color-mix(in srgb, var(--card-highlight) 12%, var(--card-surface)));
+}
+
+.zion-product-card--compact {
+	--card-inset: var(--wp--preset--spacing--compact);
+	--card-gap: .35rem;
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.zion-card-color-accent {
+	--card-surface: color-mix(in srgb, var(--wp--preset--color--accent) 12%, var(--wp--preset--color--surface));
+}
+
+.zion-card-color-light {
+	--card-surface: var(--wp--preset--color--paper);
+	--card-ink: var(--wp--preset--color--ink);
+	--card-subtle: var(--wp--preset--color--deep);
+	--card-highlight: var(--wp--preset--color--deep);
+}
+
+:is(.zion-product-card--horizontal, .zion-catalog-list .zion-product-card).zion-card-has-image {
+	grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+	align-items: start;
+}
+
+.zion-product-card__body {
+	display: grid;
+	min-width: 0;
+	align-content: start;
+	gap: var(--card-gap);
+}
+
+.zion-product-card__body :is(h2, h3, p) {
+	margin: 0;
+}
+
+.zion-product-card__title :is(h2, h3) {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: var(--zion-card-lines, 2);
+	overflow: hidden;
+	padding: .125rem;
+	font-size: clamp(1rem, 1.7vw, var(--wp--preset--font-size--card));
+	line-height: 1.2;
+}
+
+.zion-product-card__title a {
+	color: var(--card-ink);
+}
+
+.zion-product-card__title a:focus-visible {
+	outline-offset: 0;
+}
+
+.zion-product-card__price {
+	color: var(--card-highlight);
+}
+
+.zion-product-card__price ins {
+	font-weight: 750;
+	text-decoration: none;
+}
+
+.zion-product-card__body :is(.zion-product-card__category, .zion-product-card__brand, .zion-product-card__sku, .zion-product-card__reviews, .zion-product-card__availability) {
+	color: var(--card-subtle);
+	font-size: var(--wp--preset--font-size--small);
+}
+
+.zion-product-card__body :is(.zion-product-card__brand, .zion-product-card__category) a {
+	color: inherit;
+}
+
+.zion-product-card :focus-visible {
+	outline-color: var(--card-highlight);
+}
+
+.zion-product-card__media {
+	position: relative;
+	min-width: 0;
+}
+
+.zion-product-card__image {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	aspect-ratio: var(--zion-card-ratio, 4/3);
+	background: var(--wp--preset--color--surface);
+}
+
+.zion-product-card__image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: var(--zion-card-fit, cover);
+}
+
+.zion-product-card__image .zion-product-card__secondary {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.zion-product-card__image:hover .zion-product-card__secondary {
+		opacity: 1;
+	}
+	.zion-card-zoom .zion-product-card__image:hover img {
+		transform: scale(1.06);
+	}
+	@media (prefers-reduced-motion: no-preference) {
+		body:not(.zion-motion-reduced) .zion-card-zoom .zion-product-card__image img {
+			transition: transform .22s ease;
+		}
+	}
+}
+
+.zion-product-card__badges {
+	position: absolute;
+	inset-block-start: .35rem;
+	inset-inline-start: .35rem;
+	display: grid;
+	gap: .2rem;
+	max-width: calc(100% - .7rem);
+	pointer-events: none;
+}
+
+.zion-card-badges-bottom-start .zion-product-card__badges,
+.zion-card-badges-bottom-end .zion-product-card__badges {
+	inset-block: auto .35rem;
+}
+
+.zion-card-badges-top-end .zion-product-card__badges,
+.zion-card-badges-bottom-end .zion-product-card__badges {
+	inset-inline: auto .35rem;
+}
+
+.zion-product-card__badges span {
+	justify-self: start;
+	padding: .25rem .45rem;
+	background: var(--wp--preset--color--accent);
+	color: var(--wp--preset--color--ink);
+	font: 700 .7rem/1.2 var(--wp--preset--font-family--mono);
+}
+
+.zion-product-card :is(.wp-element-button, .wc-block-components-product-button__button) {
+	display: inline-grid;
+	align-content: center;
+	box-sizing: border-box;
+	min-height: 44px;
+	max-width: 100%;
+	padding: .45rem clamp(.45rem, 1vw, .9rem);
+	white-space: normal;
+	font-size: .9rem;
+}
+
+.zion-card-buttons-small :is(.wp-element-button, .wc-block-components-product-button__button) {
+	font-size: .8rem;
+	padding-inline: .45rem;
+}
+
+.zion-card-buttons-large :is(.wp-element-button, .wc-block-components-product-button__button) {
+	min-height: 52px;
+}
+
+.zion-product-card__dialog {
+	box-sizing: border-box;
+	width: min(32rem, calc(100% - 2rem));
+	max-height: calc(100% - 2rem);
+	padding: var(--wp--preset--spacing--regular);
+	border: 1px solid var(--card-stroke);
+	background: var(--card-surface);
+	color: var(--card-ink);
+}
+
+.zion-product-card__dialog::backdrop {
+	background: color-mix(in srgb, var(--wp--preset--color--ink) 75%, transparent);
+}
+
+.zion-product-card__dialog form {
+	display: flex;
+	justify-content: end;
+}
+
+.zion-configured-catalog.zion-catalog-compact .zion-catalog-native .wc-block-product:not(:has(> .zion-product-card)) {
 	padding: var(--wp--preset--spacing--compact);
 }
 

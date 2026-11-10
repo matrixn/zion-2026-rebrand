@@ -71,10 +71,9 @@ test('Control Center persists validated settings and applies inheritance on publ
 
     await page.goto('/shop/');
     await expect(page.locator('body')).toHaveClass(/zion-catalog-compact/);
-    await expect(page.locator('.zion-store .wc-block-product').first()).toHaveCSS('padding-top', '12px');
+    await expect(page.locator('.zion-store .zion-product-card--compact').first()).toHaveCSS('padding-top', '12px');
     const action = page.locator('.zion-store .wc-block-product .wp-block-woocommerce-product-button').first();
-    await expect(action).toBeAttached();
-    await expect(action).toBeHidden();
+    await expect(action).toHaveCount(0);
 
     await openSection(page, 'software');
     await field(page, 'catalog_actions').selectOption('1');
@@ -205,6 +204,75 @@ test('Control Center persists validated settings and applies inheritance on publ
     expect(JSON.parse(await exportSettings(page))).toEqual(data);
     await importSettings(page, '{"version":1,"settings":{"reading_time":true,"reading_speed":280}}');
     expect(JSON.parse(await exportSettings(page)).global).toEqual({ reading_speed: 280, reading_time: true });
+  } finally {
+    await importSettings(page, original);
+  }
+});
+
+test('all card presets fit desktop and mobile and store overrides control the shared renderer', async ({ page }) => {
+  test.setTimeout(150_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const card = page.locator('.zion-catalog-native .zion-product-card').first();
+
+  try {
+    for (const preset of ['minimal', 'classic', 'premium', 'compact', 'horizontal']) {
+      await importSettings(page, JSON.stringify({ version: 2, global: { card_preset: preset }, shops: {}, items: {} }));
+      for (const width of [390, 1440]) {
+        await page.setViewportSize({ width, height: 850 });
+        await page.goto('/magazin-3d/');
+        await expect(card).toHaveClass(new RegExp(`zion-product-card--${preset}\\b`));
+        await expect(card.locator('.zion-product-card__image img')).toBeVisible();
+        await expect(card.getByRole('heading')).toBeVisible();
+        await expect(card.locator('.zion-product-card__cart')).toBeVisible();
+        const tracks = await card.evaluate(element => getComputedStyle(element).gridTemplateColumns.split(' ').length);
+        expect(tracks).toBe(preset === 'horizontal' ? 2 : 1);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+      }
+    }
+
+    await openSection(page, '3d');
+    await field(page, 'card_preset').selectOption('premium');
+    await field(page, 'card_ratio').selectOption('3/4');
+    await field(page, 'card_fit').selectOption('contain');
+    await field(page, 'card_color').selectOption('light');
+    await field(page, 'card_buttons').selectOption('large');
+    await field(page, 'card_title_lines').selectOption('1');
+    await field(page, 'card_badge_place').selectOption('bottom-end');
+    await field(page, 'card_order').fill('price, title, quick_view');
+    await field(page, 'card_show_quick_view').selectOption('show');
+    await field(page, 'catalog_actions').selectOption('0');
+    await field(page, 'card_show_wishlist').selectOption('show');
+    await field(page, 'card_show_compare').selectOption('show');
+    await save(page);
+
+    await page.goto('/magazin-3d/');
+    await expect(card).toHaveClass(/zion-product-card--premium.*zion-card-color-light.*zion-card-badges-bottom-end/);
+    await expect(card.locator('.zion-product-card__image')).toHaveCSS('aspect-ratio', '3 / 4');
+    await expect(card.locator('.zion-product-card__image img')).toHaveCSS('object-fit', 'contain');
+    await expect(card.getByRole('heading')).toHaveCSS('-webkit-line-clamp', '1');
+    expect(await card.locator('.zion-product-card__body > div').evaluateAll(elements => elements.slice(0, 3).map(element => element.className)))
+      .toEqual(['zion-product-card__price', 'zion-product-card__title', 'zion-product-card__quick_view']);
+    await expect(card.locator('.zion-product-card__cart, .zion-product-card__wishlist, .zion-product-card__compare')).toHaveCount(0);
+    const quickView = card.getByRole('link', { name: 'Quick View' });
+    await quickView.focus();
+    await page.keyboard.press('Enter');
+    const dialog = card.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'Închide' })).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+    await expect(quickView).toBeFocused();
+    await card.getByRole('heading').getByRole('link').click();
+    await expect(page.getByRole('button', { name: 'Add to cart', exact: true })).toBeVisible();
+
+    await page.goto('/magazin-software/');
+    await expect(card).toHaveClass(/zion-product-card--horizontal/);
+    await expect(card.locator('.zion-product-card__cart')).toBeVisible();
+    await expect(card.getByRole('link', { name: 'Quick View' })).toHaveCount(0);
+    await page.goto('/shop/');
+    await expect(page.locator('.zion-store .zion-product-card--horizontal').first()).toBeVisible();
   } finally {
     await importSettings(page, original);
   }

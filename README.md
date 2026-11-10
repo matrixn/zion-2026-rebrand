@@ -4,12 +4,13 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 0.5** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 0.6** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 0.5** cu taxonomia `zion_shop`, clasificare individuală și în masă, previzualizare, dry-run și jurnal.
+- [x] **Zion Core 0.6** cu taxonomia `zion_shop`, clasificare individuală și în masă, previzualizare, dry-run și jurnal.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
+- [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Catalog demonstrativ** cu două vitrine, patru produse fictive ilustrate și fluxul WooCommerce nativ pentru produs, coș și checkout.
 - [x] **Mediu local și de test** cu WordPress, WooCommerce, Docker, wp-env, WP-CLI și date demo încărcate printr-o comandă repetabilă.
 - [x] **Calitate și CI** cu build CSS, WPCS, PHPUnit, verificări de integrare, teste Playwright și workflow GitHub Actions.
@@ -23,7 +24,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] **0.3 · Zion Control Center.** Registru unic, panou nativ WordPress, validare, resetare, import/export JSON și teste pentru precedență, permisiuni și migrarea schemei.
 - [x] **0.4 · Administrarea vitrinelor.** Clasificare individuală și în masă, filtrare după categorie și stare, previzualizare, dry-run, jurnal și layout separat pe vitrină.
 - [x] **0.5 · Catalog și filtre.** Layout și filtre pe vitrină, sortare și paginare nativă, teste pentru combinații și benchmark local cu 1.000 de produse demo.
-- [ ] **0.6 · Carduri de produs.** Adaugă preseturi și controale pentru imagini, badge-uri, informații și acțiuni, inclusiv pentru produsele variabile, grupate și externe.
+- [x] **0.6 · Carduri de produs.** Cinci preseturi, controale de afișare și acțiuni WooCommerce verificate pentru produse simple, virtuale, descărcabile, variabile, grupate și externe.
 - [ ] **0.7 · Pagina de produs.** Adaugă preseturi 3D și Software, componente reordonabile și configurare per produs, cu verificări pentru variante și disponibilitate.
 - [ ] **0.8 · Navigație, footer, blog și pagini.** Completează căutarea, contul și mini-coșul, navigația extinsă, footerul Zion Nexus și opțiunile editoriale.
 - [ ] **0.9 · Homepage și bibliotecă de componente.** Completează secțiunile pentru cele șapte servicii, ecosistemul Zion, recenzii și articole recente.
@@ -49,8 +50,8 @@ Comanda compilează CSS-ul și creează în `build/` două arhive independente. 
 
 | Arhivă | Instalare în WordPress |
 | --- | --- |
-| `zion-theme-0.5.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
-| `zion-core-0.5.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine. |
+| `zion-theme-0.6.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
+| `zion-core-0.6.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine. |
 
 Arhivele includ fișierele necesare rulării. Datele demonstrative, testele, sursele CSS și dependențele de dezvoltare se află în repo. Directorul `build/` este ignorat de Git.
 
@@ -83,6 +84,14 @@ Panoul controlează prezentarea și comportamentele Zion, precum densitatea și 
 În editorul unui produs, bifează **Magazin 3D**, **Magazin Software** sau ambele în câmpul **Vitrine Zion**. Pentru inventar, folosește coloana și filtrul de clasificare din lista WooCommerce. Pentru operații în masă, deschide **Produse → Vitrine Zion**. Acolo poți crea și paginile lipsă, păstrând pagina Shop configurată în WooCommerce.
 
 [Instrucțiuni pentru produse noi, clasificare în masă și configurarea vitrinelor](docs/storefronts.md)
+
+## Cardurile produselor
+
+Alege **Aspect → Zion Theme → Carduri produse** pentru valorile globale. **Magazin 3D** și **Magazin Software** pot moșteni sau suprascrie fiecare control. Preseturile sunt **Minimal**, **Classic**, **Premium**, **Compact** și **Horizontal**. Pentru ordinea informațiilor și acțiunilor, introdu cheile separate prin virgulă. Elementele omise rămân disponibile în ordinea lor implicită, după cele enumerate. Imaginea are propriile controale de încadrare, iar badge-urile pot fi mutate între colțuri.
+
+Blocul **Card produs Zion** folosește aceeași prezentare în vitrine, arhivele catalogului, căutarea WooCommerce, homepage și produse asociate. Șabloanele deja personalizate în Site Editor își păstrează blocurile salvate și pot folosi cardul Zion în interiorul unui **Product Template**. Quick View afișează un rezumat și deschide pagina produsului prin „Vezi detalii”. Configurarea variațiilor și cumpărarea folosesc WooCommerce.
+
+Wishlist și Compare afișează controalele modulelor YITH compatibile când shortcode-ul lor este înregistrat. Alege modul de afișare prin shortcode în setările extensiei pentru ca Zion să controleze poziția și vizibilitatea pe card. Pentru alți furnizori, tema expune filtrele `zion_theme_card_wishlist_html` și `zion_theme_card_compare_html`, care primesc HTML-ul furnizorului implicit și produsul WooCommerce. [Wishlist](https://github.com/yithemes/yith-woocommerce-wishlist/blob/master/includes/class-yith-wcwl-shortcode.php) · [Compare](https://github.com/wp-plugins/yith-woocommerce-compare/blob/master/includes/class.yith-woocompare-frontend.php)
 
 ## Test de catalog cu 1.000 de produse
 

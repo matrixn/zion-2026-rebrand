@@ -469,7 +469,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 				<?php
 				$effective       = Zion_Theme_Settings::resolve( $config, $key, $shop, $type, $id );
 				$inherited       = Zion_Theme_Settings::resolve( $inherited_config, $key, $shop, $type, $id )['value'];
-				$free_input      = in_array( $field['type'], array( 'int', 'slugs' ), true );
+				$free_input      = in_array( $field['type'], array( 'int', 'slugs', 'ordered_keys' ), true );
 				$default_label   = $free_input ? $field['default'] : $field['allowed'][ is_bool( $field['default'] ) ? (int) $field['default'] : $field['default'] ];
 				$effective_label = $free_input ? $effective['value'] : $field['allowed'][ is_bool( $effective['value'] ) ? (int) $effective['value'] : $effective['value'] ];
 				$value           = isset( $values[ $key ] ) ? ( is_bool( $values[ $key ] ) ? (string) (int) $values[ $key ] : (string) $values[ $key ] ) : '';
@@ -480,7 +480,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 					<td>
 					<?php if ( 'int' === $field['type'] ) : ?>
 						<input id="<?php echo esc_attr( $control_id ); ?>" name="values[<?php echo esc_attr( $key ); ?>]" type="number" min="<?php echo esc_attr( (string) $field['allowed']['min'] ); ?>" max="<?php echo esc_attr( (string) $field['allowed']['max'] ); ?>" value="<?php echo esc_attr( $value ); ?>" placeholder="Moștenește" aria-describedby="<?php echo esc_attr( $control_id . '-help' ); ?>">
-					<?php elseif ( 'slugs' === $field['type'] ) : ?>
+				<?php elseif ( $free_input ) : ?>
 						<input id="<?php echo esc_attr( $control_id ); ?>" name="values[<?php echo esc_attr( $key ); ?>]" type="text" class="regular-text" maxlength="180" value="<?php echo esc_attr( $value ); ?>" placeholder="Moștenește" aria-describedby="<?php echo esc_attr( $control_id . '-help' ); ?>">
 					<?php else : ?>
 						<select id="<?php echo esc_attr( $control_id ); ?>" name="values[<?php echo esc_attr( $key ); ?>]" data-zion-inherited="<?php echo esc_attr( (string) ( is_bool( $inherited ) ? (int) $inherited : $inherited ) ); ?>" aria-describedby="<?php echo esc_attr( $control_id . '-help' ); ?>">

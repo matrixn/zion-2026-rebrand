@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Zion Core
  * Description: Product classification and storefront tools for Zion.
- * Version: 0.5.0
+ * Version: 0.6.0
  * Requires at least: 6.9
  * Requires PHP: 8.3
  * Text Domain: zion-core

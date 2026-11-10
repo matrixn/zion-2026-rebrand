@@ -325,7 +325,7 @@ final class Zion_Theme_Settings {
 			),
 			'catalog_density'         => array(
 				'label'       => 'Densitatea cardurilor',
-				'description' => 'Reglează spațiul din interiorul cardurilor Zion pentru catalog, vitrine și colecțiile temei.',
+				'description' => 'Păstrează densitatea colecțiilor vechi. Cardurile Zion folosesc Compact când nu este ales un preset explicit.',
 				'section'     => 'cards',
 				'type'        => 'choice',
 				'default'     => 'standard',
@@ -336,7 +336,7 @@ final class Zion_Theme_Settings {
 				'contexts'    => array( 'global', 'shop', 'page' ),
 			),
 			'catalog_actions'         => array(
-				'label'       => 'Acțiuni rapide pe carduri',
+				'label'       => 'Buton WooCommerce pe carduri',
 				'description' => 'Controlează butonul WooCommerce de pe card. Formularul din pagina produsului rămâne disponibil.',
 				'section'     => 'cards',
 				'type'        => 'bool',
@@ -421,6 +421,166 @@ final class Zion_Theme_Settings {
 				'contexts'    => array( 'global' ),
 			),
 		);
+		static $cards  = null;
+		$cards       ??= self::card_fields();
+		return $fields + $cards;
+	}
+
+	/**
+	 * Ordered card elements and their Control Center labels.
+	 *
+	 * @return array
+	 */
+	public static function card_elements(): array {
+		return array(
+			'category'     => 'Categorie',
+			'brand'        => 'Brand',
+			'title'        => 'Titlu',
+			'sku'          => 'SKU',
+			'price'        => 'Preț',
+			'rating'       => 'Rating',
+			'reviews'      => 'Număr de recenzii',
+			'description'  => 'Descriere scurtă',
+			'availability' => 'Disponibilitate',
+			'cart'         => 'Buton WooCommerce',
+			'quick_view'   => 'Quick View',
+			'wishlist'     => 'Wishlist',
+			'compare'      => 'Compare',
+			'details'      => 'Vezi detalii',
+		);
+	}
+
+	/**
+	 * Define the card controls in the same registry and option as other theme settings.
+	 *
+	 * @return array
+	 */
+	private static function card_fields(): array {
+		$common  = array(
+			'section'  => 'cards',
+			'contexts' => array( 'global', 'shop', 'page' ),
+		);
+		$choices = array(
+			'preset'      => array(
+				'Preset card',
+				'Schimbă aspectul și elementele implicite. Controalele explicite au prioritate.',
+				'classic',
+				array(
+					'minimal'    => 'Minimal',
+					'classic'    => 'Classic',
+					'premium'    => 'Premium',
+					'compact'    => 'Compact',
+					'horizontal' => 'Horizontal',
+				),
+			),
+			'ratio'       => array(
+				'Raport imagine',
+				'Raportul cadrului în care este afișată imaginea produsului.',
+				'4/3',
+				array(
+					'1/1'  => '1:1',
+					'4/3'  => '4:3',
+					'3/4'  => '3:4',
+					'16/9' => '16:9',
+				),
+			),
+			'fit'         => array(
+				'Încadrare imagine',
+				'Umple cadrul sau afișează integral fotografia.',
+				'cover',
+				array(
+					'cover'   => 'Umple cadrul',
+					'contain' => 'Imagine integrală',
+				),
+			),
+			'color'       => array(
+				'Culori card',
+				'Folosește paleta Zion din theme.json.',
+				'dark',
+				array(
+					'dark'   => 'Antracit',
+					'accent' => 'Accent lime',
+					'light'  => 'Deschis',
+				),
+			),
+			'buttons'     => array(
+				'Mărime butoane',
+				'Schimbă spațierea butoanelor și păstrează o țintă de minimum 44 px.',
+				'regular',
+				array(
+					'small'   => 'Mică',
+					'regular' => 'Normală',
+					'large'   => 'Mare',
+				),
+			),
+			'badge_place' => array(
+				'Poziție badge-uri',
+				'Alege colțul imaginii în care apar badge-urile.',
+				'top-start',
+				array(
+					'top-start'    => 'Sus stânga',
+					'top-end'      => 'Sus dreapta',
+					'bottom-start' => 'Jos stânga',
+					'bottom-end'   => 'Jos dreapta',
+				),
+			),
+			'title_lines' => array(
+				'Linii maxime pentru titlu',
+				'Limita vizuală păstrează titlul complet disponibil pentru cititoarele de ecran.',
+				'2',
+				array(
+					'1' => '1',
+					'2' => '2',
+					'3' => '3',
+					'4' => '4',
+				),
+			),
+		);
+		$fields  = array();
+		foreach ( $choices as $key => $choice ) {
+			$fields[ 'card_' . $key ] = $common + array(
+				'label'       => $choice[0],
+				'description' => $choice[1],
+				'type'        => 'choice',
+				'default'     => $choice[2],
+				'allowed'     => $choice[3],
+			);
+		}
+		$elements             = self::card_elements();
+		$fields['card_order'] = $common + array(
+			'label'       => 'Ordinea elementelor din card',
+			'description' => 'Separă cheile prin virgulă. Elementele omise păstrează ordinea implicită după cele enumerate. Chei: ' . implode( ', ', array_keys( $elements ) ) . '.',
+			'type'        => 'ordered_keys',
+			'default'     => implode( ',', array_keys( $elements ) ),
+			'allowed'     => $elements,
+		);
+		unset( $elements['cart'] );
+		foreach ( $elements + array(
+			'image'          => 'Imagine',
+			'sale_price'     => 'Preț redus',
+			'badge_sale'     => 'Badge reducere',
+			'badge_featured' => 'Badge recomandat',
+			'badge_stock'    => 'Badge stoc epuizat',
+			'placeholder'    => 'Placeholder WooCommerce',
+			'zoom'           => 'Zoom la hover',
+			'secondary'      => 'A doua imagine la hover',
+		) as $key => $label ) {
+			$fields[ 'card_show_' . $key ] = $common + array(
+				'label'       => $label,
+				'description' => match ( $key ) {
+					'wishlist', 'compare' => 'Acțiunea este afișată dacă un modul compatibil este activ.',
+					'sale_price' => 'Când este ascuns, cardul afișează prețul obișnuit. Prețul de cumpărare este stabilit de WooCommerce.',
+					default => 'Urmează presetul sau alege explicit dacă elementul apare pe card.',
+				},
+				'type'        => 'choice',
+				'default'     => 'preset',
+				'allowed'     => array(
+					'preset' => 'Conform presetului',
+					'show'   => 'Afișează',
+					'hide'   => 'Ascunde',
+				),
+			);
+		}
 		return $fields;
 	}
 
@@ -477,6 +637,11 @@ final class Zion_Theme_Settings {
 					}
 					$valid = is_string( $value ) && preg_match( '/^[a-z0-9_-]{1,28}(?:,[a-z0-9_-]{1,28})*$/D', $value ) &&
 						count( explode( ',', $value ) ) <= $field['allowed']['max'];
+					break;
+				case 'ordered_keys':
+					$keys  = is_string( $value ) ? array_map( 'trim', explode( ',', $value ) ) : array();
+					$valid = $keys && count( $keys ) === count( array_unique( $keys ) ) && ! array_diff( $keys, array_keys( $field['allowed'] ) );
+					$value = implode( ',', $keys );
 					break;
 				default:
 					$valid = is_string( $value ) && array_key_exists( $value, $field['allowed'] );

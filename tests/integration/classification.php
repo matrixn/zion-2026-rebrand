@@ -61,6 +61,7 @@ try {
 		'Software license'      => array( new WC_Product_Simple(), array( 'software' ), true, false, 'publish' ),
 		'Variable item'         => array( new WC_Product_Variable(), array( '3d' ), false, false, 'publish' ),
 		'Grouped item'          => array( new WC_Product_Grouped(), array( 'software' ), false, false, 'publish' ),
+		'External item'         => array( new WC_Product_External(), array( 'software' ), false, false, 'publish' ),
 		'Dual store item'       => array( new WC_Product_Simple(), array( '3d', 'software' ), true, true, 'publish' ),
 		'Draft item'            => array( new WC_Product_Simple(), array( '3d', 'software' ), false, false, 'draft' ),
 	);
@@ -88,6 +89,11 @@ try {
 		if ( 'Physical 3D' === $zion_core_label ) {
 			$zion_core_product->set_manage_stock( true );
 			$zion_core_product->set_stock_quantity( 9 );
+			$zion_core_product->set_sale_price( '18' );
+		}
+		if ( $zion_core_product instanceof WC_Product_External ) {
+			$zion_core_product->set_product_url( 'https://example.test/affiliate' );
+			$zion_core_product->set_button_text( 'Affiliate fixture action' );
 		}
 		if ( $zion_core_product instanceof WC_Product_Grouped ) {
 			$zion_core_product->set_children( array( $zion_core_ids['Physical 3D'], $zion_core_ids['STL file'] ) );
@@ -99,6 +105,7 @@ try {
 			$zion_core_variation->set_parent_id( $zion_core_id );
 			$zion_core_variation->set_status( 'publish' );
 			$zion_core_variation->set_regular_price( '24' );
+			$zion_core_variation->set_sale_price( '19' );
 			$zion_core_ids['Variation child'] = $zion_core_variation->save();
 			WC_Product_Variable::sync( $zion_core_id );
 		}
@@ -134,6 +141,64 @@ try {
 		$zion_core_expected_software                      = $zion_core_visible && in_array( 'software', $zion_core_shops, true );
 		$zion_core_checks[ $zion_core_label . ' appears only in the expected public catalogs' ] =
 			$zion_core_in_3d === $zion_core_expected_3d && $zion_core_in_software === $zion_core_expected_software;
+		if ( $zion_core_visible ) {
+			$zion_core_product = wc_get_product( $zion_core_ids[ $zion_core_label ] );
+			$zion_core_button  = zion_theme_card_cart( $zion_core_product );
+			$zion_core_action  = new WP_HTML_Tag_Processor( $zion_core_button );
+			$zion_core_checks[ $zion_core_label . ' card uses the native WooCommerce action' ] =
+				str_contains( $zion_core_button, 'wp-block-woocommerce-product-button' ) &&
+				$zion_core_action->next_tag( array( 'class_name' => 'wc-block-components-product-button__button' ) ) &&
+				(string) $zion_core_product->get_id() === $zion_core_action->get_attribute( 'data-product_id' ) &&
+				$zion_core_action->has_class( 'product_type_' . $zion_core_product->get_type() ) &&
+				( 'A' === $zion_core_action->get_tag()
+					? $zion_core_product->add_to_cart_url() === $zion_core_action->get_attribute( 'href' )
+					: $zion_core_action->has_class( 'ajax_add_to_cart' ) ) &&
+				str_contains( $zion_core_button, esc_html( $zion_core_product->add_to_cart_text() ) );
+		}
+	}
+	$zion_core_discounted = wc_get_product( $zion_core_ids['Physical 3D'] );
+	$zion_core_checks['The card can show the regular price while WooCommerce keeps the discount'] =
+		str_contains( zion_theme_card_price( $zion_core_discounted, true ), '<del' ) &&
+		! str_contains( zion_theme_card_price( $zion_core_discounted, false ), '<del' ) &&
+		'18' === $zion_core_discounted->get_price();
+	foreach ( array(
+		'Variable item' => '19',
+		'Grouped item'  => '18',
+	) as $zion_core_label => $zion_core_sale ) {
+		$zion_core_discounted = wc_get_product( $zion_core_ids[ $zion_core_label ] );
+		$zion_core_regular    = wp_strip_all_tags( zion_theme_card_price( $zion_core_discounted, false ) );
+		$zion_core_checks[ $zion_core_label . ' retains its WooCommerce regular price presentation' ] =
+			str_contains( wp_strip_all_tags( zion_theme_card_price( $zion_core_discounted, true ) ), $zion_core_sale ) &&
+			str_contains( $zion_core_regular, '24' ) && ! str_contains( $zion_core_regular, $zion_core_sale );
+	}
+
+	$zion_core_media_product = wc_get_product( $zion_core_ids['Physical 3D'] );
+	$zion_core_media_product->set_image_id( wc_get_product( wc_get_product_id_by_sku( 'ZION-DEMO-3D-01' ) )->get_image_id() );
+	$zion_core_media_product->set_gallery_image_ids( array( wc_get_product( wc_get_product_id_by_sku( 'ZION-DEMO-3D-02' ) )->get_image_id() ) );
+	$zion_core_media_settings = array_fill_keys( array( 'image', 'placeholder', 'secondary', 'badge_sale', 'badge_featured', 'badge_stock' ), true );
+	$zion_core_media_markup   = zion_theme_card_image( $zion_core_media_product, $zion_core_media_settings, $zion_core_media_product->get_permalink() );
+	$zion_core_checks['Native product gallery and sale data drive the hover image and badge'] =
+		str_contains( $zion_core_media_markup, 'zion-product-card__secondary' ) && str_contains( $zion_core_media_markup, 'Reducere' );
+	$zion_core_media_settings['secondary']  = false;
+	$zion_core_media_settings['badge_sale'] = false;
+	$zion_core_media_markup                 = zion_theme_card_image( $zion_core_media_product, $zion_core_media_settings, $zion_core_media_product->get_permalink() );
+	$zion_core_checks['Image and badge controls hide only their configured card elements'] =
+		str_contains( $zion_core_media_markup, 'zion-product-card__image' ) &&
+		! str_contains( $zion_core_media_markup, 'zion-product-card__secondary' ) &&
+		! str_contains( $zion_core_media_markup, 'Reducere' );
+	$zion_core_brand_product = $zion_core_media_product->get_id();
+	$zion_core_checks['The card leaves the brand empty when no term is assigned'] = '' === zion_theme_card_brand( $zion_core_brand_product );
+	$zion_core_brand_label = 'Zion Card Brand Fixture ' . $zion_core_brand_product;
+	$zion_core_brand       = wp_insert_term( $zion_core_brand_label, 'product_brand' );
+	$zion_core_checks['An assigned WooCommerce brand links to its native archive'] = false;
+	if ( ! is_wp_error( $zion_core_brand ) ) {
+		try {
+			wp_set_object_terms( $zion_core_brand_product, $zion_core_brand['term_id'], 'product_brand' );
+			$zion_core_checks['An assigned WooCommerce brand links to its native archive'] =
+				str_contains( zion_theme_card_brand( $zion_core_brand_product ), '>' . $zion_core_brand_label . '</a>' );
+		} finally {
+			wp_delete_term( $zion_core_brand['term_id'], 'product_brand' );
+		}
 	}
 	$zion_core_unchanged = true;
 	foreach ( $zion_core_commerce_fields as $zion_core_id => $zion_core_fields ) {

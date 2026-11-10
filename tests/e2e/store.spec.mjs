@@ -64,3 +64,12 @@ test('both storefronts are isolated and a software product reaches the native ca
   await expect(page.getByRole('form', { name: 'Checkout', exact: true })).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('the shared card adds a simple product through the native WooCommerce button', async ({ page }) => {
+  await page.goto('/magazin-software/');
+  const card = page.locator('.zion-product-card').filter({ has: page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }) });
+  await card.getByRole('button', { name: /Add to cart/ }).click();
+  await expect(card.getByRole('link', { name: /view cart/i })).toBeVisible();
+  await card.getByRole('link', { name: /view cart/i }).click();
+  await expect(page.getByRole('link', { name: 'Zion Catalog Tools', exact: true }).last()).toBeVisible();
+});

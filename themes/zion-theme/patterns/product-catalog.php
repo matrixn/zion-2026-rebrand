@@ -18,10 +18,7 @@
 <!-- wp:woocommerce/product-collection {"queryId":72,"query":{"postType":"product","perPage":12,"inherit":true,"isProductCollectionBlock":true},"displayLayout":{"type":"flex","columns":3},"align":"wide"} -->
 <div class="wp-block-woocommerce-product-collection alignwide">
 	<!-- wp:woocommerce/product-template {"className":"zion-product-grid"} -->
-		<!-- wp:woocommerce/product-image {"isDescendentOfQueryLoop":true,"aspectRatio":"4/3"} /-->
-		<!-- wp:post-title {"level":2,"isLink":true,"fontSize":"card"} /-->
-		<!-- wp:woocommerce/product-price {"isDescendentOfQueryLoop":true} /-->
-		<!-- wp:woocommerce/product-button {"isDescendentOfQueryLoop":true} /-->
+		<!-- wp:zion/product-card /-->
 	<!-- /wp:woocommerce/product-template -->
 	<!-- wp:query-pagination {"className":"zion-pagination","layout":{"type":"flex","justifyContent":"center"}} -->
 		<!-- wp:query-pagination-previous {"label":"Înapoi"} /-->

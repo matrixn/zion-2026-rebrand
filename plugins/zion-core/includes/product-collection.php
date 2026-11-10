@@ -350,9 +350,7 @@ function zion_core_render_storefront_collection( array $options, array $display 
 		'zionFeaturedFirst'        => 'featured' === $sort,
 	);
 
-	$cards      = zion_core_storefront_block(
-		'woocommerce/product-template',
-		array(),
+	$card_blocks =
 		zion_core_storefront_block(
 			'woocommerce/product-image',
 			array(
@@ -369,9 +367,13 @@ function zion_core_render_storefront_collection( array $options, array $display 
 			)
 		) .
 		zion_core_storefront_block( 'woocommerce/product-price', array( 'isDescendentOfQueryLoop' => true ) ) .
-		zion_core_storefront_block( 'woocommerce/product-button', array( 'isDescendentOfQueryLoop' => true ) )
+		zion_core_storefront_block( 'woocommerce/product-button', array( 'isDescendentOfQueryLoop' => true ) );
+	$cards       = zion_core_storefront_block(
+		'woocommerce/product-template',
+		array(),
+		apply_filters( 'zion_core_product_card_blocks', $card_blocks, $shop )
 	);
-	$pagination = zion_core_storefront_block(
+	$pagination  = zion_core_storefront_block(
 		'query-pagination',
 		array(
 			'layout' => array(
@@ -383,12 +385,12 @@ function zion_core_render_storefront_collection( array $options, array $display 
 		zion_core_storefront_block( 'query-pagination-numbers' ) .
 		zion_core_storefront_block( 'query-pagination-next', array( 'label' => __( 'Mai departe', 'zion-core' ) ) )
 	);
-	$empty      = zion_core_storefront_block(
+	$empty       = zion_core_storefront_block(
 		'woocommerce/product-collection-no-results',
 		array(),
 		zion_core_storefront_block( 'paragraph', array(), '<p>' . esc_html__( 'Nu există produse pentru selecția curentă.', 'zion-core' ) . '</p>' )
 	);
-	$classes    = array(
+	$classes     = array(
 		'wp-block-woocommerce-product-collection',
 		'zion-catalog-native',
 		'zion-catalog-' . $shop,

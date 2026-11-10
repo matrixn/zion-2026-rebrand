@@ -96,6 +96,16 @@ final class ZionThemeSettingsTest extends TestCase {
 	}
 
 	/**
+	 * Preserve a partial explicit card order in the submitted sequence.
+	 */
+	public function test_normalizes_card_order_and_preserves_the_sequence(): void {
+		self::assertSame(
+			array( 'card_order' => 'price,title,quick_view' ),
+			Zion_Theme_Settings::normalize_scope( array( 'card_order' => 'price, title, quick_view' ), Zion_Theme_Settings::fields( 'shop' ), true )
+		);
+	}
+
+	/**
 	 * Reject malformed data instead of coercing it.
 	 *
 	 * @param array  $input Input values.
@@ -122,6 +132,9 @@ final class ZionThemeSettingsTest extends TestCase {
 			array( array( 'reading_time' => 'false' ), 'global', true ),
 			array( array( 'reading_time' => '1' ), 'global', false ),
 			array( array( 'reading_time' => array() ), 'global', true ),
+			array( array( 'card_order' => 'price,title,price' ), 'shop', true ),
+			array( array( 'card_order' => 'price,unknown' ), 'shop', false ),
+			array( array( 'card_ratio' => '2/3' ), 'shop', true ),
 		);
 	}
 

@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/includes/class-zion-theme-settings.php';
 require_once __DIR__ . '/includes/settings-runtime.php';
+require_once __DIR__ . '/includes/product-card.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/includes/control-center.php';
 }
@@ -28,6 +29,16 @@ add_action( 'after_setup_theme', 'zion_theme_setup' );
 function zion_theme_enqueue_styles(): void {
 	$theme = wp_get_theme();
 	wp_enqueue_style( 'zion-theme', get_theme_file_uri( 'assets/dist/zion.css' ), array(), $theme->get( 'Version' ) );
+	wp_enqueue_script(
+		'zion-card',
+		get_theme_file_uri( 'assets/blocks/product-card.js' ),
+		array(),
+		$theme->get( 'Version' ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
 }
 add_action( 'wp_enqueue_scripts', 'zion_theme_enqueue_styles' );
 
