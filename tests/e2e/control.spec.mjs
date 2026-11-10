@@ -523,6 +523,83 @@ test('site chrome, journal pagination and page overrides use the native editor a
   }
 });
 
+test('local WooCommerce checkout applies shipping, taxes and a coupon and creates a COD order', async ({ page, browser, baseURL }) => {
+  test.setTimeout(90_000);
+  const testSite = new URL(baseURL);
+  test.skip(testSite.port !== '8917' || !['localhost', '127.0.0.1', '[::1]'].includes(testSite.hostname),
+    'Commerce fixtures are restricted to the isolated tests port.');
+  await login(page);
+  const nonce = await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text();
+  const headers = { 'X-WP-Nonce': nonce };
+  const cleanup = [];
+  const wc = async (method, path, data) => {
+    const response = await page.request.fetch('/wp-json/wc/v3/' + path, { method, headers, ...(data ? { data } : {}) });
+    expect(response.ok(), await response.text()).toBe(true);
+    return response.json();
+  };
+  const guest = await browser.newContext({ baseURL });
+  const code = 'zion-release-' + randomUUID().slice(0, 8);
+  try {
+    const taxes = 'settings/general/woocommerce_calc_taxes';
+    const originalTaxes = (await wc('GET', taxes)).value;
+    cleanup.push(() => wc('PUT', taxes, { value: originalTaxes }));
+    await wc('PUT', taxes, { value: 'yes' });
+    const cod = await wc('GET', 'payment_gateways/cod');
+    cleanup.push(() => wc('PUT', 'payment_gateways/cod', { enabled: cod.enabled }));
+    await wc('PUT', 'payment_gateways/cod', { enabled: true });
+    const tax = await wc('POST', 'taxes', { country: 'RO', rate: '10.0000', name: 'Zion test tax', shipping: false });
+    cleanup.push(() => wc('DELETE', `taxes/${tax.id}?force=true`));
+    const zone = await wc('POST', 'shipping/zones', { name: 'Zion test shipping', order: 0 });
+    cleanup.push(() => wc('DELETE', `shipping/zones/${zone.id}?force=true`));
+    await wc('PUT', `shipping/zones/${zone.id}/locations`, [{ code: 'RO', type: 'country' }]);
+    const shipping = await wc('POST', `shipping/zones/${zone.id}/methods`, {
+      method_id: 'flat_rate', enabled: true, settings: { cost: '8', title: 'Zion local flat rate', tax_status: 'none' },
+    });
+    const coupon = await wc('POST', 'coupons', { code, discount_type: 'fixed_cart', amount: '5.00' });
+    cleanup.push(() => wc('DELETE', `coupons/${coupon.id}?force=true`));
+    const [product] = await wc('GET', 'products?sku=ZION-DEMO-3D-01');
+
+    const base = '/wp-json/wc/store/v1/';
+    const session = await guest.request.get(base + 'cart');
+    expect(session.ok()).toBe(true);
+    const token = session.headers()['cart-token'];
+    expect(token).toBeTruthy();
+    const store = async (route, data) => {
+      const response = await guest.request.post(base + route, { headers: { 'Cart-Token': token }, data });
+      expect(response.ok(), await response.text()).toBe(true);
+      return response.json();
+    };
+    const address = {
+      first_name: 'Zion', last_name: 'Test', address_1: 'Strada Exemplu 1', city: 'București',
+      state: 'B', postcode: '010101', country: 'RO',
+    };
+    const billing = { ...address, email: `${code}@example.test`, phone: '0700000000' };
+    await store('cart/add-item', { id: product.id, quantity: 1 });
+    await store('cart/update-customer', { billing_address: billing, shipping_address: address });
+    await store('cart/apply-coupon', { code });
+    const cart = await store('cart/select-shipping-rate', { package_id: 0, rate_id: `flat_rate:${shipping.instance_id}` });
+    expect(Number(cart.totals.total_discount)).toBeGreaterThan(0);
+    expect(Number(cart.totals.total_shipping)).toBeGreaterThan(0);
+    expect(Number(cart.totals.total_tax)).toBeGreaterThan(0);
+    const order = await store('checkout', { billing_address: billing, shipping_address: address, payment_method: 'cod' });
+    cleanup.push(() => wc('DELETE', `orders/${order.order_id}?force=true`));
+    expect(order.payment_result.payment_status).toBe('success');
+    const saved = await wc('GET', `orders/${order.order_id}`);
+    expect(saved.payment_method).toBe('cod');
+    expect(saved.line_items.map(item => item.product_id)).toContain(product.id);
+    expect(saved.coupon_lines.map(item => item.code)).toContain(code);
+    expect(saved.shipping_lines.map(item => item.method_id)).toContain('flat_rate');
+    expect(Number(saved.total_tax)).toBeGreaterThan(0);
+  } finally {
+    await guest.close();
+    const errors = [];
+    for (const restore of cleanup.reverse()) {
+      try { await restore(); } catch (error) { errors.push(error); }
+    }
+    expect(errors).toEqual([]);
+  }
+});
+
 test('a subscriber cannot open, import, export or reset theme settings', async ({ page, browser }) => {
   test.setTimeout(60_000);
   await login(page);

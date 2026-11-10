@@ -761,6 +761,21 @@ body.zion-catalog-no-counts .zion-store .woocommerce-result-count,
 	min-height: 44px;
 }
 
+.zion-catalog-native .zion-catalog-facets > .screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.zion-catalog-native .zion-catalog-facets > .wp-block-woocommerce-product-filters {
+	margin-block-start: 0;
+}
+
 .zion-catalog-native .wc-block-product-filters__overlay-content h3 {
 	font-size: var(--wp--preset--font-size--body);
 }
@@ -1114,6 +1129,10 @@ body:has(.zion-product-page--sticky) {
 
 .zion-header-search:not([open]) > form {
 	display: none;
+}
+
+.wc-block-mini-cart__drawer[aria-hidden="true"] {
+	visibility: hidden;
 }
 
 .zion-header-tools :is(.wp-block-woocommerce-customer-account, .wc-block-mini-cart) {

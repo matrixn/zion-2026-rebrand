@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 0.9** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.0.0** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 0.9** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.0.0** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -31,14 +31,26 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] **0.7 · Pagina de produs.** Patru preseturi, configurare globală, pe vitrină și pe produs, date editoriale în Zion Core și cumpărare nativă verificată pe mobil și desktop.
 - [x] **0.8 · Navigație, footer, blog și pagini.** Header configurabil, căutare și mini-coș WooCommerce, footer Zion Nexus și opțiuni editoriale cu suprascrieri per articol sau pagină.
 - [x] **0.9 · Homepage și bibliotecă de componente.** Secțiuni Gutenberg, pagini de servicii, colecții WooCommerce și verificări de performanță, accesibilitate și SEO.
-  - [ ] Creează paginile pentru printare și proiectare 3D, software personalizat, SaaS, pluginuri și integrări, aplicații Windows/Linux și integrări AI.
-  - [ ] Creează blocuri dinamice și shortcode-uri pentru grile, recomandări, produse noi, reduceri, produse asociate, servicii, CTA și recenzii.
-- [ ] **1.0 · Migrare și lansare.**
-  - [ ] Inventariază paginile, widgeturile Elementor/XStore, shortcode-urile, extensiile WooCommerce, URL-urile și metadatele SEO.
-  - [ ] Reconstruiește paginile în blocuri, clasifică produsele și verifică păstrarea URL-urilor pe staging.
-  - [ ] Validează tipurile de produs, descărcările, contul, checkoutul, plățile, livrarea, taxele, cupoanele, comenzile, HPOS și abonamentele unde sunt folosite.
-  - [ ] Măsoară Core Web Vitals, verifică accesibilitatea și compatibilitatea cu cache-ul WooCommerce.
-  - [ ] Pregătește backupul, raportul de diferențe, planul de rollback și verificările post-deploy.
+  - [x] Creează paginile pentru printare și proiectare 3D, software personalizat, SaaS, pluginuri și integrări, aplicații Windows/Linux și integrări AI.
+  - [x] Creează blocuri dinamice și shortcode-uri pentru grile, recomandări, produse noi, reduceri, produse asociate, servicii, CTA și recenzii.
+- [x] **1.0 · Pregătirea migrării.** Audit JSON, plan validat, dry-run, backup verificat prin SHA-256, jurnal și rollback pe date demo.
+  - [x] Checkout COD cu livrare, taxe și cupon. Verificare HPOS, permisiuni de descărcare și accesibilitatea mini-coșului și a filtrelor.
+  - [x] Raport automat de diferențe, crawler URL/SEO, plan de rollback, checklist și arhivele 1.0.0.
+  - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
+  - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
+  - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Migrare XStore și Elementor
+
+[Procedura de migrare și checklistul de lansare](docs/migration.md) acoperă auditul, reconstrucția, aprobarea planului, backupul, acceptanța WooCommerce și revenirea. [Raportul 1.0.0](docs/release-1.0.md) consemnează validarea locală și verificările rămase pe staging. Producția rămâne în afara acestei faze.
+
+```sh
+npm run demo:test
+npm run test:migration
+npm run test:lighthouse
+```
+
+Repetiția locală scrie auditul, dry-run-ul și rezumatul în log. Pentru rapoarte separate, capturează logul și rulează `node scripts/collect-migration-reports.mjs <log>`. Rapoartele Lighthouse se află în `build/lighthouse/`.
 
 ## Instalare din ZIP
 
@@ -53,8 +65,8 @@ Comanda compilează CSS-ul și creează în `build/` două arhive independente. 
 
 | Arhivă | Instalare în WordPress |
 | --- | --- |
-| `zion-theme-0.9.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
-| `zion-core-0.9.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine, pagini de produs și colecții. |
+| `zion-theme-1.0.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
+| `zion-core-1.0.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine, pagini de produs și colecții. |
 
 Arhivele includ fișierele necesare rulării. Datele demonstrative, testele, sursele CSS și dependențele de dezvoltare se află în repo. Directorul `build/` este ignorat de Git.
 

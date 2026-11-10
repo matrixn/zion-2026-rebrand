@@ -32,6 +32,7 @@ jobs:
       - run: npm run env:start
       - run: npm run demo:test
       - run: npm run test:integration
+      - run: npm run test:migration
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v7

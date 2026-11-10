@@ -13,6 +13,10 @@
     "demo:scale:clean": "wp-env run tests-cli wp eval-file wp-content/zion-scripts/catalog-scale.php clean",
     "test:catalog-scale": "node scripts/benchmark-catalog.mjs",
     "test:integration": "wp-env run tests-cli wp eval-file wp-content/zion-tests/integration/catalog.php",
+    "test:migration": "wp-env run tests-cli wp eval-file wp-content/zion-tests/integration/migration.php",
+    "migration:diff": "node scripts/compare-migration.mjs",
+    "migration:crawl": "node scripts/crawl-migration.mjs",
+    "test:lighthouse": "node scripts/lighthouse-release.mjs",
     "test:e2e": "playwright test",
     "test:visual:update": "playwright test --grep @visual --update-snapshots"
   },

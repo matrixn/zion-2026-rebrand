@@ -53,6 +53,7 @@ for (const width of [390, 1440]) {
     await expect(dialog.getByRole('link', { name: 'Zion Catalog Tools', exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(dialog).toBeHidden();
+    await expect(page.locator('.wc-block-mini-cart__drawer')).toHaveCSS('visibility', 'hidden');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
   });
 }

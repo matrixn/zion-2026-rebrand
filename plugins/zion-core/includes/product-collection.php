@@ -423,7 +423,10 @@ function zion_core_render_storefront_collection( array $options, array $display 
 	$style   = sprintf( '--zion-desktop:%d;--zion-tablet:%d;--zion-mobile:%d', $columns, max( 1, min( 4, (int) $display['tablet'] ) ), max( 1, min( 2, (int) $display['mobile'] ) ) );
 	$content = '<div class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '"><div class="zion-catalog-shell">';
 	if ( $facets ) {
-		$content .= '<aside class="zion-catalog-facets" aria-label="' . esc_attr__( 'Filtre catalog', 'zion-core' ) . '">' . $facets . '</aside>';
+		$heading_id = wp_unique_id( 'zion-catalog-filters-' );
+		$content   .= '<aside class="zion-catalog-facets" aria-labelledby="' . esc_attr( $heading_id ) . '">' .
+			'<h2 class="screen-reader-text" id="' . esc_attr( $heading_id ) . '">' . esc_html__( 'Filtre catalog', 'zion-core' ) . '</h2>' .
+			$facets . '</aside>';
 	}
 	$content .= '<div class="zion-catalog-results"><div class="zion-catalog-toolbar">' .
 		zion_core_storefront_sort_form( $url, $sort, $page_key ) . '<!-- zion-catalog-count --></div>' .
