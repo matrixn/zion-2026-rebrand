@@ -2005,6 +2005,8 @@ body:has(.zion-product-page--sticky) {
 }
 
 /* Technical backdrop on every band of the service landings. */
+.zion-service-main { overflow-x: clip; }
+
 .zion-services-overview > .zion-overview-band {
 	--circuit-line: color-mix(in srgb, var(--overview-fg, var(--wp--preset--color--ink)) 8%, transparent);
 	--circuit-signal: color-mix(in srgb, var(--wp--preset--color--accent) 48%, var(--wp--preset--color--ink));

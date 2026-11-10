@@ -98,7 +98,7 @@ test('Nexus footer and service circuit adapt to viewport and reduced motion', as
     await expect(footer.locator('.zion-nexus-column')).toHaveCount(4);
     await expect(footer.getByRole('link', { name: 'PORNEȘTE UN PROIECT' })).toHaveAttribute('href', /\/contact\/$/);
     await expect(footer.getByRole('link', { name: 'ANPC' })).toHaveAttribute('href', 'https://anpc.ro/');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
 
     const hero = '.zion-services-overview > .zion-overview-hero';
     const content = '.zion-services-overview > .zion-overview-band:nth-child(2)';
