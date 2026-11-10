@@ -88,7 +88,7 @@ test('both storefronts are isolated and a software product reaches the native ca
 });
 
 test('the shared card adds a simple product through the native WooCommerce button', async ({ page }) => {
-  await page.goto('/magazin-software/');
+  await page.goto('/magazin-software/', { waitUntil: 'networkidle' });
   const card = page.locator('.zion-product-card').filter({ has: page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }) });
   await card.getByRole('button', { name: /Adaugă în coș/ }).click();
   await expect(card.getByRole('link', { name: /vezi coșul/i })).toBeVisible();

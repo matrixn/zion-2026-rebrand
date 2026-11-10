@@ -40,6 +40,7 @@ for (const width of [390, 1440]) {
     await search.fill('Zion');
     await search.press('Enter');
     await expect(page).toHaveURL(/post_type=product/);
+    await page.waitForLoadState('networkidle');
     const card = page.locator('.zion-product-card').filter({ has: page.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }) });
     await expect(card).toBeVisible();
     await card.getByRole('button', { name: /Adaugă în coș/i }).click();

@@ -86,7 +86,7 @@ test('Control Center persists validated settings and applies inheritance on publ
     await field(page, 'catalog_page_size').fill('1');
     await field(page, 'catalog_load_mode').selectOption('manual');
     await save(page);
-    await page.goto('/magazin-software/');
+    await page.goto('/magazin-software/', { waitUntil: 'networkidle' });
     const shopAction = page.locator('.zion-catalog-native .wp-block-woocommerce-product-button').first();
     await expect(shopAction).toBeVisible();
     await expect(page.locator('.zion-catalog-native.zion-catalog-list.zion-catalog-drawer.alignwide')).toBeVisible();

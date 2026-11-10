@@ -52,6 +52,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Navigația implicită urmează structura Zion 3D, cu submeniuri pentru servicii și software. Linkurile interne folosesc paginile publicate pe instalarea curentă. Meniul rămâne editabil în Site Editor.
 - [x] Comandă de reconstrucție pentru paginile de pe staging: după un export al bazei de date, rulează `wp eval-file scripts/staging-editorial.php` pentru previzualizare și adaugă `apply` doar pe clonă. Comanda păstrează URL-urile și folosește blocuri native; nu transferă CSS, JavaScript, formulare sau widgeturi Elementor.
 - [x] Pe staging au fost reconstruite 20 de pagini, inclusiv cele șapte servicii, paginile de prezentare software, FAQ și cele două vitrine. Pagina Contact oferă e-mail și telefon. Verificarea checkoutului se oprește înainte de trimiterea unei comenzi.
+- [x] Testele din browser verifică spinnerul pentru filtre și adăugarea în coș după încărcarea scripturilor WooCommerce, plus istoricul și derularea cu un catalog de 1.000 de produse demo.
 
 ## Migrare XStore și Elementor
 

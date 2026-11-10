@@ -5,7 +5,7 @@ const cards = page => catalog(page).locator('.wc-block-product');
 const matching = '/magazin-3d/?categories=prototipuri-demo&min_price=80&max_price=100&filter_stock_status=instock&orderby=price-desc';
 
 test('native filters combine with sorting, reset and browser history', async ({ page }) => {
-  await page.goto('/magazin-3d/?orderby=price');
+  await page.goto('/magazin-3d/?orderby=price', { waitUntil: 'networkidle' });
   await expect(cards(page)).toHaveCount(2);
   const category = catalog(page).getByRole('checkbox', { name: /Prototipuri demo/ });
   let releaseFilter;
@@ -25,7 +25,7 @@ test('native filters combine with sorting, reset and browser history', async ({ 
   await expect(cards(page)).toHaveCount(1);
   await expect(catalog(page).getByRole('heading', { name: 'Suport modular 3D' })).toBeVisible();
 
-  await page.goto(matching);
+  await page.goto(matching, { waitUntil: 'networkidle' });
   await expect(cards(page)).toHaveCount(1);
   await expect(catalog(page).getByRole('status')).toHaveText('1 produs');
   await expect(catalog(page).getByRole('heading', { name: 'Zion Catalog Tools' })).toHaveCount(0);
@@ -51,7 +51,7 @@ test('native filters combine with sorting, reset and browser history', async ({ 
 });
 
 test('an empty price intersection can be reset', async ({ page }) => {
-  await page.goto('/magazin-software/?min_price=9999');
+  await page.goto('/magazin-software/?min_price=9999', { waitUntil: 'networkidle' });
   await expect(cards(page)).toHaveCount(0);
   await expect(catalog(page)).toContainText('Nu există produse pentru selecția curentă.');
   await catalog(page).getByRole('link', { name: 'Resetează filtrele' }).click();
@@ -76,7 +76,7 @@ for (const width of [390, 768, 1024, 1440]) {
 
 test('the mobile filter drawer opens and dismisses by keyboard', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 850 });
-  await page.goto('/magazin-3d/');
+  await page.goto('/magazin-3d/', { waitUntil: 'networkidle' });
   const open = catalog(page).getByRole('button', { name: 'Filtrează produsele' });
   const dialog = catalog(page).getByRole('dialog', { name: 'Filtre de produse' });
   await open.focus();
