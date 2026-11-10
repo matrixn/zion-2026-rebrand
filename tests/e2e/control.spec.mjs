@@ -79,10 +79,17 @@ test('Control Center persists validated settings and applies inheritance on publ
     await openSection(page, 'software');
     await field(page, 'catalog_actions').selectOption('1');
     await field(page, 'product_meta').selectOption('0');
+    await field(page, 'catalog_layout').selectOption('list');
+    await field(page, 'catalog_category_filter').selectOption('0');
     await save(page);
     await page.goto('/magazin-software/');
     const classicAction = page.locator('.woocommerce ul.products li.product .button[data-product_id]').first();
     await expect(classicAction).toBeVisible();
+    await expect(page.locator('.zion-storefront-list')).toBeVisible();
+    await expect(page.getByLabel('Categorie produse')).toHaveCount(0);
+    await page.goto('/magazin-3d/');
+    await expect(page.locator('.zion-storefront-list')).toHaveCount(0);
+    await expect(page.getByLabel('Categorie produse')).toBeVisible();
 
     const pages = await (await page.request.get('/wp-json/wp/v2/pages?slug=magazin-software')).json();
     await openSection(page, 'tools', pages[0].id);

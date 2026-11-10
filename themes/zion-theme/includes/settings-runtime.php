@@ -116,6 +116,20 @@ function zion_theme_control_shortcode( string $output, string $tag, array|string
 add_filter( 'do_shortcode_tag', 'zion_theme_control_shortcode', 10, 3 );
 
 /**
+ * Resolve the display of a Zion catalog without changing WooCommerce settings.
+ *
+ * @param array  $display Plugin display settings.
+ * @param string $shop Storefront slug.
+ * @return array
+ */
+function zion_theme_storefront_display( array $display, string $shop ): array {
+	$display['layout']          = zion_theme_setting( 'catalog_layout', $shop );
+	$display['category_filter'] = $display['category_filter'] && zion_theme_setting( 'catalog_category_filter', $shop );
+	return $display;
+}
+add_filter( 'zion_core_catalog_display', 'zion_theme_storefront_display', 10, 2 );
+
+/**
  * Skip optional blocks on public product pages before they query or render.
  *
  * @param string|null $output A prior override.

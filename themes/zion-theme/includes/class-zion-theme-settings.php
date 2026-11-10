@@ -22,7 +22,7 @@ final class Zion_Theme_Settings {
 	 */
 	public static function registry(): array {
 		static $fields = array(
-			'motion'               => array(
+			'motion'                  => array(
 				'label'       => 'Mișcare',
 				'description' => 'Urmează preferința vizitatorului sau dezactivează întotdeauna tranzițiile decorative Zion.',
 				'section'     => 'design',
@@ -34,7 +34,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global' ),
 			),
-			'highlight_shop'       => array(
+			'highlight_shop'          => array(
 				'label'       => 'Evidențiază vitrina activă',
 				'description' => 'Evidențiază linkul vitrinei în meniul Zion, inclusiv pe produsele atribuite acelei vitrine.',
 				'section'     => 'header',
@@ -46,7 +46,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global' ),
 			),
-			'back_to_top'          => array(
+			'back_to_top'             => array(
 				'label'       => 'Link Înapoi sus',
 				'description' => 'Adaugă în footer un link care readuce vizitatorul la începutul paginii.',
 				'section'     => 'footer',
@@ -58,7 +58,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global' ),
 			),
-			'catalog_counts'       => array(
+			'catalog_counts'          => array(
 				'label'       => 'Numărul de rezultate',
 				'description' => 'Afișează numărul de rezultate în cataloagele native și în vitrinele Zion.',
 				'section'     => 'woo',
@@ -70,7 +70,31 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
 			),
-			'catalog_density'      => array(
+			'catalog_category_filter' => array(
+				'label'       => 'Filtru de categorie',
+				'description' => 'Afișează filtrul după categoriile WooCommerce pe pagina dedicată a vitrinei Zion.',
+				'section'     => 'woo',
+				'type'        => 'bool',
+				'default'     => true,
+				'allowed'     => array(
+					'0' => 'Ascunde',
+					'1' => 'Afișează',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_layout'          => array(
+				'label'       => 'Layout vitrină',
+				'description' => 'Alege grilă sau listă pentru cataloagele din shortcode-ul Zion.',
+				'section'     => 'woo',
+				'type'        => 'choice',
+				'default'     => 'grid',
+				'allowed'     => array(
+					'grid' => 'Grilă',
+					'list' => 'Listă',
+				),
+				'contexts'    => array( 'global', 'shop', 'page' ),
+			),
+			'catalog_density'         => array(
 				'label'       => 'Densitatea cardurilor',
 				'description' => 'Reglează spațiul din interiorul cardurilor Zion pentru catalog, vitrine și colecțiile temei.',
 				'section'     => 'cards',
@@ -82,7 +106,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
 			),
-			'catalog_actions'      => array(
+			'catalog_actions'         => array(
 				'label'       => 'Acțiuni rapide pe carduri',
 				'description' => 'Controlează butonul WooCommerce de pe card. Formularul din pagina produsului rămâne disponibil.',
 				'section'     => 'cards',
@@ -94,7 +118,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
 			),
-			'product_meta'         => array(
+			'product_meta'            => array(
 				'label'       => 'Metadate vizibile',
 				'description' => 'Controlează zona cu SKU și categorii din șablonul de produs Zion.',
 				'section'     => 'product',
@@ -106,7 +130,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global', 'shop', 'product' ),
 			),
-			'product_related'      => array(
+			'product_related'         => array(
 				'label'       => 'Produse asociate',
 				'description' => 'Controlează afișarea colecției native WooCommerce de produse asociate din șablonul Zion.',
 				'section'     => 'product',
@@ -118,7 +142,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global', 'shop', 'product' ),
 			),
-			'reading_time'         => array(
+			'reading_time'            => array(
 				'label'       => 'Timp estimat de citire',
 				'description' => 'Adaugă estimarea lângă data publicării pe pagina unui articol.',
 				'section'     => 'blog',
@@ -130,7 +154,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global' ),
 			),
-			'reading_speed'        => array(
+			'reading_speed'           => array(
 				'label'       => 'Cuvinte pe minut',
 				'description' => 'Viteza folosită la calculul timpului estimat de citire.',
 				'section'     => 'blog',
@@ -143,7 +167,7 @@ final class Zion_Theme_Settings {
 				'contexts'    => array( 'global' ),
 				'requires'    => 'reading_time',
 			),
-			'page_home_link'       => array(
+			'page_home_link'          => array(
 				'label'       => 'Link către Acasă',
 				'description' => 'Adaugă un link deasupra titlului în șablonul paginilor standard. Se aplică și paginilor vitrinelor.',
 				'section'     => 'pages',
@@ -155,7 +179,7 @@ final class Zion_Theme_Settings {
 				),
 				'contexts'    => array( 'global', 'shop', 'page' ),
 			),
-			'disable_emoji_assets' => array(
+			'disable_emoji_assets'    => array(
 				'label'       => 'Oprește compatibilitatea emoji',
 				'description' => 'Elimină scriptul și stilurile WordPress pentru compatibilitatea emoji din paginile publice. Caracterele emoji pot fi afișate în continuare de browser.',
 				'section'     => 'performance',

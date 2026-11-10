@@ -383,6 +383,38 @@ body.zion-catalog-no-counts .zion-store .woocommerce-result-count,
 	margin: 0;
 }
 
+.zion-storefront-filters {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--wp--preset--spacing--compact);
+	padding: var(--wp--preset--spacing--regular);
+	margin-block-end: var(--wp--preset--spacing--regular);
+	background: var(--wp--preset--color--surface);
+}
+
+.zion-storefront-filters select {
+	max-width: 100%;
+	padding: .5rem;
+	border: 1px solid var(--wp--preset--color--deep);
+	color: var(--wp--preset--color--text);
+	background: var(--wp--preset--color--ink);
+	font: inherit;
+}
+
+.zion-storefront-list .woocommerce ul.products li.product > a:first-child {
+	display: grid;
+	grid-template-columns: minmax(0, min(30%, 10rem)) minmax(0, 1fr);
+	column-gap: var(--wp--preset--spacing--regular);
+	align-items: start;
+	align-content: start;
+}
+
+.zion-storefront-list .woocommerce ul.products li.product > a:first-child img {
+	grid-row: span 2;
+	margin: 0;
+}
+
 .zion-product-layout {
 	display: grid;
 	grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);

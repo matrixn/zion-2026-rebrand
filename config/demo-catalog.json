@@ -1,16 +1,4 @@
 {
-  "shops": {
-    "3d": {
-      "title": "Magazin 3D",
-      "description": "Piese funcționale, prototipuri și modele pentru printare.",
-      "slug": "magazin-3d"
-    },
-    "software": {
-      "title": "Magazin Software",
-      "description": "Pluginuri și instrumente pentru aplicații și magazine online.",
-      "slug": "magazin-software"
-    }
-  },
   "products": [
     {
       "sku": "ZION-DEMO-3D-01",

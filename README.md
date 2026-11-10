@@ -4,11 +4,12 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 0.3** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 0.4** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 0.1** cu taxonomia `zion_shop` și shortcode-ul `[zion_catalog]`. Un produs poate apărea în oricare dintre cele două vitrine sau în ambele.
+- [x] **Zion Core 0.4** cu taxonomia `zion_shop`, câmpul din editorul produsului, identificarea produselor neclasificate și clasificare în masă cu previzualizare, dry-run și jurnal.
+- [x] **Vitrine configurabile separat** cu pagini editabile, filtru de categorie WooCommerce, sortare nativă și layout grilă sau listă din Zion Control Center.
 - [x] **Catalog demonstrativ** cu două vitrine, patru produse fictive ilustrate și fluxul WooCommerce nativ pentru produs, coș și checkout.
 - [x] **Mediu local și de test** cu WordPress, WooCommerce, Docker, wp-env, WP-CLI și date demo încărcate printr-o comandă repetabilă.
 - [x] **Calitate și CI** cu build CSS, WPCS, PHPUnit, verificări de integrare, teste Playwright și workflow GitHub Actions.
@@ -20,7 +21,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 
 - [x] **0.2 · Tema nativă.** Șabloane pentru căutare, arhive și WooCommerce, presetări în editor, navigație la tastatură și verificări la 390, 768, 1024 și 1440 px.
 - [x] **0.3 · Zion Control Center.** Registru unic, panou nativ WordPress, validare, resetare, import/export JSON și teste pentru precedență, permisiuni și migrarea schemei.
-- [ ] **0.4 · Administrarea vitrinelor.** Completează clasificarea produselor cu identificarea celor neclasificate și operații în masă cu previzualizare și jurnal.
+- [x] **0.4 · Administrarea vitrinelor.** Clasificare individuală și în masă, filtrare după categorie și stare, previzualizare, dry-run, jurnal și layout separat pe vitrină.
 - [ ] **0.5 · Catalog și filtre.** Adaugă layout configurabil, filtre native WooCommerce și teste pentru combinațiile de filtre, sortare și paginare. Măsoară performanța cu cel puțin 1.000 de produse demo.
 - [ ] **0.6 · Carduri de produs.** Adaugă preseturi și controale pentru imagini, badge-uri, informații și acțiuni, inclusiv pentru produsele variabile, grupate și externe.
 - [ ] **0.7 · Pagina de produs.** Adaugă preseturi 3D și Software, componente reordonabile și configurare per produs, cu verificări pentru variante și disponibilitate.
@@ -48,8 +49,8 @@ Comanda compilează CSS-ul și creează în `build/` două arhive independente. 
 
 | Arhivă | Instalare în WordPress |
 | --- | --- |
-| `zion-theme-0.3.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
-| `zion-core-0.1.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine. |
+| `zion-theme-0.4.0.zip` | **Aspect → Teme → Adaugă o temă → Încarcă tema**, apoi activează Zion Theme. |
+| `zion-core-0.4.0.zip` | **Module → Adaugă un modul → Încarcă modulul**, apoi activează Zion Core. Activează WooCommerce pentru vitrine. |
 
 Arhivele includ fișierele necesare rulării. Datele demonstrative, testele, sursele CSS și dependențele de dezvoltare se află în repo. Directorul `build/` este ignorat de Git.
 
@@ -77,6 +78,12 @@ Panoul controlează prezentarea și comportamentele Zion, precum densitatea și 
 
 În **Instrumente**, descarcă exportul JSON înainte de modificări ample. Importul validează configurația integral înainte de a o înlocui. Override-urile folosesc ID-uri locale, deci importă-le în aceeași instalare. Poți reseta o secțiune din propriul formular sau confirma resetarea tuturor setărilor din **Instrumente**. Vezi [arhitectura](docs/architecture.md) pentru schema și regulile de moștenire.
 
+## Clasificarea produselor
+
+În editorul unui produs, bifează **Magazin 3D**, **Magazin Software** sau ambele în câmpul **Vitrine Zion**. Pentru inventar, folosește coloana și filtrul de clasificare din lista WooCommerce. Pentru operații în masă, deschide **Produse → Vitrine Zion**. Acolo poți crea și paginile lipsă, păstrând pagina Shop configurată în WooCommerce.
+
+[Instrucțiuni pentru produse noi, clasificare în masă și configurarea vitrinelor](docs/storefronts.md)
+
 ## Verificări
 
 ```sh
@@ -94,6 +101,8 @@ Folosește `npm run test:visual:update` pentru actualizarea intenționată a cap
 Matricea Playwright verifică 12 rute publice la 390, 768, 1024 și 1440 px. Suita mai verifică șabloanele în Site Editor, meniul mobil la tastatură, filtrarea nativă în catalog și traseul produs → coș → checkout.
 
 Testele Control Center rulează după cele ale vitrinei, în baza de date izolată wp-env. Verifică salvarea, moștenirea, efectele publice, importul/exportul, resetarea și accesul unui abonat. Pentru a rula doar aceste teste, folosește `npm run test:e2e -- --project=control --no-deps`.
+
+Suita de clasificare verifică tipurile WooCommerce, relațiile taxonomiei și fluxul de administrare. Testul de browser rulează după cele ale Control Center și lasă o intrare de audit în baza locală de teste.
 
 ## Flux de livrare
 

@@ -27,6 +27,19 @@ wp( array( 'pagename' => 'magazin-3d' ) );
 zion_core_test_assert( wp_is_block_theme(), 'Zion is active as a block theme' );
 zion_core_test_assert( is_object_in_taxonomy( 'product', 'zion_shop' ), 'Shop taxonomy is attached to products' );
 zion_core_test_assert( (bool) get_page_by_path( 'magazin-3d' ) && (bool) get_page_by_path( 'magazin-software' ), 'Both storefront pages exist' );
+$zion_core_native_shop         = (int) get_option( 'woocommerce_shop_page_id' );
+$zion_core_existing_pages      = array(
+	'3d'       => get_page_by_path( 'magazin-3d' )->ID,
+	'software' => get_page_by_path( 'magazin-software' )->ID,
+);
+$zion_core_provisioned         = zion_core_create_shop_pages();
+$zion_core_current_native_shop = (int) get_option( 'woocommerce_shop_page_id' );
+zion_core_test_assert(
+	$zion_core_existing_pages === $zion_core_provisioned &&
+	$zion_core_native_shop === $zion_core_current_native_shop &&
+	! in_array( $zion_core_native_shop, $zion_core_existing_pages, true ),
+	'Provisioning keeps existing storefronts and the single native WooCommerce Shop'
+);
 
 $zion_core_3d       = do_shortcode( '[zion_catalog shop="3d"]' );
 $zion_core_software = do_shortcode( '[zion_catalog shop="software"]' );
@@ -57,4 +70,5 @@ try {
 
 zion_core_test_assert( $zion_core_hidden, 'WooCommerce hidden products stay hidden' );
 zion_core_test_assert( $zion_core_visible, 'A visible product can belong to both stores' );
+require __DIR__ . '/classification.php';
 WP_CLI::success( 'Catalog integration passed.' );

@@ -3,7 +3,7 @@
 | Director | Rol |
 | --- | --- |
 | `themes/zion-theme/` | Block Theme cu `theme.json` v3, șabloane HTML, template parts, patterns și CSS propriu. |
-| `plugins/zion-core/` | Taxonomia `zion_shop` și shortcode-ul `zion_catalog`. |
+| `plugins/zion-core/` | Taxonomia `zion_shop`, shortcode-ul `zion_catalog`, instrumentul de clasificare și jurnalul. |
 | `config/` | Date demonstrative fictive, independente de codul temei. |
 | `scripts/` | Build CSS și seed prin WP-CLI. |
 | `tests/` | PHPUnit, integrare WordPress/WooCommerce și Playwright. |
@@ -31,9 +31,11 @@ Formularele folosesc nonce și capabilitatea `edit_theme_options`. Pentru un ove
 
 ### Catalog
 
-WooCommerce rămâne sursa pentru produse, vizibilitate, prețuri, stoc, coș și checkout. Zion Core adaugă o clasificare independentă de categoriile și tipurile WooCommerce. Creează termenii cu slugurile `3d` și `software` în **Products → Zion shops** dacă instanța nu folosește datele demo. Selectează unul sau ambii termeni din editorul produsului. Un produs virtual sau descărcabil poate aparține oricărei vitrine.
+WooCommerce rămâne sursa pentru produse, vizibilitate, prețuri, stoc, coș și checkout. Zion Core inițializează termenii `3d` și `software` și expune clasificarea în editorul și lista de produse. Un produs virtual sau descărcabil poate aparține oricărei vitrine.
 
-Pe o pagină WordPress, inserează un bloc Shortcode cu `[zion_catalog shop="3d"]` sau `[zion_catalog shop="software" limit="12" columns="3"]`. Folosește slugurile `magazin-3d` și `magazin-software` pentru linkurile din tema implicită. Shortcode-ul delegă listarea și paginarea către WooCommerce și adaugă filtrul de taxonomie doar pe durata acelei randări. Fiecare pagină de vitrină folosește o singură listare cu paginare.
+Pe o pagină WordPress, inserează un bloc Shortcode cu `[zion_catalog shop="3d"]` sau `[zion_catalog shop="software" limit="12" columns="3"]`. Folosește slugurile `magazin-3d` și `magazin-software` pentru linkurile din tema implicită. Shortcode-ul păstrează interogarea WooCommerce pentru vizibilitate, sortare și paginare și adaugă relația cu vitrina și categoria selectată doar pe durata randării. Tema transmite setările de layout și filtru din Control Center. Fiecare pagină de vitrină folosește o singură listare cu paginare.
+
+Planurile de clasificare au cel mult 20 de produse și sunt asociate operatorului timp de 15 minute prin Transients API. Dry-run calculează aceleași rezultate în memorie. La confirmare, Zion Core verifică din nou permisiunile și relațiile fiecărui produs, înregistrează intenția într-o intrare WordPress privată și salvează rezultatul fiecărei scrieri. Jurnalul folosește tipul intern `zion_shop_journal` și API-urile WordPress pentru conținut. [Instrucțiuni pentru vitrine](storefronts.md)
 
 Seed-ul rulează doar în WP-CLI, cu tipul de mediu WordPress `local`. Creează paginile și produsele lipsă, identifică produsele după SKU, importă ilustrațiile demonstrative și setează numele site-ului și moneda demo. Folosește-l în instanțele dedicate acestui repo.
 

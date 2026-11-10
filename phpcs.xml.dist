@@ -6,6 +6,14 @@
   <file>tests</file>
   <arg name="extensions" value="php"/>
   <rule ref="WordPress"/>
+  <rule ref="WordPress.WP.Capabilities">
+    <properties>
+      <property name="custom_capabilities" type="array">
+        <element value="manage_woocommerce"/>
+        <element value="edit_products"/>
+      </property>
+    </properties>
+  </rule>
   <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
     <properties>
       <property name="prefixes" type="array">

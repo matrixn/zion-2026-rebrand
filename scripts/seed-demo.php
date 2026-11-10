@@ -76,29 +76,13 @@ if ( ! get_page_by_path( 'jurnal-prototip-zion', OBJECT, 'post' ) ) {
 	}
 }
 
-foreach ( $zion_core_fixture['shops'] as $zion_core_shop => $zion_core_details ) {
-	if ( ! term_exists( $zion_core_shop, 'zion_shop' ) ) {
-		$zion_core_term = wp_insert_term( $zion_core_details['title'], 'zion_shop', array( 'slug' => $zion_core_shop ) );
-		if ( is_wp_error( $zion_core_term ) ) {
-			WP_CLI::error( $zion_core_term->get_error_message() );
-		}
-	}
-
-	if ( ! get_page_by_path( $zion_core_details['slug'] ) ) {
-		$zion_core_page = wp_insert_post(
-			array(
-				'post_type'    => 'page',
-				'post_status'  => 'publish',
-				'post_name'    => $zion_core_details['slug'],
-				'post_title'   => $zion_core_details['title'],
-				'post_content' => '<!-- wp:paragraph --><p>' . esc_html( $zion_core_details['description'] ) . '</p><!-- /wp:paragraph -->' .
-					'<!-- wp:shortcode -->[zion_catalog shop="' . esc_attr( $zion_core_shop ) . '"]<!-- /wp:shortcode -->',
-			),
-			true
-		);
-		if ( is_wp_error( $zion_core_page ) ) {
-			WP_CLI::error( $zion_core_page->get_error_message() );
-		}
+$zion_core_shop_ids = zion_core_shop_term_ids( true );
+if ( is_wp_error( $zion_core_shop_ids ) ) {
+	WP_CLI::error( $zion_core_shop_ids->get_error_message() );
+}
+foreach ( zion_core_create_shop_pages() as $zion_core_page ) {
+	if ( is_wp_error( $zion_core_page ) ) {
+		WP_CLI::error( $zion_core_page->get_error_message() );
 	}
 }
 
@@ -114,7 +98,7 @@ foreach ( $zion_core_fixture['products'] as $zion_core_item ) {
 		$zion_core_product->set_status( 'publish' );
 		$zion_core_product_id = $zion_core_product->save();
 	}
-	$zion_core_terms = wp_set_object_terms( $zion_core_product_id, $zion_core_item['shop'], 'zion_shop', true );
+	$zion_core_terms = wp_set_object_terms( $zion_core_product_id, $zion_core_shop_ids[ $zion_core_item['shop'] ], 'zion_shop', true );
 	if ( is_wp_error( $zion_core_terms ) ) {
 		WP_CLI::error( $zion_core_terms->get_error_message() );
 	}
