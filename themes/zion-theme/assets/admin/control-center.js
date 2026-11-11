@@ -15,6 +15,23 @@ function initZionForm(form) {
     const choices = [...picker.querySelectorAll('[data-zion-design]')];
     const figure = picker.querySelector('figure');
     const image = figure.querySelector('img');
+    const opener = figure.querySelector('a');
+    const dialog = picker.querySelector('dialog');
+    if (dialog && typeof dialog.showModal === 'function') {
+      opener.setAttribute('aria-haspopup', 'dialog');
+      opener.addEventListener('click', event => {
+        event.preventDefault();
+        const large = dialog.querySelector('img');
+        large.src = image.src;
+        large.alt = image.alt;
+        dialog.querySelector('.zion-preview-caption').textContent = figure.querySelector('figcaption').textContent;
+        dialog.showModal();
+        dialog.querySelector('button').focus();
+      });
+      dialog.querySelector('button').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+      dialog.addEventListener('close', () => opener.focus({ preventScroll: true }));
+    }
     const update = () => {
       const value = select.value || select.dataset.zionInherited;
       const selected = choices.find(choice => choice.dataset.zionDesign === value);

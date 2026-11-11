@@ -43,3 +43,25 @@
 @media (prefers-reduced-motion: reduce) { .zion-control form[aria-busy="true"] .zion-control-feedback::before { animation: none; } }
 @media (max-width: 1100px) { .zion-control-layout { grid-template-columns: minmax(0, 1fr); } .zion-control .nav-tab-wrapper { position: static; flex-direction: row; flex-wrap: wrap; } }
 @media (max-width: 600px) { .zion-control .form-table:has([data-zion-design-picker]) tr { grid-template-columns: minmax(0, 1fr); gap: 0; } .zion-control .form-table :is(th, td) { display: block; width: auto; padding: 12px 0; } .zion-control .form-table th { padding-bottom: 0; } .zion-control-panel { padding: 16px; } .zion-design-choices .button { flex: 1 1 40%; } }
+/* Compact design workbench: controls beside a bounded preview. */
+.zion-control-panel { box-shadow: 0 8px 28px #00000006; }
+.zion-control-panel > h2 { padding-bottom: 18px; border-bottom: 1px solid #e5e7eb; }
+.zion-control .zion-design-picker { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(240px, .9fr); align-items: start; gap: 12px 24px; padding: 20px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f8faf9; }
+.zion-design-picker .zion-design-choices { grid-column: 1; grid-row: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.zion-design-picker .zion-design-choices .button { white-space: normal; text-align: start; padding: 10px 12px; line-height: 1.5; }
+.zion-design-picker .zion-design-preview { grid-column: 2; grid-row: 1 / span 2; width: 100%; max-width: 480px; margin: 0; background: #fff; box-shadow: 0 4px 16px #0000000a; }
+.zion-design-preview a { display: block; cursor: zoom-in; }
+.zion-design-preview figcaption { font-size: 12px; padding: 10px 12px; }
+.zion-design-picker > .description { grid-column: 1; grid-row: 2; margin: 0; font-size: 12px; }
+.zion-preview-hint { grid-column: 2; margin: 0; font-size: 12px; color: #50575e; }
+.zion-preview-dialog { box-sizing: border-box; width: min(94vw, 1536px); max-width: 94vw; max-height: 94vh; padding: 16px; border: 1px solid #dcdcde; border-radius: 14px; background: #fff; color: #1d2327; box-shadow: 0 24px 90px #0006; }
+.zion-preview-dialog::backdrop { background: #080e0bd9; backdrop-filter: blur(5px); }
+.zion-preview-dialog[open] { display: flex; flex-direction: column; gap: 12px; }
+.zion-preview-dialog img { width: 100%; height: auto; max-height: 77vh; object-fit: contain; min-height: 0; }
+.zion-preview-dialog .zion-preview-close { align-self: flex-end; min-height: 40px; flex: none; position: sticky; top: 0; }
+.zion-preview-dialog .zion-preview-caption { margin: 0; line-height: 1.6; }
+@media (max-width: 850px) {
+  .zion-control .zion-design-picker { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+  .zion-design-picker :is(.zion-design-choices, .zion-design-preview, .zion-preview-hint), .zion-design-picker > .description { grid-column: 1; grid-row: auto; }
+  .zion-design-picker .zion-design-preview { max-width: 480px; }
+}

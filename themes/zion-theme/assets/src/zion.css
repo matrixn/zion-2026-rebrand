@@ -2924,3 +2924,12 @@ body:has(.zion-product-page--sticky) {
   .zion-cart .wc-block-cart table.wc-block-cart-items tr.wc-block-cart-items__row { grid-template-columns: 60px minmax(0, 1fr) minmax(4.75rem, auto); }
   .zion-cart--editorial .wc-block-cart table.wc-block-cart-items tr.wc-block-cart-items__row { grid-template-columns: minmax(0, 1fr) auto; }
 }
+/* One taxonomy heading; WooCommerce retains each native removal action. */
+.zion-catalog-native .zion-category-chip-heading { flex: 0 0 100%; list-style: none; font-size: .8rem; font-weight: 600; margin-block: .35rem; color: var(--wp--preset--color--muted); }
+.zion-catalog-native .zion-category-chip { border-radius: 999px; padding-inline: .5rem; }
+.zion-catalog-native [data-zion-category-prefix] { display: block; }
+.zion-catalog-native .wc-block-product-filter-removable-chips__items:has(.zion-category-chip) > .wc-block-product-filter-removable-chips__item:not(.zion-category-chip) { flex-basis: 100%; margin-top: .5rem; }
+.zion-catalog-native .zion-category-group::before { content: 'Categorii'; display: block; margin-block: .35rem; font-size: .8rem; font-weight: 600; color: var(--wp--preset--color--muted); }
+.zion-catalog-native .zion-category-chip .wc-block-product-filter-removable-chips__label { font-size: 0; }
+.zion-catalog-native .zion-category-chip .wc-block-product-filter-removable-chips__label::after { content: attr(data-zion-short-label); font-size: .85rem; }
+.zion-catalog-native .zion-category-chip-inactive { display: none; }

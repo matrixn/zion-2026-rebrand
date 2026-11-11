@@ -665,7 +665,8 @@ test('visual card choices save with Ajax and remain independent by destination',
       await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
       const previewWidth = await page.locator('.zion-design-preview').evaluate(element => element.getBoundingClientRect().width);
       const formWidth = await page.locator('[data-zion-section]').evaluate(element => element.getBoundingClientRect().width);
-      expect(previewWidth / formWidth).toBeGreaterThan(.8);
+      expect(previewWidth / formWidth).toBeGreaterThan(.25);
+      expect(previewWidth / formWidth).toBeLessThan(.65);
       const activeColor = await page.locator('.nav-tab-wrapper').evaluate(element => getComputedStyle(element).backgroundColor);
       await expect(page.locator('[data-zion-design][aria-pressed="true"]')).toHaveCSS('background-color', activeColor);
       if (index === 0) await page.locator('.zion-design-picker').screenshot({ path: 'build/control-card-selector-1.1.9.png' });
@@ -1064,6 +1065,70 @@ test('checkout design selector preserves native form, validation and totals at f
     await expect(field(page, 'checkout_design')).toHaveValue('');
   } finally {
     await importSettings(page, original);
+    await guest.close();
+  }
+});
+
+test('all design sections use compact previews and keyboard accessible lightboxes', async ({ page }) => {
+  await login(page);
+  for (const section of ['cards', 'product', 'cart', 'checkout']) {
+    await page.setViewportSize({ width: 1440, height: 950 });
+    await openSection(page, section);
+    const opener = page.locator('.zion-design-preview a');
+    const dialog = page.getByRole('dialog', { name: 'Previzualizare design' });
+    await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    const small = await page.locator('.zion-design-preview').boundingBox();
+    expect(small.width).toBeLessThan(500);
+    await opener.click();
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator('img')).toHaveAttribute('src', await page.locator('.zion-design-preview img').getAttribute('src'));
+    expect((await dialog.boundingBox()).width).toBeGreaterThan(small.width);
+    await expect(dialog.getByRole('button')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(opener).toBeFocused();
+    await page.setViewportSize({ width: 390, height: 850 });
+    await opener.click();
+    await expect(dialog).toBeVisible();
+    expect((await dialog.boundingBox()).x + (await dialog.boundingBox()).width).toBeLessThanOrEqual(390);
+    expect((await page.locator('.zion-design-picker').boundingBox()).width).toBeLessThan(390);
+    await dialog.getByRole('button', { name: 'Închide previzualizarea' }).click();
+    await expect(opener).toBeFocused();
+    if (section === 'checkout') await page.screenshot({ path: 'build/admin-compact-mobile-1.1.13.png', fullPage: true });
+  }
+});
+
+test('active category chips share one heading and preserve native removal and history', async ({ page, browser, baseURL }) => {
+  await login(page);
+  const headers = { 'X-WP-Nonce': await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text() };
+  const original = (await (await page.request.get('/wp-json/wc/v3/products?slug=suport-modular-3d', { headers })).json())[0];
+  const slug = 'zion-chip-' + randomUUID().slice(0, 8);
+  const created = await page.request.post('/wp-json/wc/v3/products/categories', { headers, data: { name: 'Categorie secundară demo', slug } });
+  expect(created.status()).toBe(201);
+  const term = await created.json();
+  const guest = await browser.newContext({ baseURL });
+  const customer = await guest.newPage();
+  try {
+    expect((await page.request.put(`/wp-json/wc/v3/products/${original.id}`, { headers, data: { categories: [...original.categories.map(c => ({ id: c.id })), { id: term.id }] } })).ok()).toBe(true);
+    await customer.goto(`/magazin-3d/?categories=prototipuri-demo,${slug}&min_price=1`, { waitUntil: 'networkidle' });
+    await expect(customer.locator('.zion-category-group')).toHaveCount(1);
+    await expect(customer.locator('.zion-category-group')).toHaveCSS('display', 'block');
+    await expect(customer.locator('.zion-category-chip')).toHaveCount(2);
+    expect(await customer.locator('.zion-category-chip .wc-block-product-filter-removable-chips__label').evaluateAll(nodes => nodes.map(n => n.dataset.zionShortLabel))).toEqual(['Categorie secundară demo', 'Prototipuri demo']);
+    await customer.locator('.zion-category-chip').filter({ hasText: 'Categorie secundară demo' }).getByRole('button').click();
+    await expect(customer).toHaveURL(/categories=prototipuri-demo/);
+    await expect(customer.locator('.zion-category-chip')).toHaveCount(1);
+    await expect(customer.locator('.zion-category-group')).toHaveCount(1);
+    await customer.goto(`/magazin-3d/?categories=prototipuri-demo,${slug}&min_price=1`, { waitUntil: 'networkidle' });
+    await customer.goto('/magazin-software/');
+    await customer.goBack();
+    await expect(customer.locator('.zion-category-chip')).toHaveCount(2);
+    await expect(customer.locator('.zion-category-group')).toHaveCount(1);
+    await customer.getByRole('link', { name: 'Resetează filtrele' }).click();
+    await expect(customer.locator('.zion-category-group')).toHaveCount(0);
+  } finally {
+    await page.request.put(`/wp-json/wc/v3/products/${original.id}`, { headers, data: { categories: original.categories.map(c => ({ id: c.id })) } });
+    await page.request.delete(`/wp-json/wc/v3/products/categories/${term.id}?force=true`, { headers });
     await guest.close();
   }
 });

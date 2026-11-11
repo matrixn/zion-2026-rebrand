@@ -734,6 +734,12 @@ function zion_theme_card_picker( string $selected, string $control_id, string $k
 			</a>
 			<figcaption><?php echo esc_html( $preview[1] ); ?></figcaption>
 		</figure>
+		<p class="zion-preview-hint">Click pe imagine pentru previzualizare mare · Escape pentru închidere.</p>
+		<dialog class="zion-preview-dialog" aria-label="Previzualizare design">
+			<button type="button" class="button zion-preview-close">Închide previzualizarea</button>
+			<img alt="" width="1536" height="1024">
+			<p class="zion-preview-caption"></p>
+		</dialog>
 		<p class="description">Preview conceptual cu produs ilustrativ. Fotografiile, prețurile, stocurile și atributele din magazin provin din produsele WooCommerce.</p>
 	</div>
 	<?php

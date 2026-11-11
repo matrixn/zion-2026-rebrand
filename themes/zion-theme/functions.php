@@ -14,6 +14,7 @@ require_once __DIR__ . '/includes/product-card.php';
 require_once __DIR__ . '/includes/product-page.php';
 require_once __DIR__ . '/includes/cart-design.php';
 require_once __DIR__ . '/includes/checkout-design.php';
+require_once __DIR__ . '/includes/filter-labels.php';
 require_once __DIR__ . '/includes/commerce-translations.php';
 require_once __DIR__ . '/includes/component-library.php';
 require_once __DIR__ . '/includes/services.php';

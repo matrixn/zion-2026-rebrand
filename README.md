@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.12** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.13** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.12** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.13** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Administrare compactă și taguri categorii 1.1.13
+
+- [x] Filtre active: un singur titlu **Categorii**, numele categoriilor afișate ca taguri, fără repetarea vizuală „Category:”. WooCommerce păstrează butoanele native, etichetele accesibile complete, parametrii și interogările.
+- [x] Carduri, pagini de produs, coș și checkout: selector și variante organizate lângă un preview compact; explicațiile sunt separate de imagine.
+- [x] Lightbox nativ `dialog`: imagine mare, fundal discret, închidere prin buton/Escape/fundal și revenirea focusului la preview. Fără biblioteci noi; fără JavaScript, linkul deschide în continuare imaginea originală.
+- [x] Teste dedicate pentru toate cele patru secțiuni, desktop/mobil, focus, eliminare taguri, reset și navigare înapoi. Build, WPCS și 41 teste PHPUnit / 359 aserțiuni trecute.
+- [x] Suita completă Playwright: **50 scenarii trecute**, inclusiv cele două teste noi pentru taguri și lightbox. Integrarea și migrarea/rollback-ul au trecut pe date sintetice.
+- [ ] Verificare 1.1.13 pe staging.
+- [x] Cinci concepte vizuale **Contul meu** prezentate pentru alegere: Atelier, Studio Editorial, Technical, Contrast Premium, Focus Account.
+- [ ] Alegerea și implementarea paginii Contul meu pe baza funcțiilor native WooCommerce. Această versiune nu modifică pagina contului.
+
+Ghid: [preview-uri și filtre](docs/admin-previews-and-filter-tags.md).
 
 ## Checkout și corecție card Technical 1.1.12
 
