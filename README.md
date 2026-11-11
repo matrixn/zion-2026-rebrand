@@ -52,7 +52,8 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Software utilizează datele WooCommerce și metadatele Zion deja existente pentru versiune, compatibilitate, fișiere, changelog și documentație. Nu adaugă automat informații fără date și nu modifică regulile comerciale.
 - [x] Build și WPCS fără erori; PHPUnit: 34 teste, 323 aserțiuni; integrarea catalogului și repetiția de migrare/rollback pe date sintetice trecute.
 - [x] 45 scenarii Playwright verificate: 43 regresii generale, matricea celor cinci designuri pe ambele vitrine la 1440/390/768/1024 px (inclusiv miniaturi la tastatură, reset și override) și clasificarea în masă. Cumpărarea variabilă Ajax este verificată pentru fiecare design la 390 și 1440 px.
-- [ ] Instalare și verificare 1.1.10 pe staging.
+- [x] **Staging 1.1.10 verificat** pe `zion-stage.on-forge.com`: cinci designuri × două vitrine × 390/1440 px, 20 randări fără overflow și cu un singur formular. Salvarea Ajax și preview-urile funcționează; alegerile 3D și Software sunt independente. Galerie reală cu șapte imagini verificată la tastatură, vertical pe desktop și orizontal pe mobil; offset final sub 1 px în Technical și Editorial.
+- [x] Backup privat înainte de instalare, numai pe staging. Selecțiile temporare de design au revenit la **Moștenește / Atelier**; configurația cardurilor și celelalte setări au fost păstrate. Nu s-au creat comenzi pe staging și nu s-a modificat producția.
 
 ## Carduri și Control Center 1.1.9
 

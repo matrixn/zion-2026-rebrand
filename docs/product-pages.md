@@ -36,3 +36,13 @@ Miniaturile verticale apar numai când există mai multe imagini. Galerie fără
 - Componenta **Atribute esențiale** arată cel mult trei atribute WooCommerce publice lângă cumpărare, cu cel mult trei valori fiecare. Poate fi ascunsă sau reordonată prin aceleași controale.
 - Specificațiile folosesc atributele și datele native despre dimensiuni. Recomandările folosesc produsele asociate, upsells și cross-sells WooCommerce și apar doar când există produse publicate și vizibile.
 - Fără JavaScript, imaginile rămân vizibile, formularul simplu poate adăuga produsul și bara rămâne un link către formular. Selecția dinamică a variațiilor cere JavaScript. [Galeria WooCommerce](https://woocommerce.com/document/adding-product-images-and-galleries/) · [Variațiile WooCommerce](https://woocommerce.com/document/variable-product/)
+
+
+## Validare 1.1.10 · 11 noiembrie 2026
+
+- Build și WPCS trecute; PHPUnit: 34 teste, 323 aserțiuni. Integrarea catalogului și repetiția migrării/rollback-ului au trecut pe baza sintetică de test.
+- Playwright: 43 scenarii generale trecute în rularea completă, plus testul matricei celor cinci designuri și testul clasificării reluate cu succes după sincronizarea capturii caruselului. Pentru galerie, testul așteaptă poziția reală a slide-ului; flagul FlexSlider poate deveni false înainte de încheierea tranziției CSS.
+- Matrice locală: cinci designuri, două vitrine, 1440/390/768/1024 px; miniaturi la tastatură, preview-uri, salvare Ajax fără navigare, reset per vitrină și override produs. Produs variabil verificat cu fiecare design la 390/1440 px, preț dinamic, buton blocat înainte de selecție și adăugare Ajax confirmată de WooCommerce.
+- Staging: instalare Theme/Core 1.1.10 din commitul `93c13e6`, după backup privat. Cele cinci variante au fost salvate prin interfață și verificate pe produs fizic și software din clonă la 390/1440 px: 20 randări fără overflow, un singur formular pe pagină. Configurațiile distincte 3D Technical / Software Editorial au fost confirmate, apoi selecțiile au revenit la Moștenește.
+- Galerie reală cu șapte fotografii: miniaturi verticale pe desktop, orizontale pe mobil, selecție la tastatură; eroare de aliniere sub 1 px în Technical și Editorial. Selecția variației unui produs real a activat formularul nativ fără reîncărcare; nu s-au trimis comenzi sau plăți pe staging. Nu au fost raportate erori JS în tabul verificat.
+- Viewporturile temporare au fost eliminate. Helperul autentificat de invalidare a cache-ului PHP s-a șters după rulare. Producția nu a fost modificată. Aceste verificări nu înlocuiesc validarea gateway-urilor, abonamentelor și fluxurilor financiare înainte de lansare.
