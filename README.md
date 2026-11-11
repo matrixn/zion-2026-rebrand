@@ -47,6 +47,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Decorații adăugate numai la randare. Conținutul și șabloanele salvate rămân editabile și nu sunt rescrise; produsele, imaginile și acțiunile WooCommerce sunt păstrate.
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **52/52 teste storefront**, inclusiv opt teste noi pentru homepage, trecute; comparațiile About păstrate și cele două referințe vizuale homepage actualizate. ZIP-uri Theme/Core **1.1.21** generate.
 - [x] Suita locală completă: **70/70 teste Playwright** trecute în 11,6 minute. După corectarea cadrului hero pe mobil, **15 verificări homepage/Continuum** au trecut din nou; testul măsoară acum și marginea cadrului, nu doar overflow-ul documentului. Reluarea About este verificată cu desenul în viewport, unde rendererul este intenționat activ, cu **8 execuții repetate** trecute.
+- [x] Scenariile CI existente selectează explicit facturarea separată când WooCommerce folosește implicit adresa de livrare și navighează cu Tab după finalizarea deschiderii reactive WordPress. Păstrează verificările câmpurilor native, totalurilor și submeniurilor; componentele livrate pe staging sunt neschimbate de această ajustare a testelor.
 - [ ] QA staging final, GitHub Actions pentru sursa finală și consemnarea livrării pe `main`.
 
 Ghid: [Continuum pe homepage](docs/home-continuum.md).

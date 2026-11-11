@@ -1039,6 +1039,11 @@ test('checkout design selector preserves native form, validation and totals at f
         await expect(checkout.locator('.wc-block-checkout__sidebar .wc-block-components-order-summary-item')).toHaveCount(2);
         await expect(checkout.locator('.wc-block-components-checkout-place-order-button')).toHaveCount(1);
         await expect(customer.locator('#email')).toBeVisible();
+        // Physical carts may default to using the shipping address for billing.
+        // Select separate billing explicitly before testing the billing fields.
+        const sameAddress = customer.getByRole('checkbox', { name: 'Folosește aceeași adresă pentru facturare', exact: true });
+        await expect(customer.locator('#billing-first_name').or(sameAddress).first()).toBeVisible();
+        if (await sameAddress.count()) await sameAddress.uncheck();
         await expect(customer.locator('#billing-first_name')).toBeVisible();
         expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
         expect((await readCart()).totals).toEqual(totals);
@@ -1380,8 +1385,15 @@ test('five header designs preserve an edited native menu, active ancestors, poin
           await guest.keyboard.press('Escape'); await expect(nav.getByRole('dialog')).toBeHidden(); await expect(opener).toBeFocused();
         } else {
           const software=nav.getByRole('button',{name:/^Software/}).first(); await software.focus(); await guest.keyboard.press('Enter');
+          await expect(software).toHaveAttribute('aria-expanded','true');
           const parent=nav.getByRole('button',{name:/WordPress/}); await expect(parent).toBeVisible();
-          await parent.focus(); await guest.keyboard.press('Enter'); await expect(active).toBeVisible();
+          // Core binds aria-expanded before its reactive initMenu callback records
+          // the focus boundary. Let that paint finish, then use real Tab navigation.
+          await guest.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+          await guest.keyboard.press('Tab');
+          await expect(nav.getByRole('link',{name:'WordPress & WooCommerce',exact:true})).toBeFocused();
+          await guest.keyboard.press('Tab'); await expect(parent).toBeFocused();
+          await guest.keyboard.press('Enter'); await expect(parent).toHaveAttribute('aria-expanded','true'); await expect(active).toBeVisible();
           if(['nexus','signature'].includes(designs[index])) {
             const panel = software.locator('..').locator(':scope > .wp-block-navigation__submenu-container');
             const panelBox=await panel.boundingBox(); const headerBox=await guest.locator('.zion-header').boundingBox();
