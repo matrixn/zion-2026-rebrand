@@ -47,7 +47,9 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Mod staging `about` pentru preview și aplicare exclusiv pe această pagină, după backup. Actualizarea nativă păstrează URL-ul, ID-ul, autorul, data publicării, excerptul și metadatele SEO; salvează revizia și elimină selecția vechiului editor/șablon de pe pagina reconstruită.
 - [x] Cinci teste About: 390/768/1024/1440 px, zero overflow, ancoră din tastatură, contrast, reduced motion, fără JavaScript și blocuri valide în editorul nativ. Integrare pentru conținut nativ și păstrarea modificărilor la seed.
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **41/41 teste storefront** trecute. Referințe About noi și referințele existente actualizate pentru linkul Despre noi introdus în meniul și footer-ul demo.
-- [ ] Verificările finale, staging, CI, ZIP-urile 1.1.19 și livrarea pe `main`.
+- [x] Theme/Core 1.1.19 și pagina nouă instalate pe staging după backup privat complet și snapshot al paginii originale. Preview-ul nu a modificat conținutul; reaplicarea identică a fost ignorată. Confirmate păstrarea ID-ului, URL-ului, titlului, autorului, datei, excerptului, câmpurilor SEO și setărilor temei. Helperul temporar pentru cache a fost eliminat.
+- [x] Staging verificat la 390/768/1024/1440 px: zero overflow, un singur H1, două secțiuni atelier/software, trei principii, CTA către Contact, animație CAD și dezactivarea ei la reduced motion. Ancora din tastatură lasă titlul poveștii sub headerul fix. Fără erori de consolă; badge-ul coșului a rămas 3 și producția nu a fost modificată.
+- [x] **GitHub Actions verde** pentru `992f573`: [rularea 43090615085](https://github.com/matrixn/zion-2026-rebrand/actions/runs/43090615085), cu **59/59 teste Playwright** în 8,3 minute, **46 teste PHPUnit / 394 aserțiuni**, build, WPCS, integrare și migrare/rollback trecute. README actualizat, ZIP-urile Theme/Core 1.1.19 generate; livrare pe `main`.
 
 Ghid: [pagina Despre noi](docs/about-page.md).
 
