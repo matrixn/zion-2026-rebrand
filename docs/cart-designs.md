@@ -48,4 +48,13 @@ Etichetele implicite ale coșului gol sunt localizate în română la randare, p
 
 ## Staging
 
-Validarea instalării 1.1.11 urmează după publicarea commitului și folosește exclusiv `zion-stage.on-forge.com`. Producția nu face parte din această livrare.
+Zion Theme și Zion Core **1.1.11** au fost instalate pe `zion-stage.on-forge.com`, după backup privat al bazei și configurației. Sursa instalată: commit `9c60d0931ca73bcc4a3a5d7e67d6cb03900c212c`. Producția nu a fost modificată.
+
+- Selectorul, cele cinci preview-uri, salvarea Ajax și linkurile native către editoare au fost verificate. Șablonul `page-cart` este utilizat efectiv, iar pagina păstrează blocul nativ Coș.
+- Atelier, Studio Editorial, Technical, Contrast Premium și Focus Checkout au fost verificate fiecare la **390, 768, 1024 și 1440 px**: două produse în coș, fără overflow orizontal sau suprapunerea titlului peste total. Totalul nativ a rămas **142,99 lei** în toate cele 20 de randări.
+- Coșul mixt a inclus o piesă 3D și Zion Privacy Pro. Regula nativă „vândut individual” pentru software a fost păstrată. Cantitatea piesei fizice a trecut prin Ajax de la 1 la 2 și înapoi la 1, cu totalurile **142,99 → 237,99 → 142,99 lei**.
+- Linkul nativ a deschis formularul de checkout, cu etichete în română. Nu s-au trimis comenzi sau plăți. Stagingul raportează că nu sunt disponibile metode de plată; testul nu validează gateway-uri, livrare sau calcul fiscal pentru adrese reale. Cupoanele au fost verificate în mediul sintetic local, fără modificarea regulilor comerciale de pe staging.
+- Eliminarea ambelor produse a restabilit coșul gol. Titlul, continuarea cumpărăturilor și produsele noi sunt localizate în română. Nu au fost înregistrate erori în consola tabului de test.
+- La final, `cart_design` a revenit la **Moștenește / Atelier**, coșul sesiunii de test este gol, iar emularea viewportului a fost eliminată. Celelalte setări ale temei au fost păstrate.
+
+Captura selectorului verificat este disponibilă local în `build/staging-cart-selector-1.1.11.png`. Dovezile de browser și rapoartele locale din `build/` nu sunt incluse în ZIP-urile WordPress.

@@ -49,7 +49,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Tokenuri derivate din `theme.json`, imagini centrate, tipografie moderată, controale accesibile, variantă cu suprafață deschisă și focus vizibil. Preview-urile sunt încărcate numai în administrare.
 - [x] Build, WPCS, PHPUnit (37 teste / 340 aserțiuni), integrarea catalogului și migrarea/rollback-ul pe date sintetice trecute. Playwright: 46 scenarii în suita completă, plus reluarea testului dedicat după ajustările finale ale imaginilor, traducerilor și alinierii celulelor.
 - [x] Matrice coș: cinci designuri × 1440/390/768/1024 px, fără overflow sau suprapunere titlu/total, un singur CTA de checkout, cantități Ajax cu indicator de încărcare, aplicare/eliminare cupoane, totaluri identice între designuri, checkout și coș gol. Studio Editorial utilizează imaginile complete din store-ul WooCommerce deja încărcat, fără interogări suplimentare de produse.
-- [ ] Instalare și verificare 1.1.11 pe staging.
+- [x] Zion Theme și Zion Core 1.1.11 instalate pe staging după backup privat. Cele cinci variante verificate la 390/768/1024/1440 px cu un coș mixt 3D + software: fără overflow sau suprapuneri, total identic de 142,99 lei. Cantitate Ajax 1 → 2 → 1: total 142,99 → 237,99 → 142,99 lei; checkout nativ în română, eliminare produse și coș gol verificate. Selectorul a revenit la Moștenește / Atelier și sesiunea de test a fost golită. Producția nu a fost modificată; nu s-au trimis comenzi sau plăți. Gateway-urile nu sunt disponibile pe staging și nu sunt validate prin acest test.
 
 Ghid: [designurile coșului și configurarea nativă](docs/cart-designs.md).
 
