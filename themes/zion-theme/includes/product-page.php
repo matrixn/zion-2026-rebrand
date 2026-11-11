@@ -40,7 +40,7 @@ function zion_theme_product_profile( WC_Product $item ): array {
 	if ( 'auto' === $preset ) {
 		$preset = 'software' === $shop || ( '' === $shop && $item->is_virtual() ) ? 'software' : 'physical';
 	}
-	$common = array( 'title', 'gallery', 'lightbox', 'price', 'short_description', 'purchase', 'availability', 'variations', 'quantity' );
+	$common = array( 'title', 'gallery', 'lightbox', 'price', 'short_description', 'purchase', 'availability', 'attributes', 'variations', 'quantity' );
 	$extra  = match ( $preset ) {
 		'minimal' => array(),
 		'software' => array( 'breadcrumb', 'description', 'specifications', 'compatibility', 'benefits', 'files', 'version', 'changelog', 'documentation', 'faq', 'reviews', 'upsells', 'cross_sells' ),
@@ -50,7 +50,11 @@ function zion_theme_product_profile( WC_Product $item ): array {
 	$sections = array_keys( Zion_Theme_Settings::product_sections() );
 	$summary  = array_keys( Zion_Theme_Settings::product_summary() );
 	$defaults = array_merge( $common, $extra );
-	$show     = array(
+	$design   = $resolve( 'product_design' );
+	if ( 'editorial' === $design ) {
+		$defaults[] = 'sticky';
+	}
+	$show = array(
 		'hero'    => true,
 		'meta'    => $resolve( 'product_meta' ),
 		'related' => $resolve( 'product_related' ),
@@ -68,6 +72,8 @@ function zion_theme_product_profile( WC_Product $item ): array {
 		};
 	}
 	return array(
+		'design'   => $design,
+		'shop'     => $shop,
 		'preset'   => $preset,
 		'style'    => $style,
 		'side'     => $resolve( 'product_gallery_side' ),
@@ -194,10 +200,11 @@ function zion_theme_product_hero( WC_Product $item, array $profile ): string {
 				add_filter( 'woocommerce_single_product_' . $feature . '_enabled', '__return_false', 20 );
 			}
 		}
-		$gallery = '<div class="zion-product-media">' . zion_theme_product_native_block( 'woocommerce/product-image-gallery', $item ) .
+		$gallery = '<div class="zion-product-media' . ( $item->get_gallery_image_ids() ? ' zion-product-media--multiple' : '' ) . '">' . zion_theme_product_native_block( 'woocommerce/product-image-gallery', $item ) .
 			'<noscript><style>.zion-product-media .woocommerce-product-gallery{opacity:1!important}</style></noscript></div>';
 	}
 	$summary = '';
+	$intro   = '';
 	foreach ( $profile['summary'] as $key ) {
 		if ( ! $show[ $key ] ) {
 			continue;
@@ -207,19 +214,53 @@ function zion_theme_product_hero( WC_Product $item, array $profile ): string {
 			'price' => wp_kses_post( $item->get_price_html() ),
 			'short_description' => wp_kses_post( wpautop( $item->get_short_description() ) ),
 			'availability' => zion_theme_product_availability( $item ),
+			'attributes' => zion_theme_product_attributes( $item ),
 			'purchase' => zion_theme_product_purchase( $item, $show ),
 			'meta' => zion_theme_product_meta( $item ),
 			default => '',
 		};
 		if ( '' !== $content ) {
-			$summary .= '<div class="zion-product-summary__' . esc_attr( $key ) . '">' . $content . '</div>';
+			$component = '<div class="zion-product-summary__' . esc_attr( $key ) . '">' . $content . '</div>';
+			if ( in_array( $profile['design'], array( 'focus', 'editorial' ), true ) && in_array( $key, array( 'title', 'short_description' ), true ) ) {
+				$intro .= $component;
+			} else {
+				$summary .= $component;
+			}
 		}
 	}
-	if ( ! $gallery && ! $summary ) {
+	if ( ! $gallery && ! $summary && ! $intro ) {
 		return '';
 	}
-	return '<div class="zion-product-layout' . ( $gallery && $summary ? ' zion-product-layout--split' : '' ) . '">' . $gallery .
+	return '<div class="zion-product-layout' . ( $gallery && $summary ? ' zion-product-layout--split' : '' ) . '">' .
+		( $intro ? '<div class="zion-product-intro">' . $intro . '</div>' : '' ) . $gallery .
 		( $summary ? '<div class="zion-product-summary">' . $summary . '</div>' : '' ) . '</div>';
+}
+
+/**
+ * Show at most three native public attributes near the purchase form.
+ *
+ * @param WC_Product $item Product.
+ * @return string
+ */
+function zion_theme_product_attributes( WC_Product $item ): string {
+	$rows  = '';
+	$count = 0;
+	foreach ( $item->get_attributes() as $attribute ) {
+		if ( ! $attribute->get_visible() ) {
+			continue;
+		}
+		$values = $attribute->is_taxonomy() ? wc_get_product_terms( $item->get_id(), $attribute->get_name(), array( 'fields' => 'names' ) ) : $attribute->get_options();
+		if ( is_wp_error( $values ) || ! $values ) {
+			continue;
+		}
+		$rows .= '<div><dt>' . esc_html( wc_attribute_label( $attribute->get_name(), $item ) ) . '</dt><dd>' .
+			esc_html( implode( ', ', array_slice( $values, 0, 3 ) ) . ( count( $values ) > 3 ? '…' : '' ) ) . '</dd></div>';
+		++$count;
+		if ( 3 === $count ) {
+			break;
+		}
+	}
+	return $rows ? '<dl class="zion-product-attributes">' . $rows . '</dl>' : '';
 }
 
 /**
@@ -372,9 +413,11 @@ function zion_theme_render_product_page( array $attributes, string $content, WP_
 		return '';
 	}
 	zion_theme_native_product_schema( $item );
-	$profile = zion_theme_product_profile( $item );
-	$show    = $profile['show'];
-	$classes = array( 'zion-product-page', 'alignwide', 'zion-product-page--' . $profile['preset'], 'zion-product-style--' . $profile['style'], 'zion-gallery--' . $profile['side'] );
+	$profile   = zion_theme_product_profile( $item );
+	$show      = $profile['show'];
+	$classes   = array( 'zion-product-page', 'alignwide', 'zion-product-page--' . $profile['preset'], 'zion-product-style--' . $profile['style'], 'zion-gallery--' . $profile['side'] );
+	$classes[] = 'zion-product-design--' . $profile['design'];
+	$classes[] = 'zion-product-shop--' . ( $profile['shop'] ? $profile['shop'] : 'global' );
 	foreach ( array( 'availability', 'price' ) as $key ) {
 		if ( ! $show[ $key ] ) {
 			$classes[] = 'zion-hide-' . $key;

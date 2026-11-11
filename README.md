@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.9** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.10** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.9** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.10** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,20 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Pagini individuale de produs 1.1.10
+
+- [x] Cinci designuri implementate în componenta comună: **Atelier**, **Technical**, **Immersive**, **Focus cumpărare**, **Editorial Premium**.
+- [x] Selector vizual cu cele cinci imagini aprobate, preview imediat și salvare Ajax cu spinner în **Aspect → Zion Theme → Pagini individuale produse**. Destinații distincte: **Global**, **Single Product 3D Print**, **Single Product Software**.
+- [x] Designul se salvează în `product_design`, în registrul/opțiunea existente. Precedență: produs → vitrină → global → Atelier implicit. Presetul de conținut `product_preset` rămâne independent: Auto/Physical 3D/Software/Minimal/Premium.
+- [x] Override per produs: **Produse → Setări Zion** sau **Instrumente → ID produs**. Alege designul, apoi salvează. „Moștenește” elimină doar alegerea explicită; resetarea secțiunii unei vitrine nu afectează cealaltă vitrină.
+- [x] Galerie nativă la lățimea componentei, miniaturi orizontale sau verticale conform variantei, zoom/lightbox WooCommerce. Fără miniaturi, fotografia folosește întregul spațiu. Formular unic pentru prețuri, variații, cantități și cumpărare; imaginile conceptuale nu sunt încărcate pe frontend.
+- [x] Technical: galerie cu miniaturi verticale pe desktop; Immersive: scenă panoramică; Focus: trei coloane de la 1200 px, două la tabletă și una pe mobil; Editorial: introducere centrată, galerie lată și acces rapid la formularul real prin bara sticky implicită. Controalele explicite de vizibilitate și stil rămân prioritare.
+- [x] Produsele încadrate în ambele magazine sau neclasificate folosesc designul Global, dacă nu au override explicit; nu alegem designul după referrer.
+- [x] Software utilizează datele WooCommerce și metadatele Zion deja existente pentru versiune, compatibilitate, fișiere, changelog și documentație. Nu adaugă automat informații fără date și nu modifică regulile comerciale.
+- [x] Build și WPCS fără erori; PHPUnit: 34 teste, 323 aserțiuni; integrarea catalogului și repetiția de migrare/rollback pe date sintetice trecute.
+- [x] 45 scenarii Playwright verificate: 43 regresii generale, matricea celor cinci designuri pe ambele vitrine la 1440/390/768/1024 px (inclusiv miniaturi la tastatură, reset și override) și clasificarea în masă. Cumpărarea variabilă Ajax este verificată pentru fiecare design la 390 și 1440 px.
+- [ ] Instalare și verificare 1.1.10 pe staging.
 
 ## Carduri și Control Center 1.1.9
 

@@ -714,3 +714,136 @@ test('visual card choices save with Ajax and remain independent by destination',
     await importSettings(page, original);
   }
 });
+
+test('single product visual designs are independent for 3D Print and Software', async ({ page }) => {
+  test.setTimeout(240_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const nonce = await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text();
+  const headers = { 'X-WP-Nonce': nonce };
+  const originals = [];
+  for (const slug of ['suport-modular-3d', 'zion-catalog-tools']) {
+    const response = await page.request.get(`/wp-json/wc/v3/products?slug=${slug}`, { headers });
+    expect(response.ok()).toBe(true);
+    originals.push((await response.json())[0]);
+  }
+  const designs = ['atelier', 'technical', 'immersive', 'focus', 'editorial'];
+  const labels = ['Atelier', 'Technical', 'Immersive', 'Focus cumpărare', 'Editorial Premium'];
+  let variable;
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  try {
+    await importSettings(page, JSON.stringify({ version: 2, global: {}, shops: {}, items: {} }));
+    const created = await page.request.post('/wp-json/wc/v3/products', { headers, data: {
+      name: 'Zion design variation fixture', type: 'variable', status: 'publish',
+      images: originals.map(product => ({ id: product.images[0].id })),
+      attributes: [{ name: 'Material', visible: true, variation: true, options: ['PLA', 'PETG'] }],
+    } });
+    expect(created.status()).toBe(201);
+    variable = await created.json();
+    for (const [material, price, stock] of [['PLA', '49', 100], ['PETG', '59', 0]]) {
+      const variation = await page.request.post(`/wp-json/wc/v3/products/${variable.id}/variations`, { headers, data: {
+        regular_price: price, manage_stock: true, stock_quantity: stock, attributes: [{ name: 'Material', option: material }],
+      } });
+      expect(variation.status()).toBe(201);
+    }
+    for (const product of originals) {
+      const images = [product.images[0].id, originals.find(other => other.id !== product.id).images[0].id].map(id => ({ id }));
+      const response = await page.request.put(`/wp-json/wc/v3/products/${product.id}`, { headers, data: { images } });
+      expect(response.ok()).toBe(true);
+    }
+    for (const [scope, url] of [['3d', '/product/suport-modular-3d/'], ['software', '/product/zion-catalog-tools/']]) {
+      for (let index = 0; index < designs.length; index++) {
+        await page.setViewportSize({ width: 1440, height: 950 });
+        await page.goto(`${base}&section=product&scope=${scope}`);
+        await expect(page.getByRole('link', { name: 'Single Product 3D Print', exact: true })).toBeVisible();
+        await expect(page.getByRole('link', { name: 'Single Product Software', exact: true })).toBeVisible();
+        await page.getByRole('button', { name: labels[index], exact: true }).click();
+        await expect(field(page, 'product_design')).toHaveValue(designs[index]);
+        await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+        if (scope === '3d' && index === 0) {
+          await page.locator('.zion-design-picker').screenshot({ path: 'build/control-product-selector-1.1.10.png' });
+          await page.screenshot({ path: 'build/control-product-center-1.1.10.png' });
+        }
+        const timeOrigin = await page.evaluate(() => performance.timeOrigin);
+        await save(page);
+        expect(await page.evaluate(() => performance.timeOrigin)).toBe(timeOrigin);
+        for (const width of [1440, 390, 768, 1024]) {
+          await page.setViewportSize({ width, height: 950 });
+          await page.goto(url);
+          const product = page.locator(`.zion-product-design--${designs[index]}.zion-product-shop--${scope}`);
+          await expect(product).toBeVisible();
+          await expect(product.locator('h1')).toHaveCount(1);
+          await expect(product.locator('form.cart')).toHaveCount(1);
+          await expect(product.locator('.single_add_to_cart_button')).toBeVisible();
+          await expect(product.locator('.woocommerce-product-gallery__image img').first()).toBeVisible();
+          expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+          await expect(product.locator('.flex-control-thumbs img')).toHaveCount(2);
+          const media = await product.locator('.zion-product-media').boundingBox();
+          const gallery = await product.locator('.wp-block-woocommerce-product-image-gallery').boundingBox();
+          expect(Math.abs(media.width - gallery.width)).toBeLessThanOrEqual(2);
+          await product.locator('.flex-control-thumbs img').last().press('Enter');
+          await expect(product.locator('.flex-control-thumbs img').last()).toHaveClass(/flex-active/);
+          // FlexSlider can clear its animating flag before the CSS transform settles.
+          await expect.poll(async () => {
+            const slide = await product.locator('.woocommerce-product-gallery__image > a > img').last().boundingBox();
+            const viewport = await product.locator('.flex-viewport').boundingBox();
+            return Math.max(Math.abs(slide.width - viewport.width), Math.abs(slide.x - viewport.x));
+          }).toBeLessThan(2);
+          if (width === 390 || width === 1440) await product.locator('[data-zion-section="hero"]').screenshot({ path: `build/product-${scope}-${designs[index]}-${width}-1.1.10.png` });
+        }
+      }
+    }
+    // Changing Software did not overwrite the 3D choice. Section reset is scoped.
+    await page.goto(`${base}&section=product&scope=3d`);
+    await expect(field(page, 'product_design')).toHaveValue('editorial');
+    await field(page, 'product_design').selectOption('technical');
+    await save(page);
+    await page.goto('/product/zion-catalog-tools/');
+    await expect(page.locator('.zion-product-design--editorial')).toBeVisible();
+    await page.goto(`${base}&section=product&scope=software`);
+    await page.getByRole('button', { name: 'Resetează secțiunea', exact: true }).click();
+    await expect(page.getByText('Secțiunea a revenit la valorile moștenite.', { exact: true })).toBeVisible();
+    await page.goto('/product/suport-modular-3d/');
+    await expect(page.locator('.zion-product-design--technical')).toBeVisible();
+    await page.goto('/product/zion-catalog-tools/');
+    await expect(page.locator('.zion-product-design--atelier')).toBeVisible();
+    await page.goto('/product/suport-modular-3d/');
+    const id = await page.evaluate(() => document.body.className.match(/postid-(\d+)/)[1]);
+    await openSection(page, 'tools', id);
+    await field(page, 'product_design').selectOption('immersive');
+    await save(page);
+    await page.goto('/product/suport-modular-3d/');
+    await expect(page.locator('.zion-product-design--immersive')).toBeVisible();
+    for (const design of designs) {
+      await page.goto(`${base}&section=product&scope=global`);
+      await field(page, 'product_design').selectOption(design);
+      await save(page);
+      for (const width of [390, 1440]) {
+        await page.setViewportSize({ width, height: 950 });
+        await page.goto(variable.permalink);
+        const form = page.locator('form.variations_form');
+        await expect(page.locator(`.zion-product-design--${design}`)).toBeVisible();
+        await expect(form.locator('.single_add_to_cart_button')).toHaveClass(/disabled/);
+        await form.locator('select').selectOption({ label: 'PLA' });
+        await expect(page.locator('.zion-product-attributes')).toContainText('Material');
+        await expect(form.locator('.woocommerce-variation-price')).toContainText('49');
+        await expect(form.locator('.single_add_to_cart_button')).not.toHaveClass(/disabled/);
+        const origin = await page.evaluate(() => performance.timeOrigin);
+        await form.locator('.single_add_to_cart_button').click();
+        await expect(page.locator('.zion-purchase-notice')).toContainText(/adăugat.*coș/s);
+        expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+      }
+    }
+    expect(errors).toEqual([]);
+  } finally {
+    if (variable) await page.request.delete(`/wp-json/wc/v3/products/${variable.id}?force=true`, { headers });
+    for (const product of originals) {
+      const response = await page.request.put(`/wp-json/wc/v3/products/${product.id}`, { headers, data: { images: product.images.map(image => ({ id: image.id })) } });
+      expect(response.ok()).toBe(true);
+    }
+    await importSettings(page, original);
+  }
+});

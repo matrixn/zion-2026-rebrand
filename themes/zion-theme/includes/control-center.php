@@ -164,6 +164,8 @@ function zion_theme_control_json( array $config ): string {
 
 /**
  * Route authorized forms. Validate the entire candidate before saving.
+ *
+ * @throws InvalidArgumentException On an unsupported destination.
  */
 function zion_theme_handle_control_post(): void {
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
@@ -219,12 +221,15 @@ function zion_theme_handle_control_post(): void {
 		if ( wp_doing_ajax() ) {
 			$shop  = in_array( $section, Zion_Theme_Settings::SHOPS, true ) ? $section : zion_theme_item_shop( $id, $type );
 			$scope = is_string( $request['card_scope'] ?? null ) ? $request['card_scope'] : 'global';
-			if ( 'cards' === $section ) {
+			if ( in_array( $section, array( 'cards', 'product' ), true ) ) {
+				if ( 'product' === $section && 'home' === $scope ) {
+					throw new InvalidArgumentException( 'Destinație pentru produs nepermisă.' );
+				}
 				$target = zion_theme_card_target( $scope );
 				$shop   = $target['shop'];
 			}
 			$context = $id ? $type : ( $shop ? 'shop' : 'global' );
-			$fields  = Zion_Theme_Settings::fields( $context, 'cards' === $section || 'global' === $context ? $section : '' );
+			$fields  = Zion_Theme_Settings::fields( $context, in_array( $section, array( 'cards', 'product' ), true ) || 'global' === $context ? $section : '' );
 			ob_start();
 			zion_theme_render_control_form( $section, $id, $type, $shop, $fields, $config, $scope );
 			$html = ob_get_clean();
@@ -250,7 +255,7 @@ function zion_theme_handle_control_post(): void {
 	}
 
 	$redirect = add_query_arg( 'updated', $operation, zion_theme_control_url( $section, $id ) );
-	if ( 'cards' === $section ) {
+	if ( in_array( $section, array( 'cards', 'product' ), true ) ) {
 		$redirect = add_query_arg( 'scope', $request['card_scope'] ?? 'global', $redirect );
 	}
 	wp_safe_redirect( $redirect );
@@ -322,17 +327,20 @@ function zion_theme_merge_control_section( array $config, string $section, int $
 	$shop    = in_array( $section, Zion_Theme_Settings::SHOPS, true ) ? $section : '';
 	$context = $id ? $type : ( $shop ? 'shop' : 'global' );
 	$fields  = Zion_Theme_Settings::fields( $context, 'global' === $context ? $section : '' );
-	if ( 'cards' === $section ) {
+	if ( in_array( $section, array( 'cards', 'product' ), true ) ) {
 		$scope = $request['card_scope'] ?? 'global';
 		if ( ! is_string( $scope ) ) {
 			throw new InvalidArgumentException( 'Destinație pentru carduri invalidă.' );
+		}
+		if ( 'product' === $section && 'home' === $scope ) {
+				throw new InvalidArgumentException( 'Destinație pentru produs nepermisă.' );
 		}
 		$target = zion_theme_card_target( $scope );
 		if ( $id !== $target['id'] || $type !== $target['type'] ) {
 			throw new InvalidArgumentException( 'Destinația cardurilor nu corespunde formularului.' );
 		}
 		$shop   = $target['shop'];
-		$fields = Zion_Theme_Settings::fields( $target['context'], 'cards' );
+		$fields = Zion_Theme_Settings::fields( $target['context'], $section );
 	}
 	$values = $request['values'] ?? array();
 	if ( ! $fields || ! is_array( $values ) ) {
@@ -370,6 +378,8 @@ function zion_theme_control_form_fields( string $section, int $id = 0 ): void {
 
 /**
  * Render the navigation and active section.
+ *
+ * @throws InvalidArgumentException On an unsupported destination.
  */
 function zion_theme_render_control_page(): void {
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
@@ -389,13 +399,16 @@ function zion_theme_render_control_page(): void {
 	$context  = $type ? $type : ( $shop ? 'shop' : 'global' );
 	$fields   = Zion_Theme_Settings::fields( $context, 'global' === $context ? $section : '' );
 	$config   = zion_theme_settings_config();
-	if ( 'cards' === $section ) {
+	if ( in_array( $section, array( 'cards', 'product' ), true ) ) {
 		try {
+			if ( 'product' === $section && 'home' === $scope ) {
+				throw new InvalidArgumentException( 'Destinație pentru produs nepermisă.' );
+			}
 			$target = zion_theme_card_target( $scope );
 			$id     = $target['id'];
 			$type   = $target['type'];
 			$shop   = $target['shop'];
-			$fields = Zion_Theme_Settings::fields( $target['context'], 'cards' );
+			$fields = Zion_Theme_Settings::fields( $target['context'], $section );
 		} catch ( InvalidArgumentException $error ) {
 			$fields = array();
 			add_settings_error( 'zion-cards', 'target', $error->getMessage() );
@@ -416,8 +429,8 @@ function zion_theme_render_control_page(): void {
 		<div data-zion-control-notices><?php zion_theme_control_notices( $config, $section, $updated ); ?></div>
 
 		<?php zion_theme_control_editor_links( $section ); ?>
-		<?php if ( 'cards' === $section ) : ?>
-			<nav class="zion-card-targets" aria-label="Destinația cardurilor">
+		<?php if ( in_array( $section, array( 'cards', 'product' ), true ) ) : ?>
+			<nav class="zion-card-targets" aria-label="Destinația designului">
 				<?php
 				foreach ( array(
 					'global'   => 'Global',
@@ -425,11 +438,17 @@ function zion_theme_render_control_page(): void {
 					'3d'       => 'Magazin 3D',
 					'software' => 'Magazin Software',
 				) as $key => $label ) :
+					if ( 'product' === $section && 'home' === $key ) {
+						continue;
+					}
+					if ( 'product' === $section && 'global' !== $key ) {
+						$label = '3d' === $key ? 'Single Product 3D Print' : 'Single Product Software';
+					}
 					?>
-					<a class="button <?php echo $scope === $key ? 'button-primary' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'scope', $key, zion_theme_control_url( 'cards' ) ) ); ?>" <?php echo $scope === $key ? 'aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a>
+					<a class="button <?php echo $scope === $key ? 'button-primary' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'scope', $key, zion_theme_control_url( $section ) ) ); ?>" <?php echo $scope === $key ? 'aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a>
 				<?php endforeach; ?>
 			</nav>
-			<p>Fiecare destinație păstrează propria alegere. „Moștenește” folosește vitrina, apoi setarea globală. Un override explicit al paginii are prioritate.</p>
+			<p>Fiecare destinație păstrează propria alegere. „Moștenește” folosește vitrina, apoi setarea globală. Un override explicit al produsului sau paginii are prioritate.</p>
 			<?php settings_errors( 'zion-cards' ); ?>
 		<?php endif; ?>
 		<?php if ( 'general' === $section ) : ?>
@@ -607,7 +626,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 	?>
 	<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" data-zion-section>
 		<?php zion_theme_control_form_fields( $section, $id ); ?>
-		<?php if ( 'cards' === $section ) : ?>
+		<?php if ( in_array( $section, array( 'cards', 'product' ), true ) ) : ?>
 			<input type="hidden" name="card_scope" value="<?php echo esc_attr( $scope ); ?>">
 		<?php endif; ?>
 		<div class="zion-control-feedback" role="status" aria-live="polite"></div>
@@ -637,8 +656,8 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 								<option value="<?php echo esc_attr( (string) $choice ); ?>" <?php selected( $value, (string) $choice ); ?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 						</select>
-						<?php if ( 'card_preset' === $key ) : ?>
-							<?php zion_theme_card_picker( $value ? $value : (string) $inherited, $control_id ); ?>
+						<?php if ( in_array( $key, array( 'card_preset', 'product_design' ), true ) ) : ?>
+							<?php zion_theme_card_picker( $value ? $value : (string) $inherited, $control_id, 'product_design' === $key ); ?>
 						<?php endif; ?>
 					<?php endif; ?>
 						<p class="description" id="<?php echo esc_attr( $control_id . '-help' ); ?>">
@@ -662,20 +681,21 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
  *
  * @param string $selected Effective preset.
  * @param string $control_id Select ID.
+ * @param bool   $product Whether to show single product concepts.
  */
-function zion_theme_card_picker( string $selected, string $control_id ): void {
-	$designs = Zion_Theme_Settings::card_designs();
+function zion_theme_card_picker( string $selected, string $control_id, bool $product = false ): void {
+	$designs = $product ? Zion_Theme_Settings::product_designs() : Zion_Theme_Settings::card_designs();
 	$preview = $designs[ $selected ] ?? $designs['atelier'];
 	?>
 	<div class="zion-design-picker" data-zion-design-picker data-control="<?php echo esc_attr( $control_id ); ?>">
-		<div class="zion-design-choices" role="group" aria-label="Variante vizuale pentru carduri">
+		<div class="zion-design-choices" role="group" aria-label="<?php echo $product ? 'Variante pentru pagina de produs' : 'Variante vizuale pentru carduri'; ?>">
 			<?php foreach ( $designs as $key => $design ) : ?>
 				<button type="button" class="button" data-zion-design="<?php echo esc_attr( $key ); ?>" aria-pressed="<?php echo $key === $selected ? 'true' : 'false'; ?>" data-preview="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $design[2] ) ); ?>" data-description="<?php echo esc_attr( $design[1] ); ?>"><?php echo esc_html( $design[0] ); ?></button>
 			<?php endforeach; ?>
 		</div>
 		<figure class="zion-design-preview" <?php echo isset( $designs[ $selected ] ) ? '' : 'hidden'; ?>>
 			<a href="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" target="_blank" rel="noopener" aria-label="Deschide preview-ul la dimensiunea originală">
-				<img src="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" alt="Propunere de design pentru cardul produsului" width="1536" height="1024" loading="lazy" decoding="async">
+				<img src="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" alt="<?php echo $product ? 'Propunere pentru pagina individuală de produs' : 'Propunere de design pentru cardul produsului'; ?>" width="1536" height="1024" loading="lazy" decoding="async">
 			</a>
 			<figcaption><?php echo esc_html( $preview[1] ); ?></figcaption>
 		</figure>

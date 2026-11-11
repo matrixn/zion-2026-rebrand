@@ -602,6 +602,7 @@ final class Zion_Theme_Settings {
 			'price'             => 'Preț',
 			'short_description' => 'Descriere scurtă',
 			'availability'      => 'Disponibilitate',
+			'attributes'        => 'Atribute esențiale',
 			'purchase'          => 'Formular WooCommerce',
 			'meta'              => 'SKU și categorii',
 		);
@@ -618,6 +619,12 @@ final class Zion_Theme_Settings {
 			'contexts' => array( 'global', 'shop', 'product' ),
 		);
 		$choices = array(
+			'design'       => array(
+				'Design pagină produs',
+				'Aspect independent de presetul de conținut. Configurabil separat pentru 3D Print, Software și fiecare produs.',
+				'atelier',
+				array_combine( array_keys( self::product_designs() ), array_column( self::product_designs(), 0 ) ),
+			),
 			'preset'       => array(
 				'Preset pagină',
 				'Auto folosește vitrina produsului și tipul fizic sau virtual pentru produsele fără o vitrină unică.',
@@ -745,6 +752,21 @@ final class Zion_Theme_Settings {
 			'studio-compact' => array( 'Compact Studio', 'Imagine lângă informații în cardurile late, așezare verticală în spațiile înguste.', 'compact.png', '4/3' ),
 			'technical'      => array( 'Technical', 'Contur tehnic, atribute disponibile și acțiuni egale.', 'technical.png', '4/3' ),
 			'focus'          => array( 'Premium Focus', 'Compoziție centrată, fotografie aerisită și acțiuni la baza cardului.', 'focus.png', '3/2' ),
+		);
+	}
+
+	/**
+	 * Approved single-product concepts sharing the native gallery and purchase form.
+	 *
+	 * @return array
+	 */
+	public static function product_designs(): array {
+		return array(
+			'atelier'   => array( 'Atelier', 'Galerie amplă și rezumat echilibrat, miniaturi dedesubt și acțiune principală clară.', 'product-atelier.png' ),
+			'technical' => array( 'Technical', 'Miniaturi verticale pe desktop, galerie generoasă și panou de cumpărare cu contur tehnic.', 'product-technical.png' ),
+			'immersive' => array( 'Immersive', 'Scenă panoramică pentru produs cu panou de cumpărare integrat; pe mobil, componente verticale.', 'product-immersive.png' ),
+			'focus'     => array( 'Focus cumpărare', 'Introducere, galerie și panou de cumpărare în trei coloane pe ecrane mari.', 'product-focus.png' ),
+			'editorial' => array( 'Editorial Premium', 'Titlu centrat, galerie lată și rezumat sub imagine, cu acces rapid la formularul nativ de cumpărare.', 'product-editorial.png' ),
 		);
 	}
 

@@ -15,6 +15,34 @@ require_once __DIR__ . '/../../themes/zion-theme/includes/class-zion-theme-setti
  */
 final class ZionThemeSettingsTest extends TestCase {
 	/**
+	 * Layout choices remain independent between stores and from content presets.
+	 */
+	public function test_single_product_design_precedence_and_choices(): void {
+		$config = Zion_Theme_Settings::empty_config();
+		self::assertSame( 'atelier', Zion_Theme_Settings::resolve( $config, 'product_design' )['value'] );
+		$config['global'] = array(
+			'product_design' => 'immersive',
+			'product_preset' => 'software',
+		);
+		$config['shops']  = array(
+			'3d'       => array( 'product_design' => 'technical' ),
+			'software' => array( 'product_design' => 'editorial' ),
+		);
+		$config['items']  = array( 'product' => array( 42 => array( 'product_design' => 'focus' ) ) );
+		$config           = Zion_Theme_Settings::normalize( $config );
+		self::assertSame( 'technical', Zion_Theme_Settings::resolve( $config, 'product_design', '3d' )['value'] );
+		self::assertSame( 'editorial', Zion_Theme_Settings::resolve( $config, 'product_design', 'software' )['value'] );
+		self::assertSame( 'focus', Zion_Theme_Settings::resolve( $config, 'product_design', '3d', 'product', 42 )['value'] );
+		self::assertSame( 'immersive', Zion_Theme_Settings::resolve( $config, 'product_design' )['value'] );
+		self::assertSame( 'software', Zion_Theme_Settings::resolve( $config, 'product_preset', '3d' )['value'] );
+		foreach ( array_keys( Zion_Theme_Settings::product_designs() ) as $design ) {
+			self::assertSame( array( 'product_design' => $design ), Zion_Theme_Settings::normalize_scope( array( 'product_design' => $design ), Zion_Theme_Settings::fields( 'product' ), true ) );
+		}
+		$this->expectException( InvalidArgumentException::class );
+		Zion_Theme_Settings::normalize_scope( array( 'product_design' => 'unknown' ), Zion_Theme_Settings::fields( 'product' ), true );
+	}
+
+	/**
 	 * New designs use the existing option and preserve explicit page precedence.
 	 */
 	public function test_visual_designs_share_the_existing_card_setting(): void {
