@@ -15,6 +15,25 @@ if ( $zion_core_services['failed'] ) {
 }
 $zion_core_reference = wc_get_product_id_by_sku( 'ZION-DEMO-SW-01' );
 
+if ( ! get_page_by_path( 'despre-noi' ) ) {
+	$zion_core_about = wp_insert_post(
+		wp_slash(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_name'    => 'despre-noi',
+				'post_title'   => 'Despre noi',
+				'post_excerpt' => 'Oamenii, ideile și felul de lucru din spatele Zion: printare 3D, proiectare și software din Râmnicu Vâlcea.',
+				'post_content' => zion_theme_about_content(),
+			)
+		),
+		true
+	);
+	if ( is_wp_error( $zion_core_about ) ) {
+		WP_CLI::error( $zion_core_about->get_error_message() );
+	}
+}
+
 $zion_core_reviews = get_comments(
 	array(
 		'post_id'      => $zion_core_reference,

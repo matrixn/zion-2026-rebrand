@@ -3145,3 +3145,53 @@ body:has(.zion-product-page--sticky) {
 	.zion-header nav.zion-navigation .wp-block-navigation__responsive-container.is-menu-open { animation: none; }
 }
 .zion-motion-reduced .zion-header nav.zion-navigation .wp-block-navigation__responsive-container.is-menu-open { animation: none; }
+
+/* About Zion: an editable editorial page within the existing visual system. */
+.zion-about { --overview-gap: clamp(2rem, 6vw, 6rem); }
+.zion-about [id] { scroll-margin-block-start: 9rem; }
+.zion-about-hero-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .8fr); gap: var(--overview-gap); align-items: center; }
+.zion-about-hero-grid > *, .zion-about-editorial > *, .zion-about-world-grid > *, .zion-about-value-grid > * { min-width: 0; margin-block: 0; }
+.zion-about .zion-about-lead h1 { max-width: 14ch; font-size: clamp(2.85rem, 5.7vw, 5.7rem); text-wrap: balance; }
+.zion-about-intro { max-width: 44ch; font-size: 1.125rem; line-height: 1.8; color: var(--wp--preset--color--muted); }
+.zion-about-coordinate { margin-block-start: 2.25rem; font: .68rem/1.7 var(--wp--preset--font-family--mono); letter-spacing: .08em; color: var(--wp--preset--color--muted); }
+.zion-about-note { position: relative; isolation: isolate; margin: .75rem; padding: clamp(1.5rem, 3vw, 2.5rem); min-height: 27rem; border: 1px solid var(--wp--preset--color--deep); border-radius: .35rem; color: var(--wp--preset--color--ink); background: var(--wp--preset--color--paper); transform: rotate(-2deg); box-shadow: 1.25rem 1.25rem 0 color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent); }
+.zion-about-note-label, .zion-about-note-footer { position: relative; font: .66rem/1.6 var(--wp--preset--font-family--mono); letter-spacing: .08em; }
+.zion-about .zion-about-monogram { position: absolute; inset: -.75rem 1.25rem auto auto; margin: 0; font-size: 18rem; line-height: 1; font-weight: 850; color: color-mix(in srgb, var(--wp--preset--color--deep) 12%, transparent); pointer-events: none; }
+.zion-about .zion-about-question { position: relative; max-width: 8ch; margin-block: 8rem 1rem; font-size: clamp(2.6rem, 4vw, 4rem); line-height: 1.05; font-weight: 700; letter-spacing: -.055em; }
+.zion-about-note-copy { position: relative; max-width: 23ch; }
+.zion-about-note-footer { margin-block-start: 2.5rem; padding-block-start: 1rem; border-block-start: 1px solid color-mix(in srgb, var(--wp--preset--color--ink) 20%, transparent); }
+.zion-about-editorial { display: grid; grid-template-columns: minmax(0, .55fr) minmax(0, 1.4fr); gap: var(--overview-gap); align-items: start; }
+.zion-about-editorial > .zion-overview-label { margin-block-start: 1rem; }
+.zion-about-prose > p { max-width: 65ch; font-size: 1.0625rem; line-height: 1.85; }
+.zion-about .zion-about-highlight { margin-block-start: 1.75rem; padding-inline-start: 1.25rem; border-inline-start: 3px solid var(--wp--preset--color--deep); font-size: clamp(1.2rem, 2vw, 1.65rem); line-height: 1.6; font-weight: 550; }
+.zion-about > :is(.zion-about-worlds, .zion-about-values) { --overview-bg: var(--wp--preset--color--ink); --overview-fg: var(--wp--preset--color--text); --circuit-signal: var(--wp--preset--color--accent); }
+.zion-about-worlds > h2, .zion-about-values > h2 { max-width: 21ch; }
+.zion-about-world-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-block-start: 2.5rem; }
+.zion-about-world { position: relative; padding: clamp(1.5rem, 3vw, 2.5rem); border: 1px solid color-mix(in srgb, var(--wp--preset--color--text) 20%, transparent); border-radius: .5rem; background: color-mix(in srgb, var(--wp--preset--color--surface) 85%, transparent); }
+.zion-about-world h3 { max-width: 15ch; margin-block: 2rem 1rem; font-size: clamp(1.8rem, 3vw, 2.65rem); line-height: 1.12; letter-spacing: -.045em; }
+.zion-about-world > p:not(.zion-overview-label) { max-width: 48ch; color: var(--wp--preset--color--muted); line-height: 1.8; }
+.zion-about-world .wp-block-buttons { margin-block-start: 2rem; }
+.zion-about-physical::after { content: ""; position: absolute; inset: 1.75rem 1.75rem auto auto; width: 3rem; height: 3rem; background: var(--wp--preset--color--accent); mask: url('../nexus-cube.svg') center / contain no-repeat; opacity: .65; pointer-events: none; }
+.zion-about-digital::after { content: "{ }"; position: absolute; inset: 1.75rem 1.75rem auto auto; font: 2rem/1.5 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--accent); opacity: .65; pointer-events: none; }
+.zion-about > .zion-about-values { padding-block-start: 1rem; }
+.zion-about-value-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.5rem, 4vw, 4rem); margin-block-start: 3rem; }
+.zion-about-value { padding-block-start: 1.5rem; border-block-start: 1px solid var(--wp--preset--color--deep); }
+.zion-about-value h3 { margin-block: 0 1rem; font-size: 1.4rem; line-height: 1.35; }
+.zion-about-value p { color: var(--wp--preset--color--muted); line-height: 1.85; }
+.zion-about-signature { margin-block-start: 2.5rem; font-family: var(--wp--preset--font-family--mono); font-size: .85rem; }
+.zion-about-end h2 { max-width: 15ch; }
+.zion-about-end > p:not(.zion-overview-label) { color: var(--wp--preset--color--muted); }
+.zion-about-end .wp-block-buttons { margin-block-start: 2rem; }
+.zion-about :where(a):focus-visible { outline-offset: 5px; }
+@media (max-width: 900px) {
+	.zion-about-hero-grid { grid-template-columns: minmax(0, 1fr); }
+	.zion-about-note { width: min(100% - 1.5rem, 32rem); box-sizing: border-box; justify-self: center; }
+	.zion-about-editorial { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+	.zion-about-value-grid { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+}
+@media (max-width: 600px) {
+	.zion-about-world-grid { grid-template-columns: minmax(0, 1fr); }
+	.zion-about-note { min-height: 24rem; box-shadow: .5rem .5rem 0 color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent); }
+	.zion-about .zion-about-monogram { font-size: 14rem; }
+	.zion-about .zion-about-question { margin-block-start: 6rem; }
+}

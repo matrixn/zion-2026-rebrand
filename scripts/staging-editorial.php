@@ -2,7 +2,7 @@
 /**
  * Rebuild menu destinations on a cloned staging site using native blocks.
  *
- * Usage: wp eval-file scripts/staging-editorial.php [apply|services [apply]|overview [apply]|details [apply]]
+ * Usage: wp eval-file scripts/staging-editorial.php [apply|services [apply]|overview [apply]|details [apply]|about [apply]]
  * Take a database snapshot before passing apply. Elementor metadata is retained.
  *
  * @package Zion_Theme
@@ -163,13 +163,19 @@ if ( 'overview' === $zion_theme_stage_mode ) {
 if ( 'details' === $zion_theme_stage_mode ) {
 	$zion_theme_stage_paths = array_keys( array_filter( $zion_theme_stage_services ) );
 }
-$zion_theme_stage_apply = 'apply' === ( in_array( $zion_theme_stage_mode, array( 'services', 'overview', 'details' ), true ) ? ( $args[1] ?? '' ) : $zion_theme_stage_mode );
+if ( 'about' === $zion_theme_stage_mode ) {
+	$zion_theme_stage_paths = array( 'despre-noi' );
+}
+$zion_theme_stage_apply = 'apply' === ( in_array( $zion_theme_stage_mode, array( 'services', 'overview', 'details', 'about' ), true ) ? ( $args[1] ?? '' ) : $zion_theme_stage_mode );
 foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 	$zion_theme_stage_page    = get_page_by_path( $zion_theme_stage_path );
 	$zion_theme_stage_title   = $zion_theme_stage_page ? $zion_theme_stage_page->post_title : 'Servicii';
 	$zion_theme_stage_content = '';
 	$zion_theme_stage_landing = isset( $zion_theme_stage_services[ $zion_theme_stage_path ] );
-	if ( $zion_theme_stage_landing ) {
+	$zion_theme_stage_about   = 'about' === $zion_theme_stage_mode && 'despre-noi' === $zion_theme_stage_path;
+	if ( $zion_theme_stage_about ) {
+		$zion_theme_stage_content = zion_theme_about_content();
+	} elseif ( $zion_theme_stage_landing ) {
 		$zion_theme_stage_content = zion_theme_service_landing( $zion_theme_stage_services[ $zion_theme_stage_path ] );
 	} elseif ( 'pluginuri-woocommerce' === $zion_theme_stage_path ) {
 		$zion_theme_stage_content = zion_theme_stage_block( 'paragraph', '<p>Explorează pluginurile și aplicațiile Zion sau deschide magazinul pentru licențe și descărcări.</p>' );
@@ -197,11 +203,21 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 		WP_CLI::warning( 'Necesită verificare: ' . $zion_theme_stage_path );
 		continue;
 	}
-	if ( ! $zion_theme_stage_landing && ! str_starts_with( $zion_theme_stage_path, 'magazin-' ) ) {
+	if ( ! $zion_theme_stage_landing && ! $zion_theme_stage_about && ! str_starts_with( $zion_theme_stage_path, 'magazin-' ) ) {
 		$zion_theme_stage_content = zion_theme_stage_block( 'group', '<div class="wp-block-group zion-editorial-panel">' . $zion_theme_stage_content . '</div>', array( 'className' => 'zion-editorial-panel' ) );
 	}
 	WP_CLI::log( sprintf( '%s %s: %d bytes', $zion_theme_stage_apply ? 'Apply' : 'Preview', $zion_theme_stage_path, strlen( $zion_theme_stage_content ) ) );
 	if ( $zion_theme_stage_apply ) {
+		if ( $zion_theme_stage_about && $zion_theme_stage_page &&
+			$zion_theme_stage_page->post_content === $zion_theme_stage_content &&
+			! get_post_meta( $zion_theme_stage_page->ID, '_wp_page_template', true ) &&
+			! get_post_meta( $zion_theme_stage_page->ID, '_elementor_edit_mode', true ) ) {
+			WP_CLI::log( 'Already current: despre-noi' );
+			continue;
+		}
+		if ( $zion_theme_stage_about && $zion_theme_stage_page ) {
+			wp_save_post_revision( $zion_theme_stage_page->ID );
+		}
 		$zion_theme_stage_result = wp_insert_post(
 			wp_slash(
 				array(
@@ -210,7 +226,7 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 					'post_name'    => basename( $zion_theme_stage_path ),
 					'post_parent'  => $zion_theme_stage_page ? $zion_theme_stage_page->post_parent : 0,
 					'post_title'   => $zion_theme_stage_title,
-					'post_status'  => $zion_theme_stage_landing && $zion_theme_stage_page ? $zion_theme_stage_page->post_status : 'publish',
+					'post_status'  => ( $zion_theme_stage_landing || $zion_theme_stage_about ) && $zion_theme_stage_page ? $zion_theme_stage_page->post_status : 'publish',
 					'post_content' => $zion_theme_stage_content,
 				)
 			),
@@ -221,6 +237,9 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 		}
 		if ( $zion_theme_stage_landing ) {
 			update_post_meta( $zion_theme_stage_result, '_wp_page_template', 'service-landing' );
+		}
+		if ( $zion_theme_stage_about ) {
+			delete_post_meta( $zion_theme_stage_result, '_wp_page_template' );
 		}
 		delete_post_meta( $zion_theme_stage_result, '_elementor_edit_mode' );
 		foreach ( array( 'elementor_canvas', 'elementor_header_footer' ) as $zion_theme_stage_legacy_template ) {

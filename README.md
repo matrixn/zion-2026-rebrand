@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.18** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.19** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.18** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.19** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,17 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Despre noi, cu vocea Zion 1.1.19
+
+- [x] Pagină editorială cu hero „Oameni curioși. Idei care prind formă.”, notă tipografică Zion, poveste, atelier și software, principii de lucru și invitație la dialog. Negru, lime, Paper și același fundal CAD animat, cu reducerea mișcării.
+- [x] Conținut din blocuri Gutenberg native, pattern reutilizabil și șablon HTML `page-despre-noi`. Header/footer editabile în Site Editor; seed-ul local creează doar pagina lipsă și păstrează editările existente. Fără asseturi JavaScript noi.
+- [x] Mod staging `about` pentru preview și aplicare exclusiv pe această pagină, după backup. Păstrează URL-ul, ID-ul și metadatele SEO; salvează revizia și elimină selecția vechiului editor/șablon de pe pagina reconstruită.
+- [x] Cinci teste About: 390/768/1024/1440 px, zero overflow, ancoră din tastatură, contrast, reduced motion, fără JavaScript și blocuri valide în editorul nativ. Integrare pentru conținut nativ și păstrarea modificărilor la seed.
+- [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **41/41 teste storefront** trecute. Referințe About noi și referințele existente actualizate pentru linkul Despre noi introdus în meniul și footer-ul demo.
+- [ ] Verificările finale, staging, CI, ZIP-urile 1.1.19 și livrarea pe `main`.
+
+Ghid: [pagina Despre noi](docs/about-page.md).
 
 ## Hover continuu pentru mega meniuri 1.1.18
 
