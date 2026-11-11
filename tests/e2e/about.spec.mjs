@@ -19,6 +19,10 @@ for (const width of [390, 768, 1024, 1440]) {
     await expect(about.locator('.zion-forge-phase')).toHaveCount(4);
     for (const phase of await about.locator('.zion-forge-phase').all()) await expect(phase).toBeVisible();
     await expect(about.locator('canvas[data-render-mode="static"]')).toHaveCount(2);
+    for (const canvas of await about.locator('canvas').all()) {
+      const aspect = await canvas.evaluate(e => ({ pixels: e.width / e.height, display: e.getBoundingClientRect().width / e.getBoundingClientRect().height }));
+      expect(aspect.pixels).toBeCloseTo(aspect.display, 1);
+    }
     await expect(about.locator('.zion-about-hero')).toHaveCSS('color', 'rgb(243, 246, 239)');
     await expect(about.locator('.zion-about-story')).toHaveCSS('color', 'rgb(8, 13, 9)');
     expect(await about.locator('.zion-about-hero').evaluate(e => getComputedStyle(e, '::after').animationName)).toBe('none');

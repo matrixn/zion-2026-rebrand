@@ -47,7 +47,8 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Pauză/reluare pentru întreaga animație About, inclusiv fundalul CAD. Preferința OS și opțiunea temei pentru mișcare redusă afișează geometrie statică și toate textele; fără JavaScript rămâne pagina editorială completă. Derulare nativă, fără scroll-jacking.
 - [x] Actualizare staging `about-motion`: preview fără scriere, inserare punctuală cu revizie și păstrarea blocurilor editate și a metadatelor; reaplicarea nu dublează scena.
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **44 teste storefront** trecute, dintre care opt pentru About și Continuum; referințele vizuale About actualizate. ZIP-uri Theme/Core **1.1.20** generate.
-- [ ] Verificarea completă a administrării, instalare și QA staging, GitHub Actions și consemnarea livrării pe `main`.
+- [x] Suita locală completă: **62/62 teste Playwright** trecute (14,9 minute). După ajustarea proporțiilor Canvas din hero, toate cele **8 teste About/Continuum** au fost repetate cu succes, inclusiv raportul corect între pixelii Canvas și dimensiunea afișată.
+- [ ] QA staging final, GitHub Actions și consemnarea livrării pe `main`.
 
 Ghid tehnic și actualizare: [Despre noi / Continuum](docs/about-page.md).
 

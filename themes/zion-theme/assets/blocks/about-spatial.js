@@ -107,7 +107,8 @@
     about.style.setProperty('--zion-forge-height', `${Math.max(380, innerHeight - topInset - 16)}px`);
     for (const scene of scenes) {
       scene.rect = scene.host.getBoundingClientRect();
-      const { width, height } = scene.rect;
+      // The hero canvas occupies only the illustration area, not the copy below.
+      const { width, height } = scene.canvas.getBoundingClientRect();
       const ratio = Math.min(devicePixelRatio || 1, compact ? 1 : 1.5);
       const w = Math.round(width * ratio), h = Math.round(height * ratio);
       if (scene.canvas.width !== w || scene.canvas.height !== h) {
@@ -141,7 +142,7 @@
     const t = reduced() ? 0 : clock;
     const ry = -.38 + Math.sin(t * .23) * .12 + pointer[0] * .25 + code * .25;
     const rx = -.17 + Math.cos(t * .17) * .055 - pointer[1] * .18;
-    const scale = Math.min(w * (isForge ? .24 : .3), h * (isForge ? .32 : .27));
+    const scale = Math.min(w * (isForge ? .24 : .32), h * (isForge ? .32 : .31));
     const cy = isForge ? h * .48 : h * .43;
     const project = (x, y, z) => {
       const a = x * Math.cos(ry) + z * Math.sin(ry), b = z * Math.cos(ry) - x * Math.sin(ry);
