@@ -210,16 +210,7 @@ function zion_theme_about_spatial_markup( string $html, array $block ): string {
 	if ( ! $seed && ! $forge ) {
 		return $html;
 	}
-	wp_enqueue_script(
-		'zion-about-spatial',
-		get_theme_file_uri( 'assets/blocks/about-spatial.js' ),
-		array(),
-		wp_get_theme()->get( 'Version' ),
-		array(
-			'strategy'  => 'defer',
-			'in_footer' => true,
-		)
-	);
+	zion_theme_enqueue_continuum();
 	$canvas = '<canvas class="zion-spatial-canvas" data-zion-spatial="' . ( $seed ? 'seed' : 'forge' ) . '" aria-hidden="true"></canvas>';
 	return preg_replace( '~(</div>\s*)$~', $canvas . '$1', $html, 1 ) ?? $html;
 }

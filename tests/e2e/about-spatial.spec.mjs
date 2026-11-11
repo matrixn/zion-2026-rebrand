@@ -74,9 +74,9 @@ test('Continuum respects live reduced motion and stays conditional', async ({ br
   try {
     const page = await context.newPage();
     await page.goto('/magazin-3d/');
-    await expect(page.locator('script#zion-about-spatial-js')).toHaveCount(0);
+    await expect(page.locator('script#zion-continuum-js')).toHaveCount(0);
     await page.goto('/despre-noi/');
-    await expect(page.locator('script#zion-about-spatial-js')).toHaveCount(1);
+    await expect(page.locator('script#zion-continuum-js')).toHaveCount(1);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect(page.locator('.zion-about')).toHaveClass(/is-spatial-static/);
     const canvas = page.locator('.zion-about-note canvas');

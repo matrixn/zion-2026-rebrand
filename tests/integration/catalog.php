@@ -130,4 +130,5 @@ try {
 	update_option( Zion_Theme_Settings::OPTION, $zion_core_checkout_before );
 }
 require __DIR__ . '/about.php';
+require __DIR__ . '/home-continuum.php';
 WP_CLI::success( 'Catalog integration passed.' );
