@@ -46,6 +46,8 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] O singură colecție cu ultimele șase produse vizibile din magazinul 3D, ordonate descrescător după data publicării. Cardurile compacte folosesc rendererul comun, trei coloane pe desktop și două pe mobil. Dacă există mai puține produse eligibile, apar doar cele disponibile.
 - [x] Două direcții de explorare, șapte servicii, exemple de utilizare, pașii colaborării, articole recente și FAQ editabil. Colecțiile repetate și recenziile de pe homepage au fost înlocuite cu această compoziție.
 - [x] Compoziția se editează în **Aspect → Editor → Șabloane → Prima pagină**. Pattern-ul **Zion · Homepage / Creative engineering** poate fi inserat și editat în Gutenberg.
+- [x] Verificarea pe staging confirmă șase produse în aceeași ordine ca în catalogul 3D sortat după dată, fără overflow la 390, 768, 1024 și 1440 px. Linkurile produselor, FAQ-ul și varianta cu mișcare redusă au fost verificate în Chrome.
+- [x] Validare locală pentru 1.1.7 cu build, WPCS, 32 teste PHPUnit și 285 aserțiuni, integrare și migrare, plus 43 teste Playwright. Verificările includ editarea nativă a homepage-ului în Site Editor și sortarea colecției de produse.
 
 ## Footer și fundalul paginilor de servicii 1.1.6
 

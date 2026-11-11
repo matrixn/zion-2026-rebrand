@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const routes = [
-  { url: '/', heading: /ideile devin realitate/i },
+  { url: '/', heading: /Imaginează.*Noi construim/i },
   { url: '/servicii/', heading: /Idei ambițioase.*Soluții reale/, block: '.zion-service-main .zion-overview-card-lime' },
   { url: '/magazin-3d/', heading: 'Magazin 3D' },
   { url: '/magazin-software/', heading: 'Magazin Software' },
@@ -104,8 +104,8 @@ test('Site Editor opens the theme templates and template parts as native blocks'
       const scope = block === 'core/search' && type === 'wp_template' ? 'main ' : '';
       await expect(canvas.locator(`${scope}[data-type="${block}"]`).first()).toBeVisible({ timeout: 15_000 });
       if (slug === 'front-page') {
-        await expect(canvas.locator('[data-type="zion/services-grid"]').first()).toBeVisible();
-        await expect(canvas.locator('[data-type="zion/featured-products"]').first()).toBeVisible();
+        await expect(canvas.locator('.zion-home-service').first()).toBeVisible();
+        await expect(canvas.locator('[data-type="zion/new-arrivals"]').first()).toBeVisible();
       }
       await expect(canvas.getByText('This block contains unexpected or invalid content.')).toHaveCount(0);
     });
