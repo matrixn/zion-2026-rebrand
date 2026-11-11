@@ -30,19 +30,19 @@ test('all nine component demos render with the native product scope and paginati
 });
 
 for (const width of [390, 1440]) {
-  test(`eleven homepage sections and service links fit at ${width}px`, async ({ page }) => {
+  test(`homepage sections and service links fit at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 850 });
     await page.goto('/');
     await expect(page.locator('main h1')).toHaveCount(1);
-    await expect(page.locator('.zion-hero .zion-blueprint')).toHaveCSS('animation-name', 'none');
+    await expect(page.locator('.zion-home-lab')).toHaveCSS('animation-name', 'none');
     expect(await page.locator('main h2').allTextContents()).toEqual([
-      'Ce construim.', 'De la atelier la aplicație.', 'Produse recomandate', 'Magazin 3D', 'Magazin Software',
-      'Ecosistemul Zion', 'De la schiță la soluție.', 'Recenzii din magazin', 'Articole recente', 'Găsește următoarea piesă.'
+      'Lucruri mici. Posibilități mari.', 'Din atelier. Din cod. Pentru tine.', 'Șapte puncte de plecare.',
+      'De aici poate începe ceva bun.', 'De la „dacă?” la „uite-l”.', 'Idei de luat mai departe.', 'Curiozitatea e un început bun.'
     ]);
-    await expect(page.locator('.zion-services-grid article h3 a')).toHaveCount(7);
+    await expect(page.locator('.zion-home-service h3 a')).toHaveCount(7);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
-    const services = await page.locator('.zion-services-grid article h3 a').evaluateAll(links =>
-      links.map(link => ({ url: link.href, title: link.textContent }))
+    const services = await page.locator('.zion-home-service h3 a').evaluateAll(links =>
+      links.map(link => ({ url: link.href, title: link.textContent.replace(' ↗', '') }))
     );
     for (const service of services) {
       await page.goto(service.url);
@@ -65,9 +65,10 @@ test('frontend assets follow rendered components and WooCommerce emits native Pr
   await expect(page.locator('#zion-collections-css, #zion-card-js, #zion-library-editor-js')).toHaveCount(0);
   await expect(page.locator('head meta[name="description"]')).toHaveCount(1);
   await page.goto('/');
-  await expect(page.locator('#zion-collections-css, #zion-library-content-css')).toHaveCount(2);
+  await expect(page.locator('#zion-collections-css')).toHaveCount(1);
+  await expect(page.locator('#zion-library-content-css')).toHaveCount(0);
   await expect(page.locator('#zion-card-js, #zion-library-editor-js')).toHaveCount(0);
-  await expect(page.locator('.zion-featured .zion-product-card__image img').first()).toHaveAttribute('loading', 'lazy');
+  await expect(page.locator('.zion-home-products .zion-product-card__image img').first()).toHaveAttribute('loading', 'lazy');
   await page.goto('/product/zion-catalog-tools/');
   await expect(page.locator('head link[rel="canonical"]')).toHaveCount(1);
   await expect(page.locator('head meta[name="description"]')).toHaveCount(1);
@@ -83,33 +84,46 @@ test('frontend assets follow rendered components and WooCommerce emits native Pr
   expect(schemas[0].offers).toBeTruthy();
 });
 
-test('Nexus footer and service circuit adapt to viewport and reduced motion', async ({ page }) => {
-  const backdrop = (selector) => page.locator(selector).evaluate(band => {
-    const grid = getComputedStyle(band, '::before');
-    const signal = getComputedStyle(band, '::after');
-    return { grid: grid.transform, signal: signal.backgroundPosition, animation: signal.animationName };
+for (const path of ['/servicii/', '/']) {
+  test(`Nexus footer and circuit adapt to viewport and reduced motion on ${path}`, async ({ page }) => {
+    const backdrop = (selector) => page.locator(selector).evaluate(band => {
+      const grid = getComputedStyle(band, '::before');
+      const signal = getComputedStyle(band, '::after');
+      return { grid: grid.transform, signal: signal.backgroundPosition, animation: signal.animationName };
+    });
+
+    for (const width of [1440, 390]) {
+      await page.setViewportSize({ width, height: 850 });
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.goto(path);
+      const footer = page.locator('footer .zion-nexus');
+      await expect(footer.locator('.zion-nexus-column')).toHaveCount(4);
+      await expect(footer.getByRole('link', { name: 'PORNEȘTE UN PROIECT' })).toHaveAttribute('href', /\/contact\/$/);
+      await expect(footer.getByRole('link', { name: 'ANPC' })).toHaveAttribute('href', 'https://anpc.ro/');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+
+      const hero = '.zion-services-overview > .zion-overview-hero';
+      const content = '.zion-services-overview > .zion-overview-band:nth-child(2)';
+      const initial = await backdrop(hero);
+      expect(initial.animation).toContain('zion-circuit-signals');
+      await expect.poll(async () => (await backdrop(hero)).signal).not.toBe(initial.signal);
+      await page.locator(content).scrollIntoViewIfNeeded();
+      await expect.poll(async () => (await backdrop(hero)).grid).not.toBe(initial.grid);
+      expect((await backdrop(content)).animation).toContain('zion-circuit-signals');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      expect((await backdrop(hero)).animation).toBe('none');
+      expect((await backdrop(content)).animation).toBe('none');
+    }
   });
+}
 
-  for (const width of [1440, 390]) {
-    await page.setViewportSize({ width, height: 850 });
-    await page.emulateMedia({ reducedMotion: 'no-preference' });
-    await page.goto('/servicii/');
-    const footer = page.locator('footer .zion-nexus');
-    await expect(footer.locator('.zion-nexus-column')).toHaveCount(4);
-    await expect(footer.getByRole('link', { name: 'PORNEȘTE UN PROIECT' })).toHaveAttribute('href', /\/contact\/$/);
-    await expect(footer.getByRole('link', { name: 'ANPC' })).toHaveAttribute('href', 'https://anpc.ro/');
-    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
-
-    const hero = '.zion-services-overview > .zion-overview-hero';
-    const content = '.zion-services-overview > .zion-overview-band:nth-child(2)';
-    const initial = await backdrop(hero);
-    expect(initial.animation).toContain('zion-circuit-signals');
-    await expect.poll(async () => (await backdrop(hero)).signal).not.toBe(initial.signal);
-    await page.locator(content).scrollIntoViewIfNeeded();
-    await expect.poll(async () => (await backdrop(hero)).grid).not.toBe(initial.grid);
-    expect((await backdrop(content)).animation).toContain('zion-circuit-signals');
-    await page.emulateMedia({ reducedMotion: 'reduce' });
-    expect((await backdrop(hero)).animation).toBe('none');
-    expect((await backdrop(content)).animation).toBe('none');
-  }
+test('homepage latest products match the 3D catalog date order without duplicating collections', async ({ page }) => {
+  await page.goto('/magazin-3d/?orderby=date');
+  const expected = (await page.locator('.zion-catalog-native .zion-product-card__title a').allTextContents()).slice(0, 6);
+  expect(expected.length).toBeGreaterThan(0);
+  await page.goto('/');
+  await expect(page.locator('main .zion-library-collection')).toHaveCount(1);
+  const collection = page.locator('.zion-home-products .zion-library-collection--new');
+  await expect(collection.locator('.zion-product-card__title a')).toHaveText(expected);
+  await expect(collection.getByText('Zion Catalog Tools', { exact: true })).toHaveCount(0);
 });

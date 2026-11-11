@@ -4,12 +4,13 @@ for (const width of [390, 768, 1024, 1440]) {
   test(`homepage fits at ${width}px @visual`, async ({ page }) => {
     await page.setViewportSize({ width, height: 850 });
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1, name: /ideile devin realitate/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Zion Catalog Tools', exact: true }).last()).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /Imaginează.*Noi construim/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Suport modular 3D', exact: true }).last()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
 
     if (width === 390 || width === 1440) {
-      await expect(page.locator('.zion-featured img')).toHaveCount(4);
+      await expect(page.locator('main .zion-library-collection')).toHaveCount(1);
+      await expect(page.locator('.zion-home-products .zion-product-card')).toHaveCount(2);
       const images = page.locator('.zion-library-collection img');
       await images.evaluateAll(async elements => {
         for (const image of elements) image.loading = 'eager';

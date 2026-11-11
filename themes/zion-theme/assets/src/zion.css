@@ -2261,3 +2261,227 @@ body:has(.zion-product-page--sticky) {
 @media (max-width: 520px) {
 	.zion-nexus-directory { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* The homepage reuses the service circuit and the shared commerce renderer. */
+.zion-home { overflow-x: clip; }
+
+.zion-homepage {
+	--overview-bg: var(--wp--preset--color--ink);
+	--overview-fg: var(--wp--preset--color--text);
+}
+
+.zion-homepage > .zion-overview-band {
+	--circuit-signal: var(--wp--preset--color--accent);
+	padding-block: clamp(2.75rem, 5vw, 5rem);
+	border-block-end: 1px solid color-mix(in srgb, var(--wp--preset--color--accent) 14%, transparent);
+}
+
+.zion-homepage .zion-overview-label {
+	color: var(--wp--preset--color--accent);
+	font-size: .7rem;
+}
+
+.zion-homepage h2 {
+	font-size: clamp(2rem, 3.5vw, 3.25rem);
+	letter-spacing: -.05em;
+	max-inline-size: 23ch;
+}
+
+.zion-homepage > .zion-home-hero {
+	padding-block-start: clamp(2.5rem, 5vw, 5rem);
+	padding-block-end: 1.4rem;
+}
+
+.zion-home-hero-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	align-items: center;
+	gap: clamp(1.5rem, 4vw, 4rem);
+}
+
+.zion-home-hero-grid > * { margin: 0; min-inline-size: 0; }
+.zion-home-hero h1 { font-size: clamp(3.1rem, 6vw, 5.6rem); }
+.zion-home-lead { max-inline-size: 42ch; font-size: clamp(1rem, 1.4vw, 1.2rem); color: var(--wp--preset--color--muted); }
+.zion-home-capabilities { font-size: .8rem; letter-spacing: .02em; color: var(--wp--preset--color--muted); margin-block-start: 1.5rem; }
+
+.zion-home-lab {
+	border: 0;
+	background: radial-gradient(ellipse at center, color-mix(in srgb, var(--wp--preset--color--accent) 8%, transparent), transparent 70%);
+	padding: 1rem 0;
+	max-inline-size: 33rem;
+}
+
+.zion-home-lab .zion-blueprint-label { font-size: .6rem; }
+.zion-home-lab svg { max-block-size: 27rem; }
+.zion-home-lab .zion-home-solid { fill: color-mix(in srgb, var(--wp--preset--color--accent) 8%, var(--wp--preset--color--surface)); }
+
+.zion-home-hero-note {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: .5rem 1rem;
+	border-block-start: 1px solid var(--overview-rule);
+	padding-block-start: 1rem;
+	margin-block-start: 2rem;
+	font: 650 .65rem/1.6 var(--wp--preset--font-family--mono);
+	letter-spacing: .08em;
+	color: var(--wp--preset--color--muted);
+}
+
+.zion-home-hero-note > p { margin: 0; }
+
+.zion-home-section-head {
+	display: flex;
+	align-items: end;
+	justify-content: space-between;
+	gap: 1.5rem;
+	margin-block-end: 1.75rem;
+}
+
+.zion-home-section-head > * { margin: 0; }
+.zion-home-heading > :last-child { max-inline-size: 60ch; color: var(--wp--preset--color--muted); }
+.zion-home-heading > h2:last-child { color: inherit; }
+.zion-home-section-head .wp-block-buttons { flex-shrink: 0; }
+.zion-homepage .wp-block-button__link { font-size: .86rem; padding: .85rem 1.1rem; min-block-size: 44px; }
+
+.zion-homepage > .zion-home-products { --overview-bg: var(--wp--preset--color--surface); }
+
+.zion-homepage .zion-home-products .zion-library-collection .wc-block-product-template {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.zion-home-products .zion-product-card {
+	--card-inset: .85rem;
+	--card-gap: .45rem;
+	border-radius: .65rem;
+	height: 100%;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: start;
+	grid-template-rows: auto 1fr;
+}
+
+.zion-home-products .zion-product-card__media { min-inline-size: 0; grid-row: auto; }
+.zion-home-products .zion-product-card__image { max-block-size: 12rem; border-radius: .3rem; }
+.zion-home-products .zion-product-card__body { align-content: start; }
+.zion-home-products .zion-product-card__title :is(h2, h3) { font-size: 1.05rem; line-height: 1.3; }
+.zion-home-products .zion-product-card__description { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .8rem; }
+.zion-home-products .zion-product-card__body :is(.zion-product-card__category, .zion-product-card__brand, .zion-product-card__sku, .zion-product-card__availability) { font-size: .73rem; }
+.zion-home-products .zion-product-card .wp-element-button { font-size: .8rem; padding: .6rem .8rem; min-block-size: 44px; }
+.zion-home-products .zion-product-card__price { font-size: 1rem; }
+
+.zion-home-path-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.zion-home-path {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: start;
+	padding: clamp(1.5rem, 3vw, 2.75rem);
+	margin: 0;
+	border-radius: .65rem;
+	border: 1px solid var(--overview-rule);
+	background: var(--wp--preset--color--surface);
+}
+
+.zion-home-path h3 { font-size: clamp(1.8rem, 3vw, 2.5rem); letter-spacing: -.055em; line-height: 1.07; margin-block: .7rem; }
+.zion-home-path > p { max-inline-size: 45ch; margin-block: .5rem; }
+.zion-home-path-tags { font: 700 .65rem/1.7 var(--wp--preset--font-family--mono); letter-spacing: .07em; }
+.zion-home-path .wp-block-buttons { margin-block-start: auto; padding-block-start: 1.5rem; }
+.zion-home-path-physical { background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); }
+.zion-home-path-physical .zion-overview-label { color: inherit; }
+.zion-home-path-physical .wp-block-button__link { background: var(--wp--preset--color--ink); color: var(--wp--preset--color--text); }
+
+.zion-home-service-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+
+.zion-home-service {
+	position: relative;
+	padding: 1.5rem;
+	border: 1px solid var(--overview-rule);
+	border-radius: .65rem;
+	margin: 0;
+	background: var(--wp--preset--color--ink);
+}
+
+.zion-home-service > :first-child { margin: 0; }
+.zion-home-service h3 { font-size: 1.25rem; line-height: 1.25; letter-spacing: -.035em; margin-block: .6rem; }
+.zion-home-service h3 a { color: inherit; text-decoration: none; }
+.zion-home-service h3 a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.zion-home-service h3 a::after { content: ""; position: absolute; inset: 0; border-radius: .65rem; }
+.zion-home-service:focus-within { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
+.zion-home-service > p:last-child { margin: 0; font-size: .9rem; color: var(--wp--preset--color--muted); }
+
+.zion-home-service-ai {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.1fr);
+	align-items: center;
+	gap: 1.5rem;
+	border-color: color-mix(in srgb, var(--wp--preset--color--accent) 38%, transparent);
+	background: color-mix(in srgb, var(--wp--preset--color--accent) 7%, var(--wp--preset--color--surface));
+}
+
+.zion-homepage > .zion-home-cases { --overview-bg: var(--wp--preset--color--surface); }
+.zion-home-cases .zion-service-grid,
+.zion-home-process .zion-service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.zion-homepage :is(.zion-home-cases, .zion-home-process) .zion-service-card {
+	padding: 1.4rem;
+	background: var(--wp--preset--color--ink);
+	border: 1px solid var(--overview-rule);
+	border-radius: .65rem;
+}
+
+.zion-homepage .zion-service-card h3 { font-size: 1.3rem; letter-spacing: -.035em; }
+.zion-homepage .zion-service-card > p:last-child { font-size: .9rem; color: var(--wp--preset--color--muted); }
+.zion-home-cases > .wp-block-buttons { margin-block-start: 1.5rem; }
+.zion-home-process-intro { max-inline-size: 29ch; color: var(--wp--preset--color--muted); }
+
+.zion-home-post {
+	padding: 1.1rem;
+	border: 1px solid var(--overview-rule);
+	border-radius: .65rem;
+	background: var(--wp--preset--color--surface);
+}
+
+.zion-home-post .wp-block-post-featured-image { margin: 0 0 1rem; max-block-size: 11rem; overflow: hidden; border-radius: .3rem; }
+.zion-home-post :is(h3, .wp-block-post-excerpt p) { margin-block: .6rem; }
+.zion-home-post h3 { font-size: 1.3rem; line-height: 1.2; }
+.zion-home-post h3 a { color: inherit; }
+.zion-home-post .wp-block-post-excerpt { font-size: .9rem; color: var(--wp--preset--color--muted); }
+.zion-home-journal > p:not(.zion-overview-label) { color: var(--wp--preset--color--muted); }
+.zion-home-questions details { border-block-start: 1px solid var(--overview-rule); padding-block: 1rem; }
+.zion-home-questions details:last-child { border-block-end: 1px solid var(--overview-rule); }
+.zion-home-questions details > summary { cursor: pointer; padding-block: .25rem; font-weight: 650; }
+.zion-home-questions details > p { font-size: .95rem; color: var(--wp--preset--color--muted); }
+.zion-homepage .zion-home-faq { gap: 3rem; }
+.zion-home-faq > * { margin: 0; }
+
+@media (max-width: 1050px) {
+	.zion-home-section-head { flex-wrap: wrap; }
+	.zion-home-hero-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 1rem; }
+	.zion-home-hero h1 { font-size: clamp(3rem, 6vw, 5.6rem); }
+}
+
+@media (max-width: 780px) {
+	.zion-home-hero-grid { grid-template-columns: minmax(0, 1fr); }
+	.zion-home-hero h1 { font-size: clamp(3rem, 9vw, 4.75rem); }
+	.zion-home-lab { width: 100%; max-inline-size: 25rem; margin-inline: auto; }
+	.zion-home-lab svg { max-block-size: 16rem; }
+	.zion-home-path-grid,
+	.zion-home-service-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.zion-homepage .zion-home-products .zion-library-collection .wc-block-product-template { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	.zion-homepage :is(.zion-home-cases, .zion-home-process) .zion-service-grid { grid-template-columns: minmax(0, 1fr); }
+	.zion-home-service-ai { display: block; }
+}
+
+@media (max-width: 520px) {
+	.zion-home-hero-note { display: grid; }
+	.zion-home-path-grid,
+	.zion-home-service-grid { grid-template-columns: minmax(0, 1fr); }
+	.zion-home-products .zion-product-card { --card-inset: .65rem; --card-gap: .4rem; }
+	.zion-home-products .zion-product-card__image { max-block-size: 9rem; }
+	.zion-home-products .zion-product-card__title :is(h2, h3) { font-size: .92rem; }
+	.zion-home-products .zion-product-card .wp-element-button { padding-inline: .5rem; font-size: .75rem; }
+	.zion-home-service { padding: 1.2rem; }
+	.zion-homepage > .zion-home-hero { padding-block-start: 2rem; }
+}
