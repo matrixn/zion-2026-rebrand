@@ -49,7 +49,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Stiluri responsive și focus vizibil, tokenuri din `theme.json`, variantă Contrast Premium. Traduceri de rezervă pentru etichetele native ale contului; traducerile instalate și formatarea datelor WooCommerce au prioritate. Fără JavaScript nou pe frontend și fără suprascrieri de template-uri PHP WooCommerce.
 - [x] PHPUnit: 45 teste / 378 aserțiuni. Testul dedicat verifică cele cinci variante la 390/768/1024/1440 px pentru clienți și vizitatori, endpointurile native și izolarea comenzilor între clienți.
 - [x] Suita completă Playwright: **51 scenarii trecute**, inclusiv salvarea detaliilor contului și logoutul nativ. Build, WPCS, integrarea și migrarea/rollback-ul pe date sintetice trecute. ZIP-urile 1.1.14 generate.
-- [ ] Verificare 1.1.14 pe staging.
+- [x] Theme și Core 1.1.14 instalate pe staging după backup privat. Cinci designuri × 390/768/1024/1440 px: navigație/conținut unice, zero overflow și stare goală corectă pentru contul fără comenzi. Comenzi, Descărcări, Adrese și Detalii cont verificate la 390 și 1440 px; selector, preview-uri, lightbox și revenirea focusului funcționale. Fără erori în consolele taburilor verificate. Selecția a revenit la Moștenește / Atelier; nu s-au trimis formulare de profil, comenzi sau plăți pe staging și nu s-a modificat producția.
 
 Ghid: [designurile contului](docs/account-designs.md).
 
