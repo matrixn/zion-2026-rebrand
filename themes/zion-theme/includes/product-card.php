@@ -83,24 +83,10 @@ function zion_theme_card_profile( string $shop ): array {
 	if ( isset( $profiles[ $shop ] ) ) {
 		return $profiles[ $shop ];
 	}
-	$preset = zion_theme_setting_with_source( 'card_preset', $shop );
-	if ( 'default' === $preset['source'] && 'compact' === zion_theme_setting( 'catalog_density', $shop ) ) {
-		$preset['value'] = 'compact';
-	}
+	$preset   = zion_theme_setting_with_source( 'card_preset', $shop );
 	$settings = array( 'preset' => $preset['value'] );
 	foreach ( array( 'ratio', 'fit', 'color', 'buttons', 'badge_place', 'title_lines', 'order' ) as $key ) {
 		$settings[ $key ] = zion_theme_setting( 'card_' . $key, $shop );
-	}
-	$design = Zion_Theme_Settings::card_designs()[ $settings['preset'] ] ?? null;
-	if ( $design ) {
-		foreach ( array(
-			'ratio' => $design[3],
-			'fit'   => 'contain',
-		) as $key => $value ) {
-			if ( 'default' === zion_theme_setting_with_source( 'card_' . $key, $shop )['source'] ) {
-				$settings[ $key ] = $value;
-			}
-		}
 	}
 	$common = array( 'image', 'title', 'price', 'sale_price', 'placeholder', 'wishlist', 'compare' );
 	$shown  = match ( $settings['preset'] ) {

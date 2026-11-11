@@ -786,7 +786,7 @@ final class Zion_Theme_Settings {
 			'fit'         => array(
 				'Încadrare imagine',
 				'Umple cadrul sau afișează integral fotografia.',
-				'cover',
+				'contain',
 				array(
 					'cover'   => 'Umple cadrul',
 					'contain' => 'Imagine integrală',
@@ -1050,8 +1050,21 @@ final class Zion_Theme_Settings {
 				);
 			}
 		}
+		$value = self::registry()[ $key ]['default'];
+		if ( 'card_preset' === $key && 'compact' === self::resolve( $config, 'catalog_density', $shop, $type, $id )['value'] ) {
+			$value = 'compact';
+		}
+		if ( in_array( $key, array( 'card_ratio', 'card_fit' ), true ) ) {
+			$preset = self::resolve( $config, 'card_preset', $shop, $type, $id )['value'];
+			$design = self::card_designs()[ $preset ] ?? null;
+			if ( 'card_ratio' === $key && $design ) {
+				$value = $design[3];
+			} elseif ( 'card_fit' === $key && ! $design ) {
+				$value = 'cover';
+			}
+		}
 		return array(
-			'value'  => self::registry()[ $key ]['default'],
+			'value'  => $value,
 			'source' => 'default',
 		);
 	}

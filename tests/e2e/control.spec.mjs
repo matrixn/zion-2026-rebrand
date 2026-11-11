@@ -663,6 +663,12 @@ test('visual card choices save with Ajax and remain independent by destination',
       await expect(field(page, 'card_preset')).toHaveValue(presets[index]);
       await expect(page.locator('.zion-design-preview')).toBeVisible();
       await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+      const previewWidth = await page.locator('.zion-design-preview').evaluate(element => element.getBoundingClientRect().width);
+      const formWidth = await page.locator('[data-zion-section]').evaluate(element => element.getBoundingClientRect().width);
+      expect(previewWidth / formWidth).toBeGreaterThan(.8);
+      const activeColor = await page.locator('.nav-tab-wrapper').evaluate(element => getComputedStyle(element).backgroundColor);
+      await expect(page.locator('[data-zion-design][aria-pressed="true"]')).toHaveCSS('background-color', activeColor);
+      if (index === 0) await page.locator('.zion-design-picker').screenshot({ path: 'build/control-card-selector-1.1.9.png' });
       const origin = await page.evaluate(() => performance.timeOrigin);
       if (index === 0) stale = await requestFields(page.locator('[data-zion-section]'));
       const response = page.waitForResponse(reply => reply.url().includes('admin-ajax.php') && reply.request().method() === 'POST');

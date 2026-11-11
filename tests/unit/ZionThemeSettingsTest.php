@@ -34,7 +34,12 @@ final class ZionThemeSettingsTest extends TestCase {
 		self::assertSame( 'editorial', Zion_Theme_Settings::resolve( $config, 'card_preset', 'software' )['value'] );
 		foreach ( array_keys( Zion_Theme_Settings::card_designs() ) as $preset ) {
 			self::assertSame( array( 'card_preset' => $preset ), Zion_Theme_Settings::normalize_scope( array( 'card_preset' => $preset ), Zion_Theme_Settings::fields( 'page' ), true ) );
+			$config['global']['card_preset'] = $preset;
+			self::assertSame( Zion_Theme_Settings::card_designs()[ $preset ][3], Zion_Theme_Settings::resolve( $config, 'card_ratio' )['value'] );
+			self::assertSame( 'contain', Zion_Theme_Settings::resolve( $config, 'card_fit' )['value'] );
 		}
+		$config['global']['card_preset'] = 'classic';
+		self::assertSame( 'cover', Zion_Theme_Settings::resolve( $config, 'card_fit' )['value'] );
 		self::assertSame( array( 'card_preset' => 'classic' ), Zion_Theme_Settings::normalize_scope( array( 'card_preset' => 'classic' ), Zion_Theme_Settings::fields( 'global' ), true ) );
 	}
 
