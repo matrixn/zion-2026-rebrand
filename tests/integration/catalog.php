@@ -109,4 +109,24 @@ zion_core_test_assert(
 	'https://example.test/manual' === sanitize_meta( '_zion_product_documentation', 'https://example.test/manual', 'post', 'product' ),
 	'Zion documentation metadata accepts public HTTP URLs and rejects unsafe schemes'
 );
+$zion_core_checkout_id      = wc_get_page_id( 'checkout' );
+$zion_core_checkout_content = get_post_field( 'post_content', $zion_core_checkout_id );
+$zion_core_checkout_html    = '<div class="wp-block-woocommerce-checkout"><form data-native="preserved"><input name="native-test"></form></div>';
+$zion_core_checkout_before  = get_option( Zion_Theme_Settings::OPTION, Zion_Theme_Settings::empty_config() );
+try {
+	foreach ( array_keys( Zion_Theme_Settings::checkout_designs() ) as $zion_core_checkout_design ) {
+		$zion_core_checkout_config                              = Zion_Theme_Settings::empty_config();
+		$zion_core_checkout_config['global']['checkout_design'] = $zion_core_checkout_design;
+		update_option( Zion_Theme_Settings::OPTION, $zion_core_checkout_config );
+		$zion_core_checkout_rendered = zion_theme_checkout_design( $zion_core_checkout_html );
+		zion_core_test_assert(
+			str_contains( $zion_core_checkout_rendered, 'zion-checkout--' . $zion_core_checkout_design ) &&
+			str_contains( $zion_core_checkout_rendered, '<form data-native="preserved"><input name="native-test"></form>' ) &&
+			get_post_field( 'post_content', $zion_core_checkout_id ) === $zion_core_checkout_content,
+			'Checkout design ' . $zion_core_checkout_design . ' preserves native children and saved page content'
+		);
+	}
+} finally {
+	update_option( Zion_Theme_Settings::OPTION, $zion_core_checkout_before );
+}
 WP_CLI::success( 'Catalog integration passed.' );

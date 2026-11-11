@@ -22,6 +22,15 @@ final class Zion_Theme_Settings {
 	 */
 	public static function registry(): array {
 		static $fields   = array(
+			'checkout_design'         => array(
+				'label'       => 'Design checkout',
+				'description' => 'Aspectul formularului nativ Finalizare comandă. Câmpurile, validarea, livrarea, taxele și plățile rămân gestionate de WooCommerce.',
+				'section'     => 'checkout',
+				'type'        => 'choice',
+				'default'     => 'atelier',
+				'allowed'     => array_combine( array_keys( self::checkout_designs() ), array_column( self::checkout_designs(), 0 ) ),
+				'contexts'    => array( 'global' ),
+			),
 			'cart_design'             => array(
 				'label'       => 'Design coș',
 				'description' => 'Schimbă prezentarea blocului Coș WooCommerce. Cantitățile, cupoanele și totalurile rămân gestionate de WooCommerce.',
@@ -776,6 +785,21 @@ final class Zion_Theme_Settings {
 			'technical' => array( 'Technical', 'Tabel precis pe toată lățimea și rezumat integrat sub produse.', 'cart-technical.png' ),
 			'contrast'  => array( 'Contrast Premium', 'Produse pe o suprafață deschisă și rezumat pe fundal întunecat.', 'cart-contrast.png' ),
 			'focus'     => array( 'Focus Checkout', 'Flux central concentrat, cu rezumat și acțiune la baza listei.', 'cart-focus.png' ),
+		);
+	}
+
+	/**
+	 * Checkout concepts adapted to one native WooCommerce form.
+	 *
+	 * @return array
+	 */
+	public static function checkout_designs(): array {
+		return array(
+			'atelier'   => array( 'Atelier', 'Formular aerisit și rezumat lateral, cu acțiunea nativă la finalul formularului.', 'checkout-atelier.png' ),
+			'editorial' => array( 'Studio Editorial', 'Compoziție editorială, secțiuni deschise și rezumat separat prin linii fine.', 'checkout-editorial.png' ),
+			'technical' => array( 'Technical', 'Panouri cu contur precis, secțiuni delimitate și accente CAD discrete.', 'checkout-technical.png' ),
+			'contrast'  => array( 'Contrast Premium', 'Formular deschis la culoare, rezumat întunecat și contrast ridicat.', 'checkout-contrast.png' ),
+			'focus'     => array( 'Focus Checkout', 'Flux central într-o singură coloană, rezumat și acțiune fără distrageri.', 'checkout-focus.png' ),
 		);
 	}
 

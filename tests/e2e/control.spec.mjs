@@ -61,7 +61,7 @@ test('Control Center persists validated settings and applies inheritance on publ
   try {
     await importSettings(page, empty);
     await openSection(page, 'general');
-    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(14);
+    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(15);
 
     await openSection(page, 'cards');
     await expect(field(page, 'catalog_density')).toHaveValue('');
@@ -960,6 +960,110 @@ test('cart visual designs preserve native totals, quantities, coupons and checko
   } finally {
     await importSettings(page, original);
     if (coupon) await page.request.delete(`/wp-json/wc/v3/coupons/${coupon.id}?force=true`, { headers });
+    await guest.close();
+  }
+});
+
+test('Technical card actions stay aligned after the native view-cart link appears', async ({ page, browser, baseURL }) => {
+  test.setTimeout(240_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  try {
+    await importSettings(page, JSON.stringify({ version: 2, global: { card_preset: 'technical' }, shops: {}, items: {} }));
+    for (const url of ['/', '/magazin-3d/', '/magazin-software/']) {
+      for (const width of [390, 768, 1024, 1440]) {
+        const guest = await browser.newContext({ baseURL, viewport: { width, height: 950 } });
+        try {
+          const customer = await guest.newPage();
+          await customer.goto(url);
+          const card = customer.locator('main .zion-product-card--technical').filter({ has: customer.locator('.wc-block-components-product-button__button') }).first();
+          const add = card.locator('.wc-block-components-product-button__button');
+          const details = card.locator('.zion-product-card__details a');
+          const originalDetails = await details.boundingBox();
+          await add.click();
+          const view = card.locator('.wc-block-components-product-button__view-cart, .added_to_cart');
+          await expect(view).toBeVisible();
+          const [a, b, c, v] = await Promise.all([add.boundingBox(), details.boundingBox(), card.boundingBox(), view.boundingBox()]);
+          expect(b.height).toBeCloseTo(originalDetails.height, 0);
+          expect(a.height).toBeLessThan(80);
+          expect(v.y).toBeGreaterThanOrEqual(a.y + a.height - 1);
+          expect(v.y + v.height).toBeLessThanOrEqual(c.y + c.height + 1);
+          if (width > 520) expect(Math.abs(a.y - b.y)).toBeLessThan(1);
+          expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+          if (url.includes('software') && width === 1440) await card.screenshot({ path: 'build/technical-added-to-cart-1.1.12.png' });
+        } finally { await guest.close(); }
+      }
+    }
+  } finally { await importSettings(page, original); }
+});
+
+test('checkout design selector preserves native form, validation and totals at four widths', async ({ page, browser, baseURL }) => {
+  test.setTimeout(240_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const guest = await browser.newContext({ baseURL });
+  const customer = await guest.newPage();
+  const errors = [];
+  customer.on('pageerror', error => errors.push(error.message));
+  try {
+    for (const slug of ['suport-modular-3d', 'zion-catalog-tools']) {
+      const products = await (await customer.request.get(`/wp-json/wc/store/v1/products?slug=${slug}`)).json();
+      await customer.goto(`/?add-to-cart=${products[0].id}`);
+    }
+    const readCart = async () => (await customer.request.get('/wp-json/wc/store/v1/cart')).json();
+    const totals = (await readCart()).totals;
+    const designs = ['atelier', 'editorial', 'technical', 'contrast', 'focus'];
+    const labels = ['Atelier', 'Studio Editorial', 'Technical', 'Contrast Premium', 'Focus Checkout'];
+    for (let index = 0; index < designs.length; index++) {
+      await openSection(page, 'checkout');
+      await expect(page.getByRole('link', { name: 'Editează șablonul checkoutului în Site Editor' })).toBeVisible();
+      await page.getByRole('button', { name: labels[index], exact: true }).click();
+      await expect(field(page, 'checkout_design')).toHaveValue(designs[index]);
+      await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+      const start = await page.evaluate(() => performance.timeOrigin);
+      await save(page);
+      expect(await page.evaluate(() => performance.timeOrigin)).toBe(start);
+      if (index === 0) await page.locator('.zion-design-picker').screenshot({ path: 'build/control-checkout-selector-1.1.12.png' });
+      for (const width of [1440, 390, 768, 1024]) {
+        await customer.setViewportSize({ width, height: 1000 });
+        await customer.goto('/checkout/');
+        const checkout = customer.locator(`.zion-checkout--${designs[index]}`);
+        await expect(checkout).toBeVisible();
+        await expect(customer.locator('.zion-checkout-page')).toBeVisible();
+        await expect(checkout.getByRole('form', { name: 'Finalizare comandă', exact: true })).toHaveCount(1);
+        await expect(checkout.locator('.wc-block-checkout__sidebar .wc-block-components-order-summary-item')).toHaveCount(2);
+        await expect(checkout.locator('.wc-block-components-checkout-place-order-button')).toHaveCount(1);
+        await expect(customer.locator('#email')).toBeVisible();
+        await expect(customer.locator('#billing-first_name')).toBeVisible();
+        expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+        expect((await readCart()).totals).toEqual(totals);
+        await expect(checkout.locator('img[src*="admin/previews"]')).toHaveCount(0);
+        const input = await customer.locator('#email').evaluate(el => ({ bg: getComputedStyle(el).backgroundColor, ink: getComputedStyle(el).color }));
+        expect(input.bg).not.toBe(input.ink);
+        if (width === 1440 || width === 390) await checkout.screenshot({ path: `build/checkout-${designs[index]}-${width}-1.1.12.png` });
+      }
+      const formStart = await customer.evaluate(() => performance.timeOrigin);
+      await customer.locator('#email').fill('invalid');
+      await customer.locator('#email').press('Tab');
+      await expect(customer.locator('#email')).toHaveAttribute('aria-invalid', 'true');
+      await customer.locator('#email').fill('checkout@example.test');
+      await customer.locator('#email').press('Tab');
+      await expect(customer.locator('#email')).toHaveAttribute('aria-invalid', 'false');
+      await customer.locator('#billing-first_name').fill('Zion');
+      await customer.locator('#billing-first_name').press('Tab');
+      await customer.setViewportSize({ width: 1440, height: 1000 });
+      await expect(customer.locator('#billing-first_name')).toHaveValue('Zion');
+      expect(await customer.evaluate(() => performance.timeOrigin)).toBe(formStart);
+    }
+    expect(errors).toEqual([]);
+    await openSection(page, 'checkout');
+    await page.getByRole('button', { name: 'Resetează secțiunea', exact: true }).click();
+    await expect(page.getByText('Secțiunea a revenit la valorile moștenite.', { exact: true })).toBeVisible();
+    await expect(field(page, 'checkout_design')).toHaveValue('');
+  } finally {
+    await importSettings(page, original);
     await guest.close();
   }
 });

@@ -69,6 +69,7 @@ function zion_theme_control_sections(): array {
 		'cards'       => 'Carduri produse',
 		'product'     => 'Pagini individuale produse',
 		'cart'        => 'Coș de cumpărături',
+		'checkout'    => 'Finalizare comandă',
 		'blog'        => 'Blog și articole',
 		'pages'       => 'Pagini standard',
 		'performance' => 'Performanță',
@@ -477,17 +478,19 @@ function zion_theme_render_control_page(): void {
  * @param string $section Control Center section.
  */
 function zion_theme_control_editor_links( string $section ): void {
-	if ( 'cart' === $section && function_exists( 'wc_get_page_id' ) ) {
-		$id = wc_get_page_id( 'cart' );
+	if ( in_array( $section, array( 'cart', 'checkout' ), true ) && function_exists( 'wc_get_page_id' ) ) {
+		$id    = wc_get_page_id( $section );
+		$label = 'cart' === $section ? 'Coș' : 'Finalizare comandă';
 		if ( $id > 0 ) {
-			echo '<p><a href="' . esc_url( get_edit_post_link( $id ) ) . '">Editează blocul Coș în editorul WordPress</a></p>';
-			if ( ! has_block( 'woocommerce/cart', get_post_field( 'post_content', $id ) ) ) {
-				echo '<div class="notice notice-warning"><p>Pagina de coș trebuie să conțină blocul nativ Coș WooCommerce pentru aceste designuri. Înlocuiește shortcode-ul clasic din editor după un backup.</p></div>';
+			echo '<p><a href="' . esc_url( get_edit_post_link( $id ) ) . '">' . esc_html( 'Editează blocul ' . $label . ' în editorul WordPress' ) . '</a></p>';
+			if ( ! has_block( 'woocommerce/' . $section, get_post_field( 'post_content', $id ) ) ) {
+				echo '<div class="notice notice-warning"><p>' . esc_html( 'Pagina trebuie să conțină blocul nativ ' . $label . ' WooCommerce pentru aceste designuri. Înlocuiește shortcode-ul clasic din editor după un backup.' ) . '</p></div>';
 			}
 		}
 	}
 	$views = match ( $section ) {
 		'cart' => array( array( 'wp_template', 'page-cart', 'Editează șablonul coșului în Site Editor' ) ),
+		'checkout' => array( array( 'wp_template', 'page-checkout', 'Editează șablonul checkoutului în Site Editor' ) ),
 		'header' => array( array( 'wp_template_part', 'header', 'Editează Header, logo, meniu și CTA' ) ),
 		'footer' => array( array( 'wp_template_part', 'footer', 'Editează Footer, contact și linkuri sociale' ) ),
 		'blog' => array( array( 'wp_template', 'home', 'Editează Jurnal' ), array( 'wp_template', 'single', 'Editează șablonul de articol' ) ),
@@ -531,7 +534,7 @@ function zion_theme_control_notices( array $config, string $section, string $upd
 	} catch ( InvalidArgumentException $error ) {
 		echo '<div class="notice notice-error"><p>' . esc_html( $error->getMessage() ) . ' Importă o configurație compatibilă sau confirmă resetarea totală în Instrumente.</p></div>';
 	}
-	if ( in_array( $section, array( 'woo', '3d', 'software', 'cards', 'product', 'cart' ), true ) && ! class_exists( 'WooCommerce' ) ) {
+	if ( in_array( $section, array( 'woo', '3d', 'software', 'cards', 'product', 'cart', 'checkout' ), true ) && ! class_exists( 'WooCommerce' ) ) {
 		echo '<div class="notice notice-warning"><p>WooCommerce este inactiv. Controalele de magazin au efect după activare.</p></div>';
 	} elseif ( in_array( $section, Zion_Theme_Settings::SHOPS, true ) && ! taxonomy_exists( 'zion_shop' ) ) {
 		echo '<div class="notice notice-warning"><p>Zion Core este inactiv. Vitrinele și clasificarea produselor necesită Zion Core.</p></div>';
@@ -667,7 +670,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 								<option value="<?php echo esc_attr( (string) $choice ); ?>" <?php selected( $value, (string) $choice ); ?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 						</select>
-						<?php if ( in_array( $key, array( 'card_preset', 'product_design', 'cart_design' ), true ) ) : ?>
+						<?php if ( in_array( $key, array( 'card_preset', 'product_design', 'cart_design', 'checkout_design' ), true ) ) : ?>
 							<?php
 							zion_theme_card_picker(
 								$value ? $value : (string) $inherited,
@@ -675,6 +678,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 								match ( $key ) {
 								'product_design' => 'product',
 								'cart_design' => 'cart',
+								'checkout_design' => 'checkout',
 								default => 'card' }
 							);
 							?>
@@ -707,11 +711,13 @@ function zion_theme_card_picker( string $selected, string $control_id, string $k
 	$designs = match ( $kind ) {
 		'product' => Zion_Theme_Settings::product_designs(),
 		'cart' => Zion_Theme_Settings::cart_designs(),
+		'checkout' => Zion_Theme_Settings::checkout_designs(),
 		default => Zion_Theme_Settings::card_designs(),
 	};
 	$label = match ( $kind ) {
 		'product' => 'Variante pentru pagina de produs',
 		'cart' => 'Variante pentru coșul de cumpărături',
+		'checkout' => 'Variante pentru finalizarea comenzii',
 		default => 'Variante vizuale pentru carduri',
 	};
 	$preview = $designs[ $selected ] ?? $designs['atelier'];
