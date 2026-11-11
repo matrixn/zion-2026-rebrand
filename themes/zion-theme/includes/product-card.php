@@ -91,12 +91,25 @@ function zion_theme_card_profile( string $shop ): array {
 	foreach ( array( 'ratio', 'fit', 'color', 'buttons', 'badge_place', 'title_lines', 'order' ) as $key ) {
 		$settings[ $key ] = zion_theme_setting( 'card_' . $key, $shop );
 	}
+	$design = Zion_Theme_Settings::card_designs()[ $settings['preset'] ] ?? null;
+	if ( $design ) {
+		foreach ( array(
+			'ratio' => $design[3],
+			'fit'   => 'contain',
+		) as $key => $value ) {
+			if ( 'default' === zion_theme_setting_with_source( 'card_' . $key, $shop )['source'] ) {
+				$settings[ $key ] = $value;
+			}
+		}
+	}
 	$common = array( 'image', 'title', 'price', 'sale_price', 'placeholder', 'wishlist', 'compare' );
 	$shown  = match ( $settings['preset'] ) {
 		'minimal' => array(),
 		'compact' => array( 'badge_sale' ),
 		'premium' => array( 'badge_sale', 'badge_featured', 'badge_stock', 'category', 'brand', 'description', 'rating', 'reviews', 'availability', 'details', 'zoom', 'secondary' ),
 		'horizontal' => array( 'badge_sale', 'badge_stock', 'description', 'availability', 'details' ),
+		'atelier', 'editorial', 'studio-compact', 'focus' => array( 'badge_sale', 'category', 'description', 'availability', 'details' ),
+		'technical' => array( 'badge_sale', 'category', 'specs', 'description', 'availability', 'details' ),
 		default => array( 'badge_sale', 'badge_stock', 'category', 'description', 'availability', 'details' ),
 	};
 	$shown             = array_merge( $common, $shown );
@@ -121,9 +134,10 @@ function zion_theme_card_profile( string $shop ): array {
  * @param array      $show Visibility controls.
  * @param string     $url Product URL.
  * @param bool       $defer Whether the image sits below the fold.
+ * @param string     $stock Optional escaped stock markup.
  * @return string
  */
-function zion_theme_card_image( WC_Product $product, array $show, string $url, bool $defer = false ): string {
+function zion_theme_card_image( WC_Product $product, array $show, string $url, bool $defer = false, string $stock = '' ): string {
 	$image_id = $product->get_image_id();
 	if ( ! $show['image'] || ( ! $image_id && ! $show['placeholder'] ) ) {
 		return '';
@@ -163,7 +177,8 @@ function zion_theme_card_image( WC_Product $product, array $show, string $url, b
 		$badge_html .= '<span>' . esc_html( $badge ) . '</span>';
 	}
 	return '<div class="zion-product-card__media"><a class="zion-product-card__image" href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $product->get_name() ) . '">' .
-		$image . $secondary . '</a>' . ( $badge_html ? '<div class="zion-product-card__badges">' . $badge_html . '</div>' : '' ) . '</div>';
+		$image . $secondary . '</a>' . ( $badge_html ? '<div class="zion-product-card__badges">' . $badge_html . '</div>' : '' ) .
+		( $stock ? '<div class="zion-card-stock-overlay">' . $stock . '</div>' : '' ) . '</div>';
 }
 
 /**
@@ -284,13 +299,39 @@ function zion_theme_card_element( string $key, WC_Product $product, string $url,
 		/* translators: %s: review count. */
 		'reviews' => esc_html( sprintf( _n( '%s recenzie', '%s recenzii', $product->get_review_count(), 'zion-theme' ), number_format_i18n( $product->get_review_count() ) ) ),
 		'description' => esc_html( wp_trim_words( wp_strip_all_tags( strip_shortcodes( $product->get_short_description() ? $product->get_short_description() : $product->get_description() ) ), 24 ) ),
-		'availability' => $product->is_in_stock() && ! $product->is_on_backorder() ? esc_html__( 'În stoc', 'zion-theme' ) : wp_kses_post( wc_get_stock_html( $product ) ),
+		'availability' => '<span class="zion-stock-pill zion-stock-' . ( ! $product->is_in_stock() ? 'out' : ( $product->is_on_backorder() ? 'backorder' : 'in' ) ) . '">' .
+			( $product->is_in_stock() && ! $product->is_on_backorder() ? esc_html__( 'În stoc', 'zion-theme' ) : wp_kses_post( wc_get_stock_html( $product ) ) ) . '</span>',
+		'specs' => zion_theme_card_specs( $product ),
 		'cart' => zion_theme_card_cart( $product ),
 		'quick_view' => zion_theme_card_quick_view( $product, $url, $show ),
 		'wishlist', 'compare' => zion_theme_card_extension( $key, $product ),
 		'details' => '<a class="wp-element-button" href="' . esc_url( $url ) . '">' . esc_html__( 'Vezi detalii', 'zion-theme' ) . '</a>',
 		default => '',
 	};
+}
+
+/**
+ * Show up to two existing, public WooCommerce attributes.
+ *
+ * @param WC_Product $product Native product.
+ * @return string
+ */
+function zion_theme_card_specs( WC_Product $product ): string {
+	$specs = array();
+	foreach ( $product->get_attributes() as $attribute ) {
+		if ( ! $attribute->get_visible() ) {
+			continue;
+		}
+		$values = $attribute->is_taxonomy() ? wc_get_product_terms( $product->get_id(), $attribute->get_name(), array( 'fields' => 'names' ) ) : $attribute->get_options();
+		if ( is_wp_error( $values ) || ! $values ) {
+			continue;
+		}
+		$specs[] = '<span>' . esc_html( wc_attribute_label( $attribute->get_name() ) . ': ' . implode( ', ', $values ) ) . '</span>';
+		if ( 2 === count( $specs ) ) {
+			break;
+		}
+	}
+	return implode( '', $specs );
 }
 
 /**
@@ -319,17 +360,43 @@ function zion_theme_render_product_card( array $attributes, string $content, WP_
 	$show    = $profile['show'];
 	$level   = 3 === ( $attributes['level'] ?? 2 ) ? 3 : 2;
 	$url     = $product->get_permalink();
-	$image   = zion_theme_card_image( $product, $show, $url, ! empty( $attributes['deferImage'] ) );
+	$design  = isset( Zion_Theme_Settings::card_designs()[ $profile['preset'] ] );
+	$stock   = $design && $show['availability'] && in_array( $profile['preset'], array( 'editorial', 'technical' ), true )
+		? zion_theme_card_element( 'availability', $product, $url, $show, $level ) : '';
+	$image   = zion_theme_card_image( $product, $show, $url, ! empty( $attributes['deferImage'] ), $stock );
+	$overlay = $stock && $image;
 	$items   = '';
+	$groups  = array();
 	foreach ( $profile['order'] as $key ) {
-		if ( $show[ $key ] ) {
+		if ( $show[ $key ] && ! ( $overlay && 'availability' === $key ) ) {
 			$item = zion_theme_card_element( $key, $product, $url, $show, $level );
 			if ( '' !== $item ) {
-				$items .= '<div class="zion-product-card__' . esc_attr( $key ) . '">' . $item . '</div>';
+				$group = $design ? match ( $key ) {
+					'cart', 'quick_view', 'wishlist', 'compare', 'details' => 'actions',
+					'price', 'availability' => 'commerce',
+					default => $key,
+				} : $key;
+				$last = array_key_last( $groups );
+				if ( null === $last || $groups[ $last ]['key'] !== $group ) {
+					$groups[] = array(
+						'key'  => $group,
+						'html' => '',
+					);
+					$last     = array_key_last( $groups );
+				}
+				$groups[ $last ]['html'] .= '<div class="zion-product-card__' . esc_attr( $key ) . '">' . $item . '</div>';
 			}
 		}
 	}
+	foreach ( $groups as $group ) {
+		$items .= $design && in_array( $group['key'], array( 'actions', 'commerce' ), true )
+			? '<div class="zion-card-' . esc_attr( $group['key'] ) . '">' . $group['html'] . '</div>'
+			: $group['html'];
+	}
 	$classes = array( 'zion-product-card', 'zion-product-card--' . $profile['preset'], 'zion-card-color-' . $profile['color'], 'zion-card-buttons-' . $profile['buttons'], 'zion-card-badges-' . $profile['badge_place'] );
+	if ( $design ) {
+		$classes[] = 'zion-card-design';
+	}
 	if ( $show['zoom'] ) {
 		$classes[] = 'zion-card-zoom';
 	}

@@ -1,0 +1,40 @@
+.zion-control { max-width: 1480px; padding: 12px 12px 24px 0; }
+.zion-control > h1 { font-size: 30px; font-weight: 650; letter-spacing: -.04em; }
+.zion-control-intro { font-size: 14px; color: #50575e; margin-bottom: 24px; }
+.zion-control-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 24px; align-items: start; }
+.zion-control .nav-tab-wrapper { display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 0; border-radius: 12px; background: var(--wp--preset--color--ink); position: sticky; top: 44px; }
+.zion-control .nav-tab { float: none; white-space: normal; margin: 0; padding: 11px 12px; border: 0; border-radius: 6px; background: transparent; color: var(--wp--preset--color--text); font-size: 13px; font-weight: 500; }
+.zion-control .nav-tab:hover { background: var(--wp--preset--color--surface); }
+.zion-control .nav-tab-active, .zion-control .nav-tab-active:hover { color: var(--wp--preset--color--ink); background: var(--wp--preset--color--accent); font-weight: 650; }
+.zion-control-panel { min-width: 0; padding: clamp(16px, 3vw, 32px); background: #fff; border: 1px solid #dcdcde; border-radius: 12px; }
+.zion-control-panel > h2 { font-size: 23px; margin-top: 0; letter-spacing: -.025em; }
+.zion-control .form-table { margin-top: 20px; }
+.zion-control .form-table tr { border-top: 1px solid #eef0f1; }
+.zion-control .form-table th { width: 180px; font-weight: 600; padding-block: 22px; }
+.zion-control .form-table td { padding-block: 20px; }
+.zion-control .form-table select { max-width: 100%; min-height: 38px; width: 300px; }
+.zion-control .description { color: #50575e; line-height: 1.65; margin-top: 10px; max-width: 85ch; }
+.zion-control .form-table tr:has([data-zion-design-picker]) { display: block; }
+.zion-control .form-table tr:has([data-zion-design-picker]) > :is(th, td) { display: block; width: auto; padding-inline: 0; }
+.zion-control .form-table tr:has([data-zion-design-picker]) > th { padding-bottom: 0; }
+.zion-card-targets, .zion-design-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.zion-card-targets { margin-block: 20px 12px; }
+.zion-control .zion-card-targets .button { padding: 6px 16px; font-size: 13px; }
+.zion-design-picker { margin-top: 18px; }
+.zion-design-choices .button { min-height: 42px; padding: 5px 16px; border-radius: 6px; }
+.zion-design-choices [aria-pressed="true"] { background: var(--wp--preset--color--ink); color: var(--wp--preset--color--accent); border-color: var(--wp--preset--color--ink); box-shadow: inset 0 -3px var(--wp--preset--color--accent); }
+.zion-design-preview { position: relative; margin: 16px 0 0; padding: 0; border: 1px solid #dcdcde; border-radius: 10px; overflow: hidden; }
+.zion-design-preview img { display: block; width: 100%; height: auto; }
+.zion-design-preview figcaption { padding: 14px 16px; line-height: 1.6; background: #f6f7f7; }
+.zion-control .submit { display: flex; flex-wrap: wrap; gap: 10px; position: sticky; bottom: 0; z-index: 2; padding: 16px 0; margin-bottom: 0; background: #fff; border-top: 1px solid #dcdcde; }
+.zion-control .submit .button { min-height: 40px; padding-inline: 18px; }
+.zion-control-feedback:empty { display: none; }
+.zion-control-feedback { padding: 12px 16px; margin-top: 16px; border-inline-start: 4px solid #008a20; background: #f0f6f2; }
+.zion-control-feedback[role="alert"] { border-color: #b32d2e; background: #fcf0f1; }
+.zion-control form[aria-busy="true"] .zion-control-feedback::before { content: ""; display: inline-block; width: 14px; height: 14px; margin-inline-end: 10px; vertical-align: middle; border: 2px solid #b5c8b8; border-top-color: #135e21; border-radius: 50%; animation: zion-admin-spin .75s linear infinite; }
+.zion-control [hidden] { display: none; }
+.zion-control a:focus-visible, .zion-control button:focus-visible { outline: 2px solid #2271b1; outline-offset: 3px; }
+@keyframes zion-admin-spin { to { transform: rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) { .zion-control form[aria-busy="true"] .zion-control-feedback::before { animation: none; } }
+@media (max-width: 1100px) { .zion-control-layout { grid-template-columns: minmax(0, 1fr); } .zion-control .nav-tab-wrapper { position: static; flex-direction: row; flex-wrap: wrap; } }
+@media (max-width: 600px) { .zion-control .form-table :is(th, td) { display: block; width: auto; padding: 12px 0; } .zion-control .form-table th { padding-bottom: 0; } .zion-control-panel { padding: 16px; } .zion-design-choices .button { flex: 1 1 40%; } }

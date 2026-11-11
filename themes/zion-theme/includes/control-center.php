@@ -45,6 +45,8 @@ function zion_theme_register_control_page(): void {
 		'load-' . $page,
 		static function (): void {
 			wp_enqueue_script( 'zion-theme-control', get_theme_file_uri( 'assets/admin/control-center.js' ), array(), wp_get_theme()->get( 'Version' ), true );
+			wp_enqueue_style( 'zion-theme-control', get_theme_file_uri( 'assets/admin/control-center.css' ), array(), wp_get_theme()->get( 'Version' ) );
+			wp_add_inline_style( 'zion-theme-control', wp_get_global_stylesheet( array( 'variables' ) ) );
 		}
 	);
 }
@@ -128,6 +130,29 @@ function zion_theme_control_revision(): string {
 }
 
 /**
+ * Resolve a card destination into the existing configuration scopes.
+ *
+ * @param string $scope Destination identifier.
+ * @return array
+ * @throws InvalidArgumentException When the destination is unavailable.
+ */
+function zion_theme_card_target( string $scope ): array {
+	if ( ! in_array( $scope, array( 'global', 'home', '3d', 'software' ), true ) ) {
+		throw new InvalidArgumentException( 'Destinație pentru carduri nepermisă.' );
+	}
+	$id = 'home' === $scope ? (int) get_option( 'page_on_front' ) : 0;
+	if ( 'home' === $scope && ( 'page' !== get_option( 'show_on_front' ) || 'page' !== zion_theme_control_item_type( $id ) ) ) {
+		throw new InvalidArgumentException( 'Alege o pagină principală statică în Setări → Citire pentru a configura separat cardurile homepage-ului.' );
+	}
+	return array(
+		'id'      => $id,
+		'type'    => $id ? 'page' : '',
+		'shop'    => $id ? '3d' : ( in_array( $scope, Zion_Theme_Settings::SHOPS, true ) ? $scope : '' ),
+		'context' => $id ? 'page' : ( 'global' === $scope ? 'global' : 'shop' ),
+	);
+}
+
+/**
  * Serialize the same document for export and for the import size check.
  *
  * @param array $config Settings.
@@ -153,7 +178,7 @@ function zion_theme_handle_control_post(): void {
 	$id        = is_string( $raw_id ) && ctype_digit( $raw_id ) && (string) (int) $raw_id === $raw_id ? (int) $raw_id : -1;
 	$type      = zion_theme_control_item_type( $id );
 
-	if ( ! is_string( $section ) || ! isset( zion_theme_control_sections()[ $section ] ) || $id < 0 || ( $id && ( 'tools' !== $section || ! $type ) ) ) {
+	if ( ! is_string( $section ) || ! isset( zion_theme_control_sections()[ $section ] ) || $id < 0 || ( $id && ( ! in_array( $section, array( 'tools', 'cards' ), true ) || ! $type ) ) ) {
 		wp_die( 'Secțiune sau element nepermis.', '', array( 'response' => 403 ) );
 	}
 
@@ -191,6 +216,28 @@ function zion_theme_handle_control_post(): void {
 				)
 			);
 		}
+		if ( wp_doing_ajax() ) {
+			$shop  = in_array( $section, Zion_Theme_Settings::SHOPS, true ) ? $section : zion_theme_item_shop( $id, $type );
+			$scope = is_string( $request['card_scope'] ?? null ) ? $request['card_scope'] : 'global';
+			if ( 'cards' === $section ) {
+				$target = zion_theme_card_target( $scope );
+				$shop   = $target['shop'];
+			}
+			$context = $id ? $type : ( $shop ? 'shop' : 'global' );
+			$fields  = Zion_Theme_Settings::fields( $context, 'cards' === $section || 'global' === $context ? $section : '' );
+			ob_start();
+			zion_theme_render_control_form( $section, $id, $type, $shop, $fields, $config, $scope );
+			$html = ob_get_clean();
+			ob_start();
+			zion_theme_control_notices( $config, $section, '' );
+			wp_send_json_success(
+				array(
+					'html'    => $html,
+					'notices' => ob_get_clean(),
+					'message' => 'save' === $operation ? 'Setările au fost salvate.' : 'Secțiunea a revenit la valorile moștenite.',
+				)
+			);
+		}
 	} catch ( InvalidArgumentException $error ) {
 		wp_die(
 			esc_html( $error->getMessage() ),
@@ -202,10 +249,15 @@ function zion_theme_handle_control_post(): void {
 		);
 	}
 
-	wp_safe_redirect( add_query_arg( 'updated', $operation, zion_theme_control_url( $section, $id ) ) );
+	$redirect = add_query_arg( 'updated', $operation, zion_theme_control_url( $section, $id ) );
+	if ( 'cards' === $section ) {
+		$redirect = add_query_arg( 'scope', $request['card_scope'] ?? 'global', $redirect );
+	}
+	wp_safe_redirect( $redirect );
 	exit;
 }
 add_action( 'admin_post_zion_theme_control', 'zion_theme_handle_control_post' );
+add_action( 'wp_ajax_zion_theme_control', 'zion_theme_handle_control_post' );
 
 /**
  * Build a complete, valid configuration without persisting any data.
@@ -270,7 +322,19 @@ function zion_theme_merge_control_section( array $config, string $section, int $
 	$shop    = in_array( $section, Zion_Theme_Settings::SHOPS, true ) ? $section : '';
 	$context = $id ? $type : ( $shop ? 'shop' : 'global' );
 	$fields  = Zion_Theme_Settings::fields( $context, 'global' === $context ? $section : '' );
-	$values  = $request['values'] ?? array();
+	if ( 'cards' === $section ) {
+		$scope = $request['card_scope'] ?? 'global';
+		if ( ! is_string( $scope ) ) {
+			throw new InvalidArgumentException( 'Destinație pentru carduri invalidă.' );
+		}
+		$target = zion_theme_card_target( $scope );
+		if ( $id !== $target['id'] || $type !== $target['type'] ) {
+			throw new InvalidArgumentException( 'Destinația cardurilor nu corespunde formularului.' );
+		}
+		$shop   = $target['shop'];
+		$fields = Zion_Theme_Settings::fields( $target['context'], 'cards' );
+	}
+	$values = $request['values'] ?? array();
 	if ( ! $fields || ! is_array( $values ) ) {
 		throw new InvalidArgumentException( 'Formularul nu conține o secțiune configurabilă.' );
 	}
@@ -314,6 +378,7 @@ function zion_theme_render_control_page(): void {
 	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- These query arguments select a read-only view.
 	$section = isset( $_GET['section'] ) && is_string( $_GET['section'] ) ? sanitize_key( wp_unslash( $_GET['section'] ) ) : 'general';
 	$id      = 'tools' === $section && isset( $_GET['item'] ) && is_scalar( $_GET['item'] ) ? absint( $_GET['item'] ) : 0;
+	$scope   = isset( $_GET['scope'] ) && is_string( $_GET['scope'] ) ? sanitize_key( wp_unslash( $_GET['scope'] ) ) : 'global';
 	$updated = isset( $_GET['updated'] ) && is_string( $_GET['updated'] ) ? sanitize_key( wp_unslash( $_GET['updated'] ) ) : '';
 	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
@@ -324,18 +389,49 @@ function zion_theme_render_control_page(): void {
 	$context  = $type ? $type : ( $shop ? 'shop' : 'global' );
 	$fields   = Zion_Theme_Settings::fields( $context, 'global' === $context ? $section : '' );
 	$config   = zion_theme_settings_config();
+	if ( 'cards' === $section ) {
+		try {
+			$target = zion_theme_card_target( $scope );
+			$id     = $target['id'];
+			$type   = $target['type'];
+			$shop   = $target['shop'];
+			$fields = Zion_Theme_Settings::fields( $target['context'], 'cards' );
+		} catch ( InvalidArgumentException $error ) {
+			$fields = array();
+			add_settings_error( 'zion-cards', 'target', $error->getMessage() );
+		}
+	}
 	?>
-	<div class="wrap">
+	<div class="wrap zion-control">
 		<h1>Zion Control Center</h1>
+		<p class="zion-control-intro">Configurează experiența Zion, de la prima pagină la ultimul detaliu.</p>
+		<div class="zion-control-layout">
 		<nav class="nav-tab-wrapper" aria-label="Secțiuni Zion Control Center">
 			<?php foreach ( $sections as $key => $label ) : ?>
 				<a class="nav-tab<?php echo $section === $key ? ' nav-tab-active' : ''; ?>" href="<?php echo esc_url( zion_theme_control_url( $key ) ); ?>" <?php echo $section === $key ? 'aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a>
 			<?php endforeach; ?>
 		</nav>
+		<div class="zion-control-panel">
 		<h2><?php echo esc_html( $sections[ $section ] ); ?></h2>
-		<?php zion_theme_control_notices( $config, $section, $updated ); ?>
+		<div data-zion-control-notices><?php zion_theme_control_notices( $config, $section, $updated ); ?></div>
 
 		<?php zion_theme_control_editor_links( $section ); ?>
+		<?php if ( 'cards' === $section ) : ?>
+			<nav class="zion-card-targets" aria-label="Destinația cardurilor">
+				<?php
+				foreach ( array(
+					'global'   => 'Global',
+					'home'     => 'Homepage',
+					'3d'       => 'Magazin 3D',
+					'software' => 'Magazin Software',
+				) as $key => $label ) :
+					?>
+					<a class="button <?php echo $scope === $key ? 'button-primary' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'scope', $key, zion_theme_control_url( 'cards' ) ) ); ?>" <?php echo $scope === $key ? 'aria-current="page"' : ''; ?>><?php echo esc_html( $label ); ?></a>
+				<?php endforeach; ?>
+			</nav>
+			<p>Fiecare destinație păstrează propria alegere. „Moștenește” folosește vitrina, apoi setarea globală. Un override explicit al paginii are prioritate.</p>
+			<?php settings_errors( 'zion-cards' ); ?>
+		<?php endif; ?>
 		<?php if ( 'general' === $section ) : ?>
 			<p>Alege o secțiune pentru a configura tema. Valorile explicite au prioritate în ordinea produs, pagină sau articol → vitrină → global → implicit.</p>
 			<p>Versiunea temei: <strong><?php echo esc_html( wp_get_theme()->get( 'Version' ) ); ?></strong>. Schema setărilor: <strong><?php echo esc_html( (string) Zion_Theme_Settings::VERSION ); ?></strong>.</p>
@@ -347,8 +443,10 @@ function zion_theme_render_control_page(): void {
 			<?php zion_theme_render_control_tools( $id, $type ); ?>
 		<?php endif; ?>
 		<?php if ( $fields && ( ! $id || $type ) ) : ?>
-			<?php zion_theme_render_control_form( $section, $id, $type, $shop, $fields, $config ); ?>
+			<?php zion_theme_render_control_form( $section, $id, $type, $shop, $fields, $config, $scope ); ?>
 		<?php endif; ?>
+		</div>
+		</div>
 	</div>
 	<?php
 }
@@ -485,8 +583,12 @@ function zion_theme_render_control_tools( int $id, string $type ): void {
  * @param string $shop Storefront context.
  * @param array  $fields Registry fields for the scope.
  * @param array  $config Current settings.
+ * @param string $scope Card destination.
  */
-function zion_theme_render_control_form( string $section, int $id, string $type, string $shop, array $fields, array $config ): void {
+function zion_theme_render_control_form( string $section, int $id, string $type, string $shop, array $fields, array $config, string $scope = 'global' ): void {
+	if ( 'cards' === $section && isset( $fields['card_preset'] ) ) {
+		$fields = array( 'card_preset' => $fields['card_preset'] ) + $fields;
+	}
 	$values           = $id ? ( $config['items'][ $type ][ $id ] ?? array() ) : ( $shop ? ( $config['shops'][ $shop ] ?? array() ) : $config['global'] );
 	$sources          = array(
 		'default' => 'implicit',
@@ -505,6 +607,10 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 	?>
 	<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" data-zion-section>
 		<?php zion_theme_control_form_fields( $section, $id ); ?>
+		<?php if ( 'cards' === $section ) : ?>
+			<input type="hidden" name="card_scope" value="<?php echo esc_attr( $scope ); ?>">
+		<?php endif; ?>
+		<div class="zion-control-feedback" role="status" aria-live="polite"></div>
 		<table class="form-table" role="presentation">
 			<tbody>
 			<?php foreach ( $fields as $key => $field ) : ?>
@@ -531,6 +637,9 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 								<option value="<?php echo esc_attr( (string) $choice ); ?>" <?php selected( $value, (string) $choice ); ?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 						</select>
+						<?php if ( 'card_preset' === $key ) : ?>
+							<?php zion_theme_card_picker( $value ? $value : (string) $inherited, $control_id ); ?>
+						<?php endif; ?>
 					<?php endif; ?>
 						<p class="description" id="<?php echo esc_attr( $control_id . '-help' ); ?>">
 							<?php echo esc_html( $field['description'] . ' Implicit: ' . $default_label . '. Activ: ' . $effective_label . ' (' . $sources[ $effective['source'] ] . ').' ); ?>
@@ -545,5 +654,32 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 			<button type="submit" class="button" name="operation" value="reset_section" formnovalidate>Resetează secțiunea</button>
 		</p>
 	</form>
+	<?php
+}
+
+/**
+ * Render visual choices alongside the canonical native select.
+ *
+ * @param string $selected Effective preset.
+ * @param string $control_id Select ID.
+ */
+function zion_theme_card_picker( string $selected, string $control_id ): void {
+	$designs = Zion_Theme_Settings::card_designs();
+	$preview = $designs[ $selected ] ?? $designs['atelier'];
+	?>
+	<div class="zion-design-picker" data-zion-design-picker data-control="<?php echo esc_attr( $control_id ); ?>">
+		<div class="zion-design-choices" role="group" aria-label="Variante vizuale pentru carduri">
+			<?php foreach ( $designs as $key => $design ) : ?>
+				<button type="button" class="button" data-zion-design="<?php echo esc_attr( $key ); ?>" aria-pressed="<?php echo $key === $selected ? 'true' : 'false'; ?>" data-preview="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $design[2] ) ); ?>" data-description="<?php echo esc_attr( $design[1] ); ?>"><?php echo esc_html( $design[0] ); ?></button>
+			<?php endforeach; ?>
+		</div>
+		<figure class="zion-design-preview" <?php echo isset( $designs[ $selected ] ) ? '' : 'hidden'; ?>>
+			<a href="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" target="_blank" rel="noopener" aria-label="Deschide preview-ul la dimensiunea originală">
+				<img src="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" alt="Propunere de design pentru cardul produsului" width="1536" height="1024" loading="lazy" decoding="async">
+			</a>
+			<figcaption><?php echo esc_html( $preview[1] ); ?></figcaption>
+		</figure>
+		<p class="description">Preview conceptual cu produs ilustrativ. Fotografiile, prețurile, stocurile și atributele din magazin provin din produsele WooCommerce.</p>
+	</div>
 	<?php
 }

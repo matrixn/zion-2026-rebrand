@@ -15,6 +15,30 @@ require_once __DIR__ . '/../../themes/zion-theme/includes/class-zion-theme-setti
  */
 final class ZionThemeSettingsTest extends TestCase {
 	/**
+	 * New designs use the existing option and preserve explicit page precedence.
+	 */
+	public function test_visual_designs_share_the_existing_card_setting(): void {
+		$config = Zion_Theme_Settings::normalize(
+			array(
+				'version' => 2,
+				'global'  => array( 'card_preset' => 'atelier' ),
+				'shops'   => array(
+					'3d'       => array( 'card_preset' => 'technical' ),
+					'software' => array( 'card_preset' => 'editorial' ),
+				),
+				'items'   => array( 'page' => array( 42 => array( 'card_preset' => 'focus' ) ) ),
+			)
+		);
+		self::assertSame( 'focus', Zion_Theme_Settings::resolve( $config, 'card_preset', '3d', 'page', 42 )['value'] );
+		self::assertSame( 'technical', Zion_Theme_Settings::resolve( $config, 'card_preset', '3d' )['value'] );
+		self::assertSame( 'editorial', Zion_Theme_Settings::resolve( $config, 'card_preset', 'software' )['value'] );
+		foreach ( array_keys( Zion_Theme_Settings::card_designs() ) as $preset ) {
+			self::assertSame( array( 'card_preset' => $preset ), Zion_Theme_Settings::normalize_scope( array( 'card_preset' => $preset ), Zion_Theme_Settings::fields( 'page' ), true ) );
+		}
+		self::assertSame( array( 'card_preset' => 'classic' ), Zion_Theme_Settings::normalize_scope( array( 'card_preset' => 'classic' ), Zion_Theme_Settings::fields( 'global' ), true ) );
+	}
+
+	/**
 	 * Defaults are derived and never copied into storage.
 	 */
 	public function test_resolves_defaults_without_persisting_them(): void {

@@ -98,6 +98,7 @@ try {
 			'files'       => array( 'style.css', 'functions.php', 'theme.json', 'assets/admin/control-center.js', 'assets/nexus-cube.svg' ),
 			'directories' => array(
 				'assets/blocks' => array( 'js' ),
+				'assets/admin'  => array( 'css', 'png' ),
 				'assets/dist'   => array( 'css' ),
 				'includes'      => array( 'php' ),
 				'parts'         => array( 'html' ),

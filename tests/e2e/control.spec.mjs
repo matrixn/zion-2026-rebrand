@@ -637,10 +637,74 @@ test('a subscriber cannot open, import, export or reset theme settings', async (
       const denied = await member.request.post(endpoint, { form: { action: 'zion_theme_control', operation } });
       expect(denied.status()).toBe(403);
       expect(await denied.text()).toContain('Nu ai permisiunea');
+      const ajax = await member.request.post('/wp-admin/admin-ajax.php', { form: { action: 'zion_theme_control', operation } });
+      expect(ajax.status()).toBe(403);
     }
   } finally {
     const deleted = await page.request.delete(`/wp-json/wp/v2/users/${user.id}?force=true&reassign=${admin.id}`, { headers });
     await subscriber.close();
     expect(deleted.ok()).toBe(true);
+  }
+});
+
+test('visual card choices save with Ajax and remain independent by destination', async ({ page }) => {
+  test.setTimeout(180_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const presets = ['atelier', 'editorial', 'studio-compact', 'technical', 'focus'];
+  const labels = ['Atelier', 'Editorial', 'Compact Studio', 'Technical', 'Premium Focus'];
+  try {
+    await importSettings(page, JSON.stringify({ version: 2, global: {}, shops: {}, items: {} }));
+    let stale;
+    for (let index = 0; index < presets.length; index++) {
+      await page.goto(`${base}&section=cards&scope=home`);
+      await page.getByRole('button', { name: labels[index], exact: true }).click();
+      await expect(field(page, 'card_preset')).toHaveValue(presets[index]);
+      await expect(page.locator('.zion-design-preview')).toBeVisible();
+      await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+      const origin = await page.evaluate(() => performance.timeOrigin);
+      if (index === 0) stale = await requestFields(page.locator('[data-zion-section]'));
+      const response = page.waitForResponse(reply => reply.url().includes('admin-ajax.php') && reply.request().method() === 'POST');
+      await save(page);
+      expect((await response).ok()).toBe(true);
+      expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+      await expect(field(page, 'card_preset')).toHaveValue(presets[index]);
+
+      for (const width of [390, 1440]) {
+        await page.setViewportSize({ width, height: 850 });
+        await page.goto('/');
+        const card = page.locator('.zion-home-products .zion-card-design').first();
+        await expect(card).toHaveClass(new RegExp(`zion-product-card--${presets[index]}\\b`));
+        await expect(card.locator('.zion-product-card__title a')).toHaveCSS('text-decoration-line', 'none');
+        await expect(card.locator('.zion-stock-pill')).toBeVisible();
+        expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+        if (width === 1440) await card.screenshot({ path: "build/card-" + presets[index] + "-1.1.8.png" });
+        const box = await card.locator('.zion-product-card__image').boundingBox();
+        const media = await card.locator('.zion-product-card__media').boundingBox();
+        expect(Math.abs(box.width - media.width)).toBeLessThan(1);
+      }
+    }
+
+    const conflict = await page.request.post('/wp-admin/admin-ajax.php', { form: { ...stale, operation: 'save' } });
+    expect(conflict.status()).toBe(409);
+
+    for (const [scope, preset] of [['3d', 'technical'], ['software', 'editorial']]) {
+      await page.goto(`${base}&section=cards&scope=${scope}`);
+      await field(page, 'card_preset').selectOption(preset);
+      await save(page);
+    }
+    for (const [url, preset] of [['/', 'focus'], ['/magazin-3d/', 'technical'], ['/magazin-software/', 'editorial']]) {
+      await page.goto(url);
+      await expect(page.locator('main .zion-card-design').first()).toHaveClass(new RegExp(`zion-product-card--${preset}\\b`));
+    }
+    await page.goto(`${base}&section=cards&scope=home`);
+    await page.getByRole('button', { name: 'Resetează secțiunea', exact: true }).click();
+    await expect(page.getByText('Secțiunea a revenit la valorile moștenite.', { exact: true })).toBeVisible();
+    await expect(page.locator('[data-zion-design="technical"]')).toHaveAttribute('aria-pressed', 'true');
+    await page.goto('/');
+    await expect(page.locator('.zion-home-products .zion-card-design').first()).toHaveClass(/zion-product-card--technical\b/);
+  } finally {
+    await importSettings(page, original);
   }
 });

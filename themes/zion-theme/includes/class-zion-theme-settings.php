@@ -723,12 +723,28 @@ final class Zion_Theme_Settings {
 			'rating'       => 'Rating',
 			'reviews'      => 'Număr de recenzii',
 			'description'  => 'Descriere scurtă',
+			'specs'        => 'Specificații WooCommerce',
 			'availability' => 'Disponibilitate',
 			'cart'         => 'Buton WooCommerce',
 			'quick_view'   => 'Quick View',
 			'wishlist'     => 'Wishlist',
 			'compare'      => 'Compare',
 			'details'      => 'Vezi detalii',
+		);
+	}
+
+	/**
+	 * Visual proposals available in the existing card preset setting.
+	 *
+	 * @return array
+	 */
+	public static function card_designs(): array {
+		return array(
+			'atelier'        => array( 'Atelier', 'Imagine centrată, preț și stoc împreună, două acțiuni aliniate.', 'atelier.png', '4/3' ),
+			'editorial'      => array( 'Editorial', 'Fotografie pe toată lățimea, stoc peste imagine și un buton principal lat.', 'editorial.png', '1/1' ),
+			'studio-compact' => array( 'Compact Studio', 'Imagine lângă informații în cardurile late, așezare verticală în spațiile înguste.', 'compact.png', '4/3' ),
+			'technical'      => array( 'Technical', 'Contur tehnic, atribute disponibile și acțiuni egale.', 'technical.png', '4/3' ),
+			'focus'          => array( 'Premium Focus', 'Compoziție centrată, fotografie aerisită și acțiuni la baza cardului.', 'focus.png', '3/2' ),
 		);
 	}
 
@@ -746,8 +762,8 @@ final class Zion_Theme_Settings {
 			'preset'      => array(
 				'Preset card',
 				'Schimbă aspectul și elementele implicite. Controalele explicite au prioritate.',
-				'classic',
-				array(
+				'atelier',
+				array_combine( array_keys( self::card_designs() ), array_column( self::card_designs(), 0 ) ) + array(
 					'minimal'    => 'Minimal',
 					'classic'    => 'Classic',
 					'premium'    => 'Premium',
@@ -762,6 +778,7 @@ final class Zion_Theme_Settings {
 				array(
 					'1/1'  => '1:1',
 					'4/3'  => '4:3',
+					'3/2'  => '3:2',
 					'3/4'  => '3:4',
 					'16/9' => '16:9',
 				),
@@ -833,7 +850,7 @@ final class Zion_Theme_Settings {
 			'label'       => 'Ordinea elementelor din card',
 			'description' => 'Separă cheile prin virgulă. Elementele omise păstrează ordinea implicită după cele enumerate. Chei: ' . implode( ', ', array_keys( $elements ) ) . '.',
 			'type'        => 'ordered_keys',
-			'default'     => implode( ',', array_keys( $elements ) ),
+			'default'     => 'category,brand,title,sku,rating,reviews,specs,description,price,availability,cart,quick_view,wishlist,compare,details',
 			'allowed'     => $elements,
 		);
 		unset( $elements['cart'] );
