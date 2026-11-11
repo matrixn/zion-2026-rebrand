@@ -47,6 +47,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Selector vizual cu cele cinci imagini conceptuale generate, preview instant și deschidere la rezoluția originală. Panoul are navigație laterală responsive și salvare Ajax cu progres vizibil, validare, nonce, capabilități și detectarea configurațiilor modificate între timp.
 - [x] Fotografia ocupă corect cadrul, titlurile sunt moderate și fără subliniere, stocul este evidențiat și acțiunile sunt aliniate. Technical afișează atribute WooCommerce existente. Compact Studio trece la format vertical când cardul este îngust.
 - [x] Comenzile, prețurile și disponibilitatea sunt gestionate prin API-urile WooCommerce. Preview-urile sunt încărcate doar în administrare.
+- [x] Build și WPCS, 33 teste PHPUnit cu 307 aserțiuni, integrare și migrare, 44 teste Playwright și reverificarea selectorului lat. Pe staging au fost verificate toate cele cinci variante la 390 px și pe desktop, preview-urile originale și independența homepage / Magazin 3D / Magazin Software. Alegerile inițiale au fost restaurate după test.
 
 ## Homepage 1.1.7
 
