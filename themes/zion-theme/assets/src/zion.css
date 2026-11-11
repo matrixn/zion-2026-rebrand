@@ -3080,6 +3080,10 @@ body:has(.zion-product-page--sticky) {
 	.zion-menu-technical .zion-header .wp-block-navigation__container { justify-content: space-between; width: 100%; }
 	:is(.zion-menu-nexus, .zion-menu-signature) .zion-navigation { position: static; }
 	:is(.zion-menu-nexus, .zion-menu-signature) .zion-navigation .wp-block-navigation__container > li { position: static; }
+	/* Root links are 44px tall and centered. Bridge the gap without covering links. */
+	:is(.zion-menu-nexus, .zion-menu-signature) .zion-header .zion-navigation .wp-block-navigation__container > li.has-child:hover::before { content: ""; position: absolute; inset: calc(50% + 22px) 0 0; z-index: 0; }
+	:is(.zion-menu-nexus, .zion-menu-signature) .zion-header > :not(nav) { position: relative; z-index: 3; }
+	:is(.zion-menu-nexus, .zion-menu-signature) .zion-header .wp-block-navigation__container > li > :is(a, button) { position: relative; z-index: 1; }
 	:is(.zion-menu-nexus, .zion-menu-signature) .zion-header nav.zion-navigation :is(.wp-block-navigation__responsive-container:not(.is-menu-open), .wp-block-navigation__responsive-dialog, .wp-block-navigation__responsive-close) { position: static; }
 	:is(.zion-menu-nexus, .zion-menu-signature) .zion-header .zion-navigation .wp-block-navigation__container > li > .wp-block-navigation__submenu-container { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; inset: 100% 0 auto; width: 100%; padding: 1.25rem; align-items: start; }
 	:is(.zion-menu-nexus, .zion-menu-signature) .zion-header .wp-block-navigation__submenu-container .zion-menu-description { display: block; margin-top: .3rem; color: var(--zion-menu-muted); font-size: .78rem; font-weight: 400; }

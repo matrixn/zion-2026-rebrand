@@ -38,4 +38,6 @@ Culorile folosesc exclusiv presetările `theme.json`. Separatorul de 1 px este p
 
 Technical are o singură suprascriere `!important`, limitată la fundalul submeniului din overlay: WordPress impune aici fundal transparent cu `!important`, incompatibil cu suprafața Paper. Restul prezentării folosește selectori de componente și specificitate normală.
 
+Din 1.1.18, Nexus Mega și Signature păstrează hover-ul în spațiul dintre linkurile Header-ului și panoul aliniat la marginea lui de jos. Puntea transparentă aparține elementului nativ de meniu, apare numai la hover și ocupă spațiul de sub declanșatoarele de 44 px, fără a acoperi linkurile. Nu există temporizatoare sau un motor JavaScript suplimentar. Regresia este testată cu mouse-ul pe trasee verticale și diagonale la 1440 și 1920 px, inclusiv ieșirea din panou și click pe un link de nivel trei.
+
 Testele verifică cele cinci preseturi la 390, 768, 1024 și 1440 px, cu un meniu WordPress salvat și trei niveluri. Acoperă păstrarea conținutului meniului, linkul activ și părinții, panouri mega aliniate la container, contrastul Technical, logo, zero overflow, separator complet, acordioane, tastatură, lightbox, salvare Ajax, reset și fallback mobil fără JavaScript. Referințele vizuale se generează și se verifică în browserul Docker descris în [ghidul CI](ci.md).

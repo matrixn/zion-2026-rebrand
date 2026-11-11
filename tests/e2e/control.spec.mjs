@@ -1309,7 +1309,7 @@ test('cart link badge follows native quantities and Ajax while the mini-cart is 
   } finally { await importSettings(page, original); await context.close(); await otherContext.close(); }
 });
 
-test('five header designs preserve an edited native menu, active ancestors and mobile navigation', async ({ page, browser, baseURL }) => {
+test('five header designs preserve an edited native menu, active ancestors, pointer paths and mobile navigation', async ({ page, browser, baseURL }) => {
   test.setTimeout(300_000);
   await login(page); await openSection(page, 'tools');
   const original = await exportSettings(page);
@@ -1393,8 +1393,68 @@ test('five header designs preserve an edited native menu, active ancestors and m
           await guest.screenshot({path:`build/menu-${designs[index]}-${width}-1.1.17.png`});
         }
       }
+      if (['nexus', 'signature'].includes(designs[index])) {
+        for (const width of [1440, 1920]) {
+          await guest.setViewportSize({ width, height: 950 });
+          // A fresh page prevents focus-within from masking a broken hover path.
+          await guest.goto(leaf.link + '?pointer-menu=' + designs[index]);
+          const nav = guest.locator('header nav.zion-navigation');
+          for (const label of ['Servicii', 'Software', 'Resurse']) {
+            const toggle = nav.getByRole('button', { name: label + ' submenu', exact: true });
+            const root = toggle.locator('..');
+            const trigger = root.locator(':scope > .wp-block-navigation-item__content');
+            const panel = root.locator(':scope > .wp-block-navigation__submenu-container');
+            for (const diagonal of [false, true]) {
+              await trigger.hover(); await expect(panel).toBeVisible();
+              const start = await trigger.boundingBox(), bounds = await panel.boundingBox();
+              const first = panel.locator('a.wp-block-navigation-item__content').first();
+              const destination = await first.boundingBox();
+              const startX = start.x + start.width / 2, startY = start.y + start.height - 1;
+              const endY = bounds.y + 4;
+              const endX = diagonal ? startX + (destination.x + destination.width / 2 - startX) * (endY - startY) / (destination.y + destination.height / 2 - startY) : startX;
+              await guest.mouse.move(startX, startY);
+              for (let step = 1; step <= 12; step++) {
+                await guest.mouse.move(startX + (endX - startX) * step / 12, startY + (endY - startY) * step / 12);
+                await expect(panel, `${designs[index]} ${label} ${width}px ${diagonal ? 'diagonal' : 'vertical'} step ${step}`).toBeVisible();
+              }
+              await first.hover(); await expect(panel).toBeVisible();
+              await panel.locator('a.wp-block-navigation-item__content').last().hover(); await expect(panel).toBeVisible();
+              const headerControls = await guest.locator('.zion-header').evaluate(header =>
+                [...header.querySelectorAll('.zion-header-logo a, .zion-header-cart-link, .wp-block-navigation__container > li > a')].every(link => {
+                  const box = link.getBoundingClientRect();
+                  return link.contains(document.elementFromPoint(box.x + box.width / 2, box.bottom - 1));
+                }));
+              expect(headerControls, 'The hover bridge must leave header links, logo and cart clickable').toBe(true);
+              await guest.mouse.move(width - 10, 900);
+              await expect(panel).toBeHidden();
+            }
+          }
+          // Reach and activate a third-level native link using only the mouse.
+          await nav.getByRole('link', { name: 'Software', exact: true }).hover();
+          await nav.getByRole('link', { name: 'WordPress & WooCommerce', exact: true }).hover();
+          await nav.getByRole('link', { name: 'Zion Privacy', exact: true }).click();
+          await expect(guest).toHaveURL(leaf.link);
+        }
+      }
       const savedMenu=await (await page.request.get('/wp-json/wp/v2/navigation/'+menu.id+'?context=edit',{headers})).json();
       expect(savedMenu.content.raw).toBe(canonicalMenu);
+    }
+    for (const design of ['nexus', 'signature']) {
+      await openSection(page, 'header');
+      await field(page, 'header_design').selectOption(design);
+      await field(page, 'header_cart').selectOption('1'); await save(page);
+      await guest.setViewportSize({width:1440,height:950}); await guest.goto(leaf.link);
+      await guest.locator('nav.zion-navigation').getByRole('link', {name:'Servicii',exact:true}).hover();
+      await guest.locator('.zion-header .wc-block-mini-cart__button').focus();
+      await guest.keyboard.press('Enter');
+      const drawer = guest.locator('.wc-block-mini-cart__drawer[role="dialog"]');
+      await expect(drawer).toBeVisible();
+      await expect.poll(() => drawer.evaluate(element => element.contains(document.activeElement))).toBe(true);
+      await expect.poll(() => drawer.evaluate(element => {
+        const box = element.getBoundingClientRect(), header = document.querySelector('.zion-header').getBoundingClientRect();
+        return element.contains(document.elementFromPoint(box.left + 24, header.bottom + 24));
+      })).toBe(true);
+      await guest.keyboard.press('Escape'); await expect(drawer).toBeHidden();
     }
     await page.setViewportSize({width:390,height:950}); await page.goto(leaf.link);
     await page.locator('header nav.zion-navigation .wp-block-navigation__responsive-container-open').click();
