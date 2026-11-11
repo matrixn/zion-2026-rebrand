@@ -68,6 +68,7 @@ function zion_theme_control_sections(): array {
 		'software'    => 'Magazin Software',
 		'cards'       => 'Carduri produse',
 		'product'     => 'Pagini individuale produse',
+		'cart'        => 'Coș de cumpărături',
 		'blog'        => 'Blog și articole',
 		'pages'       => 'Pagini standard',
 		'performance' => 'Performanță',
@@ -476,7 +477,17 @@ function zion_theme_render_control_page(): void {
  * @param string $section Control Center section.
  */
 function zion_theme_control_editor_links( string $section ): void {
+	if ( 'cart' === $section && function_exists( 'wc_get_page_id' ) ) {
+		$id = wc_get_page_id( 'cart' );
+		if ( $id > 0 ) {
+			echo '<p><a href="' . esc_url( get_edit_post_link( $id ) ) . '">Editează blocul Coș în editorul WordPress</a></p>';
+			if ( ! has_block( 'woocommerce/cart', get_post_field( 'post_content', $id ) ) ) {
+				echo '<div class="notice notice-warning"><p>Pagina de coș trebuie să conțină blocul nativ Coș WooCommerce pentru aceste designuri. Înlocuiește shortcode-ul clasic din editor după un backup.</p></div>';
+			}
+		}
+	}
 	$views = match ( $section ) {
+		'cart' => array( array( 'wp_template', 'page-cart', 'Editează șablonul coșului în Site Editor' ) ),
 		'header' => array( array( 'wp_template_part', 'header', 'Editează Header, logo, meniu și CTA' ) ),
 		'footer' => array( array( 'wp_template_part', 'footer', 'Editează Footer, contact și linkuri sociale' ) ),
 		'blog' => array( array( 'wp_template', 'home', 'Editează Jurnal' ), array( 'wp_template', 'single', 'Editează șablonul de articol' ) ),
@@ -520,7 +531,7 @@ function zion_theme_control_notices( array $config, string $section, string $upd
 	} catch ( InvalidArgumentException $error ) {
 		echo '<div class="notice notice-error"><p>' . esc_html( $error->getMessage() ) . ' Importă o configurație compatibilă sau confirmă resetarea totală în Instrumente.</p></div>';
 	}
-	if ( in_array( $section, array( 'woo', '3d', 'software', 'cards', 'product' ), true ) && ! class_exists( 'WooCommerce' ) ) {
+	if ( in_array( $section, array( 'woo', '3d', 'software', 'cards', 'product', 'cart' ), true ) && ! class_exists( 'WooCommerce' ) ) {
 		echo '<div class="notice notice-warning"><p>WooCommerce este inactiv. Controalele de magazin au efect după activare.</p></div>';
 	} elseif ( in_array( $section, Zion_Theme_Settings::SHOPS, true ) && ! taxonomy_exists( 'zion_shop' ) ) {
 		echo '<div class="notice notice-warning"><p>Zion Core este inactiv. Vitrinele și clasificarea produselor necesită Zion Core.</p></div>';
@@ -656,8 +667,17 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 								<option value="<?php echo esc_attr( (string) $choice ); ?>" <?php selected( $value, (string) $choice ); ?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 						</select>
-						<?php if ( in_array( $key, array( 'card_preset', 'product_design' ), true ) ) : ?>
-							<?php zion_theme_card_picker( $value ? $value : (string) $inherited, $control_id, 'product_design' === $key ); ?>
+						<?php if ( in_array( $key, array( 'card_preset', 'product_design', 'cart_design' ), true ) ) : ?>
+							<?php
+							zion_theme_card_picker(
+								$value ? $value : (string) $inherited,
+								$control_id,
+								match ( $key ) {
+								'product_design' => 'product',
+								'cart_design' => 'cart',
+								default => 'card' }
+							);
+							?>
 						<?php endif; ?>
 					<?php endif; ?>
 						<p class="description" id="<?php echo esc_attr( $control_id . '-help' ); ?>">
@@ -681,21 +701,30 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
  *
  * @param string $selected Effective preset.
  * @param string $control_id Select ID.
- * @param bool   $product Whether to show single product concepts.
+ * @param string $kind Component whose concepts are shown.
  */
-function zion_theme_card_picker( string $selected, string $control_id, bool $product = false ): void {
-	$designs = $product ? Zion_Theme_Settings::product_designs() : Zion_Theme_Settings::card_designs();
+function zion_theme_card_picker( string $selected, string $control_id, string $kind = 'card' ): void {
+	$designs = match ( $kind ) {
+		'product' => Zion_Theme_Settings::product_designs(),
+		'cart' => Zion_Theme_Settings::cart_designs(),
+		default => Zion_Theme_Settings::card_designs(),
+	};
+	$label = match ( $kind ) {
+		'product' => 'Variante pentru pagina de produs',
+		'cart' => 'Variante pentru coșul de cumpărături',
+		default => 'Variante vizuale pentru carduri',
+	};
 	$preview = $designs[ $selected ] ?? $designs['atelier'];
 	?>
 	<div class="zion-design-picker" data-zion-design-picker data-control="<?php echo esc_attr( $control_id ); ?>">
-		<div class="zion-design-choices" role="group" aria-label="<?php echo $product ? 'Variante pentru pagina de produs' : 'Variante vizuale pentru carduri'; ?>">
+		<div class="zion-design-choices" role="group" aria-label="<?php echo esc_attr( $label ); ?>">
 			<?php foreach ( $designs as $key => $design ) : ?>
 				<button type="button" class="button" data-zion-design="<?php echo esc_attr( $key ); ?>" aria-pressed="<?php echo $key === $selected ? 'true' : 'false'; ?>" data-preview="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $design[2] ) ); ?>" data-description="<?php echo esc_attr( $design[1] ); ?>"><?php echo esc_html( $design[0] ); ?></button>
 			<?php endforeach; ?>
 		</div>
 		<figure class="zion-design-preview" <?php echo isset( $designs[ $selected ] ) ? '' : 'hidden'; ?>>
 			<a href="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" target="_blank" rel="noopener" aria-label="Deschide preview-ul la dimensiunea originală">
-				<img src="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" alt="<?php echo $product ? 'Propunere pentru pagina individuală de produs' : 'Propunere de design pentru cardul produsului'; ?>" width="1536" height="1024" loading="lazy" decoding="async">
+				<img src="<?php echo esc_url( get_theme_file_uri( 'assets/admin/previews/' . $preview[2] ) ); ?>" alt="<?php echo esc_attr( $label ); ?>" width="1536" height="1024" loading="lazy" decoding="async">
 			</a>
 			<figcaption><?php echo esc_html( $preview[1] ); ?></figcaption>
 		</figure>

@@ -61,7 +61,7 @@ test('Control Center persists validated settings and applies inheritance on publ
   try {
     await importSettings(page, empty);
     await openSection(page, 'general');
-    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(13);
+    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(14);
 
     await openSection(page, 'cards');
     await expect(field(page, 'catalog_density')).toHaveValue('');
@@ -845,5 +845,121 @@ test('single product visual designs are independent for 3D Print and Software', 
       expect(response.ok()).toBe(true);
     }
     await importSettings(page, original);
+  }
+});
+
+test('cart visual designs preserve native totals, quantities, coupons and checkout', async ({ page, browser, baseURL }) => {
+  test.setTimeout(300_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const headers = { 'X-WP-Nonce': await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text() };
+  const guest = await browser.newContext({ baseURL, viewport: { width: 1440, height: 1000 } });
+  const customer = await guest.newPage();
+  const errors = [];
+  customer.on('pageerror', error => errors.push(error.message));
+  const code = 'zion-cart-' + randomUUID().slice(0, 8);
+  let coupon;
+  const readCart = async () => {
+    const response = await customer.request.get('/wp-json/wc/store/v1/cart');
+    expect(response.ok()).toBe(true);
+    return response.json();
+  };
+  try {
+    const created = await page.request.post('/wp-json/wc/v3/coupons', { headers, data: { code, discount_type: 'fixed_cart', amount: '5' } });
+    expect(created.status()).toBe(201);
+    coupon = await created.json();
+    for (const slug of ['suport-modular-3d', 'zion-catalog-tools']) {
+      const products = await (await customer.request.get(`/wp-json/wc/store/v1/products?slug=${slug}`)).json();
+      expect(products).toHaveLength(1);
+      await customer.goto(`/?add-to-cart=${products[0].id}`);
+    }
+    const designs = ['atelier', 'editorial', 'technical', 'contrast', 'focus'];
+    const labels = ['Atelier', 'Studio Editorial', 'Technical', 'Contrast Premium', 'Focus Checkout'];
+    for (let index = 0; index < designs.length; index++) {
+      await page.goto(`${base}&section=cart`);
+      await expect(page.getByRole('heading', { name: 'Coș de cumpărături', exact: true })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Editează șablonul coșului în Site Editor' })).toBeVisible();
+      await page.getByRole('button', { name: labels[index], exact: true }).click();
+      await expect(field(page, 'cart_design')).toHaveValue(designs[index]);
+      await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+      const origin = await page.evaluate(() => performance.timeOrigin);
+      await save(page);
+      expect(await page.evaluate(() => performance.timeOrigin)).toBe(origin);
+      if (index === 0) await page.locator('.zion-design-picker').screenshot({ path: 'build/control-cart-selector-1.1.11.png' });
+      const before = await readCart();
+      for (const width of [1440, 390, 768, 1024]) {
+        await customer.setViewportSize({ width, height: 1000 });
+        await customer.goto('/cart/');
+        const cart = customer.locator(`.zion-cart--${designs[index]}`);
+        await expect(cart).toBeVisible();
+        await expect(customer.locator('.zion-cart-page')).toBeVisible();
+        await expect(customer.locator('main h1')).toHaveCount(1);
+        await expect(cart.locator('.wc-block-components-product-name')).toHaveCount(2);
+        await expect(cart.locator('.wc-block-cart__submit-button')).toHaveCount(1);
+        await expect(cart.locator('.wc-block-cart__submit-button')).toBeVisible();
+        await expect(cart.getByLabel('Cantitatea pentru Suport modular 3D din coș.')).toBeVisible();
+        expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+        expect((await readCart()).totals).toEqual(before.totals);
+        for (const row of await cart.locator('.wc-block-cart-items__row').all()) {
+          const title = await row.locator('.wc-block-components-product-name').boundingBox();
+          const total = await row.locator('.wc-block-cart-item__total').boundingBox();
+          expect(title.x + title.width).toBeLessThanOrEqual(total.x + 1);
+        }
+        await expect(cart.locator('img[src*="admin/previews"]')).toHaveCount(0);
+        if (designs[index] === 'editorial') await expect(cart.locator('.wc-block-cart-item__image img').first()).toHaveAttribute('src', before.items[0].images[0].src);
+        if (width === 1440 || width === 390) await cart.screenshot({ path: `build/cart-${designs[index]}-${width}-1.1.11.png` });
+      }
+      const documentStart = await customer.evaluate(() => performance.timeOrigin);
+      const quantity = index % 2 === 0 ? 2 : 1;
+      let release;
+      if (index === 0) {
+        const hold = new Promise(resolve => { release = resolve; });
+        await customer.route(url => decodeURIComponent(url.href).includes('/wc/store/'), async route => {
+          if (route.request().method() === 'POST') await hold;
+          await route.continue();
+        });
+      }
+      try {
+        await customer.getByLabel('Cantitatea pentru Suport modular 3D din coș.').fill(String(quantity));
+        await customer.getByLabel('Cantitatea pentru Suport modular 3D din coș.').press('Tab');
+        if (index === 0) await expect(customer.locator('.zion-commerce-progress')).toHaveText('Se încarcă…');
+      } finally {
+        if (release) { release(); await customer.unrouteAll({ behavior: 'wait' }); }
+      }
+      await expect.poll(async () => (await readCart()).items.find(item => item.name === 'Suport modular 3D').quantity).toBe(quantity);
+      expect(await customer.evaluate(() => performance.timeOrigin)).toBe(documentStart);
+      const withoutCoupon = (await readCart()).totals;
+      await customer.getByRole('button', { name: 'Adaugă cupoane', exact: true }).click();
+      await customer.locator('.wc-block-components-totals-coupon input').fill(code);
+      await customer.getByRole('button', { name: 'Aplică', exact: true }).click();
+      await expect.poll(async () => (await readCart()).coupons.map(item => item.code)).toContain(code);
+      expect(Number((await readCart()).totals.total_discount)).toBeGreaterThan(0);
+      await customer.locator('.wc-block-components-totals-discount .wc-block-components-chip__remove').click();
+      await expect.poll(async () => (await readCart()).coupons).toEqual([]);
+      expect((await readCart()).totals).toEqual(withoutCoupon);
+    }
+    await customer.locator('.wc-block-cart__submit-button').click();
+    await expect(customer).toHaveURL(/\/checkout\/?$/);
+    await expect(customer.getByRole('form', { name: 'Finalizare comandă', exact: true })).toBeVisible();
+    await customer.goBack();
+    await expect(customer.locator('.wc-block-cart-item__remove-link')).toHaveCount(2);
+    for (const remaining of [1, 0]) {
+      await customer.locator('.wc-block-cart-item__remove-link').first().click();
+      await expect(customer.locator('.wc-block-cart-item__remove-link')).toHaveCount(remaining);
+    }
+    await expect(customer.getByRole('heading', { name: /Coșul tău este gol|Your cart is currently empty/i })).toBeVisible();
+    await expect(customer.getByRole('heading', { name: 'Coșul tău este gol.', exact: true })).toBeVisible();
+    expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+    expect(errors).toEqual([]);
+    await openSection(page, 'cart');
+    await page.getByRole('button', { name: 'Resetează secțiunea', exact: true }).click();
+    await expect(page.getByText('Secțiunea a revenit la valorile moștenite.', { exact: true })).toBeVisible();
+    await expect(field(page, 'cart_design')).toHaveValue('');
+    await expect(page.locator('[data-zion-design="atelier"]')).toHaveAttribute('aria-pressed', 'true');
+  } finally {
+    await importSettings(page, original);
+    if (coupon) await page.request.delete(`/wp-json/wc/v3/coupons/${coupon.id}?force=true`, { headers });
+    await guest.close();
   }
 });

@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.10** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.11** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.10** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.11** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Coș cu selector vizual 1.1.11
+
+- [x] **Aspect → Zion Theme → Coș de cumpărături**: Atelier, Studio Editorial, Technical, Contrast Premium și Focus Checkout, cu cele cinci imagini aprobate, preview imediat și salvare Ajax cu spinner.
+- [x] Un singur câmp `cart_design` în registrul și opțiunea existente `zion_theme_settings.global`, cu Atelier implicit, validare, reset de secțiune și import/export. Un singur coș comun pentru produsele fizice și software; nu există totaluri sau configurații comerciale duplicate.
+- [x] Blocul Coș WooCommerce își păstrează cantitățile, eliminarea produselor, cupoanele, taxele, livrarea, plățile expres și linkul către checkout. Designurile schimbă numai prezentarea; sumele și rândurile din rezumat sunt cele furnizate de WooCommerce.
+- [x] Șablonul HTML `page-cart` rămâne editabil în Site Editor și afișează conținutul paginii native de coș, fără să îl rescrie. Linkuri directe în panou către Site Editor și editorul paginii. Pentru shortcode-ul clasic se afișează o explicație: designurile necesită blocul nativ Coș.
+- [x] Tokenuri derivate din `theme.json`, imagini centrate, tipografie moderată, controale accesibile, variantă cu suprafață deschisă și focus vizibil. Preview-urile sunt încărcate numai în administrare.
+- [x] Build, WPCS, PHPUnit (37 teste / 340 aserțiuni), integrarea catalogului și migrarea/rollback-ul pe date sintetice trecute. Playwright: 46 scenarii în suita completă, plus reluarea testului dedicat după ajustările finale ale imaginilor, traducerilor și alinierii celulelor.
+- [x] Matrice coș: cinci designuri × 1440/390/768/1024 px, fără overflow sau suprapunere titlu/total, un singur CTA de checkout, cantități Ajax cu indicator de încărcare, aplicare/eliminare cupoane, totaluri identice între designuri, checkout și coș gol. Studio Editorial utilizează imaginile complete din store-ul WooCommerce deja încărcat, fără interogări suplimentare de produse.
+- [ ] Instalare și verificare 1.1.11 pe staging.
+
+Ghid: [designurile coșului și configurarea nativă](docs/cart-designs.md).
 
 ## Pagini individuale de produs 1.1.10
 

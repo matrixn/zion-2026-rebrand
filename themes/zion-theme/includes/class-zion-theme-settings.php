@@ -22,6 +22,15 @@ final class Zion_Theme_Settings {
 	 */
 	public static function registry(): array {
 		static $fields   = array(
+			'cart_design'             => array(
+				'label'       => 'Design coș',
+				'description' => 'Schimbă prezentarea blocului Coș WooCommerce. Cantitățile, cupoanele și totalurile rămân gestionate de WooCommerce.',
+				'section'     => 'cart',
+				'type'        => 'choice',
+				'default'     => 'atelier',
+				'allowed'     => array_combine( array_keys( self::cart_designs() ), array_column( self::cart_designs(), 0 ) ),
+				'contexts'    => array( 'global' ),
+			),
 			'motion'                  => array(
 				'label'       => 'Mișcare',
 				'description' => 'Urmează preferința vizitatorului sau dezactivează întotdeauna tranzițiile decorative Zion.',
@@ -752,6 +761,21 @@ final class Zion_Theme_Settings {
 			'studio-compact' => array( 'Compact Studio', 'Imagine lângă informații în cardurile late, așezare verticală în spațiile înguste.', 'compact.png', '4/3' ),
 			'technical'      => array( 'Technical', 'Contur tehnic, atribute disponibile și acțiuni egale.', 'technical.png', '4/3' ),
 			'focus'          => array( 'Premium Focus', 'Compoziție centrată, fotografie aerisită și acțiuni la baza cardului.', 'focus.png', '3/2' ),
+		);
+	}
+
+	/**
+	 * Cart concepts implemented on the same native WooCommerce Cart block.
+	 *
+	 * @return array
+	 */
+	public static function cart_designs(): array {
+		return array(
+			'atelier'   => array( 'Atelier', 'Listă aerisită de produse, rezumat lateral și acțiune principală clară.', 'cart-atelier.png' ),
+			'editorial' => array( 'Studio Editorial', 'Carduri vizuale cu fotografii generoase și rezumat lateral.', 'cart-editorial.png' ),
+			'technical' => array( 'Technical', 'Tabel precis pe toată lățimea și rezumat integrat sub produse.', 'cart-technical.png' ),
+			'contrast'  => array( 'Contrast Premium', 'Produse pe o suprafață deschisă și rezumat pe fundal întunecat.', 'cart-contrast.png' ),
+			'focus'     => array( 'Focus Checkout', 'Flux central concentrat, cu rezumat și acțiune la baza listei.', 'cart-focus.png' ),
 		);
 	}
 

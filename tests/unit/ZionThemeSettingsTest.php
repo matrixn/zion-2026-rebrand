@@ -15,6 +15,23 @@ require_once __DIR__ . '/../../themes/zion-theme/includes/class-zion-theme-setti
  */
 final class ZionThemeSettingsTest extends TestCase {
 	/**
+	 * There is one native cart and a single global presentation choice.
+	 */
+	public function test_cart_designs_use_one_global_setting_and_round_trip(): void {
+		$config = Zion_Theme_Settings::empty_config();
+		self::assertSame( 'atelier', Zion_Theme_Settings::resolve( $config, 'cart_design' )['value'] );
+		self::assertArrayNotHasKey( 'cart_design', Zion_Theme_Settings::fields( 'shop' ) );
+		self::assertArrayNotHasKey( 'cart_design', Zion_Theme_Settings::fields( 'product' ) );
+		foreach ( array_keys( Zion_Theme_Settings::cart_designs() ) as $design ) {
+			$config['global']['cart_design'] = $design;
+			$config                          = Zion_Theme_Settings::normalize( $config );
+			self::assertSame( $design, Zion_Theme_Settings::resolve( $config, 'cart_design' )['value'] );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone unit tests.
+			self::assertSame( $config, Zion_Theme_Settings::import( json_encode( $config, JSON_THROW_ON_ERROR ) ) );
+		}
+	}
+
+	/**
 	 * Layout choices remain independent between stores and from content presets.
 	 */
 	public function test_single_product_design_precedence_and_choices(): void {
@@ -182,6 +199,8 @@ final class ZionThemeSettingsTest extends TestCase {
 	 */
 	public static function invalid_values(): array {
 		return array(
+			array( array( 'cart_design' => 'unknown' ), 'global', true ),
+			array( array( 'cart_design' => 'focus' ), 'shop', true ),
 			array( array( 'catalog_density' => '<script>' ), 'shop', true ),
 			array( array( 'product_meta' => '1' ), 'page', true ),
 			array( array( 'reading_speed' => '500' ), 'global', true ),
