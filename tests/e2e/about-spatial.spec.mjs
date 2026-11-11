@@ -32,6 +32,9 @@ for (const width of [390, 1440]) {
       await page.waitForTimeout(180);
       expect(await image()).toBe(paused);
       await hero.getByRole('button', { name: 'Reia animația', exact: true }).click();
+      // Native focus scrolling may move the tilted canvas offscreen, where it sleeps.
+      await canvas.scrollIntoViewIfNeeded();
+      await expect(canvas).toBeInViewport();
       await expect.poll(image).not.toBe(paused);
 
       const forge = page.locator('.zion-about-forge');

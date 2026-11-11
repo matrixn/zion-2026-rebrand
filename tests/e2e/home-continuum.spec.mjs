@@ -11,6 +11,9 @@ for (const width of [390, 768, 1024, 1440]) {
     await page.goto('/');
     await expect(page.locator('.zion-homepage')).toHaveClass(/is-spatial-static/);
     await expect(page.locator('main h1')).toHaveCount(1);
+    const heroBounds = await page.locator('.zion-home-lab').evaluate(e => ({ left:e.getBoundingClientRect().left, right:e.getBoundingClientRect().right, viewport:document.documentElement.clientWidth }));
+    expect(heroBounds.left).toBeGreaterThanOrEqual(0);
+    expect(heroBounds.right).toBeLessThanOrEqual(heroBounds.viewport);
     await expect(page.locator('script#zion-continuum-js')).toHaveCount(1);
     await expect(page.locator('.zion-home-products .zion-library-collection')).toHaveCount(1);
     await expect(page.locator('.zion-home-products canvas')).toHaveCount(0);

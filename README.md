@@ -46,7 +46,8 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Un singur renderer și scheduler pentru homepage și About, cu asset condițional, scene vizibile, pauză globală și limitarea detaliilor pe mobil. Variante statice la reduced motion și SVG-ul inițial când JavaScript lipsește. Paleta rămâne în `theme.json`.
 - [x] Decorații adăugate numai la randare. Conținutul și șabloanele salvate rămân editabile și nu sunt rescrise; produsele, imaginile și acțiunile WooCommerce sunt păstrate.
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **52/52 teste storefront**, inclusiv opt teste noi pentru homepage, trecute; comparațiile About păstrate și cele două referințe vizuale homepage actualizate. ZIP-uri Theme/Core **1.1.21** generate.
-- [ ] Finalizarea suitei de administrare, QA staging la 390/768/1024/1440 px, GitHub Actions și consemnarea livrării pe `main`.
+- [x] Suita locală completă: **70/70 teste Playwright** trecute în 11,6 minute. După corectarea cadrului hero pe mobil, **15 verificări homepage/Continuum** au trecut din nou; testul măsoară acum și marginea cadrului, nu doar overflow-ul documentului. Reluarea About este verificată cu desenul în viewport, unde rendererul este intenționat activ, cu **8 execuții repetate** trecute.
+- [ ] QA staging final, GitHub Actions pentru sursa finală și consemnarea livrării pe `main`.
 
 Ghid: [Continuum pe homepage](docs/home-continuum.md).
 
