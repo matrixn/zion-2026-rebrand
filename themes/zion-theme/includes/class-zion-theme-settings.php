@@ -22,6 +22,15 @@ final class Zion_Theme_Settings {
 	 */
 	public static function registry(): array {
 		static $fields   = array(
+			'account_design'          => array(
+				'label'       => 'Design Contul meu',
+				'description' => 'Aspectul contului nativ WooCommerce, inclusiv autentificare și endpointuri. Datele și permisiunile rămân gestionate de WooCommerce.',
+				'section'     => 'account',
+				'type'        => 'choice',
+				'default'     => 'atelier',
+				'allowed'     => array_combine( array_keys( self::account_designs() ), array_column( self::account_designs(), 0 ) ),
+				'contexts'    => array( 'global' ),
+			),
 			'checkout_design'         => array(
 				'label'       => 'Design checkout',
 				'description' => 'Aspectul formularului nativ Finalizare comandă. Câmpurile, validarea, livrarea, taxele și plățile rămân gestionate de WooCommerce.',
@@ -800,6 +809,21 @@ final class Zion_Theme_Settings {
 			'technical' => array( 'Technical', 'Panouri cu contur precis, secțiuni delimitate și accente CAD discrete.', 'checkout-technical.png' ),
 			'contrast'  => array( 'Contrast Premium', 'Formular deschis la culoare, rezumat întunecat și contrast ridicat.', 'checkout-contrast.png' ),
 			'focus'     => array( 'Focus Checkout', 'Flux central într-o singură coloană, rezumat și acțiune fără distrageri.', 'checkout-focus.png' ),
+		);
+	}
+
+	/**
+	 * Account presentation concepts sharing the native endpoints.
+	 *
+	 * @return array
+	 */
+	public static function account_designs(): array {
+		return array(
+			'atelier'   => array( 'Atelier', 'Navigație laterală, panouri aerisite și acces rapid la comenzile și datele proprii.', 'account-atelier.png' ),
+			'editorial' => array( 'Studio Editorial', 'Navigație laterală deschisă, titluri generoase și separatoare fine.', 'account-editorial.png' ),
+			'technical' => array( 'Technical', 'Navigație orizontală, contururi precise și panouri inspirate de CAD.', 'account-technical.png' ),
+			'contrast'  => array( 'Contrast Premium', 'Navigație întunecată și conținut pe o suprafață deschisă, cu contrast ridicat.', 'account-contrast.png' ),
+			'focus'     => array( 'Focus Account', 'Compoziție centrală, navigație orizontală și acces clar la funcțiile contului.', 'account-focus.png' ),
 		);
 	}
 

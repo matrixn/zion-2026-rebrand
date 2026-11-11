@@ -2933,3 +2933,86 @@ body:has(.zion-product-page--sticky) {
 .zion-catalog-native .zion-category-chip .wc-block-product-filter-removable-chips__label { font-size: 0; }
 .zion-catalog-native .zion-category-chip .wc-block-product-filter-removable-chips__label::after { content: attr(data-zion-short-label); font-size: .85rem; }
 .zion-catalog-native .zion-category-chip-inactive { display: none; }
+/* One WooCommerce account, five presentation families. */
+.zion-account {
+  --account-surface: var(--wp--preset--color--surface);
+  --account-ink: var(--wp--preset--color--text);
+  --account-muted: var(--wp--preset--color--muted);
+  --account-rule: color-mix(in srgb, var(--account-ink) 20%, transparent);
+  color: var(--account-ink); margin-block: 2rem 4rem; min-width: 0;
+}
+.zion-account:has(.woocommerce-MyAccount-navigation) { display: grid; grid-template-columns: minmax(12rem, 1fr) minmax(0, 3.7fr); gap: clamp(1rem, 3vw, 2.5rem); align-items: start; }
+.zion-account:has(.woocommerce-MyAccount-navigation)::before,
+.zion-account:has(.woocommerce-MyAccount-navigation)::after { display: none; }
+.zion-account .woocommerce-MyAccount-navigation,
+.zion-account .woocommerce-MyAccount-content { float: none; width: auto; min-width: 0; }
+.zion-account .woocommerce-MyAccount-navigation { border: 1px solid var(--account-rule); border-radius: .85rem; padding: .65rem; background: var(--account-surface); }
+.zion-account .woocommerce-MyAccount-navigation ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .35rem; }
+.zion-account .woocommerce-MyAccount-navigation li { margin: 0; }
+.zion-account .woocommerce-MyAccount-navigation a { display: flex; align-items: center; min-height: 44px; padding: .6rem .85rem; box-sizing: border-box; border-radius: .4rem; font-size: .9rem; color: var(--account-ink); text-decoration: none; overflow-wrap: anywhere; }
+.zion-account .woocommerce-MyAccount-navigation a:hover { background: color-mix(in srgb, var(--account-ink) 7%, transparent); }
+.zion-account .woocommerce-MyAccount-navigation .is-active a { color: var(--wp--preset--color--ink); background: var(--wp--preset--color--accent); font-weight: 650; }
+.zion-account .woocommerce-MyAccount-content { padding: clamp(1rem, 2.5vw, 2rem); border: 1px solid var(--account-rule); border-radius: 1rem; background: var(--account-surface); color: var(--account-ink); }
+.zion-account .woocommerce-MyAccount-content > p:first-child { font-size: clamp(1.15rem, 2vw, 1.6rem); line-height: 1.5; }
+.zion-account h2 { font-size: clamp(1.1rem, 2vw, 1.5rem); line-height: 1.4; letter-spacing: -.025em; margin-block: 0 1rem; }
+.zion-account h3 { font-size: 1.15rem; }
+.zion-account p { overflow-wrap: anywhere; }
+.zion-account-dashboard { display: grid; gap: 1.25rem; margin-top: 1.75rem; }
+.zion-account-shortcuts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.zion-account .zion-account-shortcut { display: flex; align-items: center; justify-content: space-between; gap: .75rem; padding: 1.25rem 1rem; border: 1px solid var(--account-rule); border-radius: .65rem; text-decoration: none; color: var(--account-ink); font-size: .95rem; }
+.zion-account .zion-account-shortcut:hover { border-color: var(--wp--preset--color--accent); }
+.zion-account-shortcut span { color: var(--wp--preset--color--accent); }
+.zion-account-panel { min-width: 0; padding: clamp(1rem, 2vw, 1.5rem); border: 1px solid var(--account-rule); border-radius: .65rem; }
+.zion-account-resources { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.zion-account-resources p { font-size: .9rem; color: var(--account-muted); }
+.zion-account-orders { list-style: none; padding: 0; margin: 0; }
+.zion-account-orders li { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr) minmax(0, 1fr) auto; align-items: center; gap: .75rem; padding-block: 1rem; border-top: 1px solid var(--account-rule); font-size: .85rem; overflow-wrap: anywhere; }
+.zion-account-status { display: inline-flex; padding: .25rem .5rem; border-radius: .4rem; border: 1px solid var(--account-rule); font-size: .8rem; }
+.zion-account :is(input.input-text, textarea, select) { box-sizing: border-box; max-width: 100%; min-height: 48px; padding: .7rem; background: var(--account-surface); color: var(--account-ink); border: 1px solid var(--account-rule); border-radius: .4rem; font-size: 1rem; }
+.zion-account :is(input[type=checkbox], input[type=radio]) { accent-color: var(--wp--preset--color--accent); }
+.zion-account :is(form.login, form.register, form.lost_reset_password) { padding: clamp(1rem, 2vw, 2rem); border: 1px solid var(--account-rule); border-radius: .8rem; background: var(--account-surface); }
+.zion-account .button { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-height: 44px; padding: .7rem 1rem; border-radius: .4rem; background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); font-size: .9rem; line-height: 1.5; font-weight: 600; white-space: normal; text-align: center; text-decoration: none; }
+.zion-account :is(a, button, input, select, textarea):focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
+.zion-account table.shop_table { border-color: var(--account-rule); font-size: .9rem; table-layout: fixed; width: 100%; }
+.zion-account table.shop_table :is(th, td) { padding: .8rem .65rem; border-color: var(--account-rule); overflow-wrap: anywhere; }
+.zion-account address { font-style: normal; }
+.zion-account--editorial .woocommerce-MyAccount-navigation,
+.zion-account--editorial .woocommerce-MyAccount-content { background: transparent; border: 0; border-radius: 0; padding-inline: 0; }
+.zion-account--editorial .woocommerce-MyAccount-content { border-inline-start: 1px solid var(--account-rule); padding-inline-start: 2rem; }
+.zion-account--editorial .zion-account-panel { border: 0; border-top: 1px solid var(--account-rule); border-radius: 0; padding-inline: 0; }
+.zion-account--technical:has(.woocommerce-MyAccount-navigation),
+.zion-account--focus:has(.woocommerce-MyAccount-navigation) { grid-template-columns: minmax(0, 1fr); }
+.zion-account--technical .woocommerce-MyAccount-navigation ul,
+.zion-account--focus .woocommerce-MyAccount-navigation ul { flex-direction: row; flex-wrap: wrap; }
+.zion-account--technical .woocommerce-MyAccount-navigation li,
+.zion-account--focus .woocommerce-MyAccount-navigation li { flex: 1 1 auto; }
+.zion-account--technical :is(.woocommerce-MyAccount-navigation, .woocommerce-MyAccount-content, .zion-account-panel, .zion-account-shortcut) { border-radius: .2rem; }
+.zion-account--technical .woocommerce-MyAccount-content { border-top: 2px solid var(--wp--preset--color--accent); background-image: linear-gradient(135deg, color-mix(in srgb, var(--wp--preset--color--accent) 4%, transparent), transparent 55%); }
+.zion-account--technical .zion-account-panel h2 { font-family: var(--wp--preset--font-family--mono); font-size: 1.1rem; }
+.zion-account--contrast .woocommerce-MyAccount-content,
+.zion-account--contrast:not(:has(.woocommerce-MyAccount-navigation)) {
+  --account-surface: var(--wp--preset--color--paper); --account-ink: var(--wp--preset--color--ink);
+  --account-muted: color-mix(in srgb, var(--wp--preset--color--ink) 75%, var(--wp--preset--color--paper));
+  --account-rule: color-mix(in srgb, var(--wp--preset--color--ink) 25%, transparent);
+}
+.zion-account--contrast .woocommerce-MyAccount-content a:not(.button),
+.zion-account--contrast:not(:has(.woocommerce-MyAccount-navigation)) a:not(.button) { color: var(--account-ink); }
+.zion-account--contrast .woocommerce-MyAccount-content :focus-visible { outline-color: var(--account-ink); }
+.zion-account--focus { max-width: 64rem; margin-inline: auto; }
+.zion-account--focus .woocommerce-MyAccount-navigation a { justify-content: center; }
+.zion-account--focus .woocommerce-MyAccount-content > p:first-child { text-align: center; }
+@media (max-width: 999px) {
+  .zion-account:has(.woocommerce-MyAccount-navigation) { grid-template-columns: minmax(0, 1fr); }
+  .zion-account .woocommerce-MyAccount-navigation ul { flex-direction: row; flex-wrap: wrap; }
+  .zion-account .woocommerce-MyAccount-navigation li { flex: 1 1 auto; }
+  .zion-account--editorial .woocommerce-MyAccount-content { border-inline-start: 0; padding-inline-start: 0; }
+}
+@media (max-width: 600px) {
+  .zion-account-shortcuts, .zion-account-resources { grid-template-columns: minmax(0, 1fr); }
+  .zion-account-orders li { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .zion-account .woocommerce-MyAccount-navigation a { font-size: .82rem; padding-inline: .6rem; }
+}
+.zion-account.woocommerce .woocommerce-MyAccount-navigation ul { height: auto; min-height: 0; justify-content: flex-start; }
+.zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.woocommerce-MyAccount-navigation-link { padding: 0; margin: 0; }
+.zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.woocommerce-MyAccount-navigation-link > a { min-height: 44px; padding: .6rem .85rem; text-decoration: none; font-weight: 500; }
+.zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.is-active > a { font-weight: 650; }

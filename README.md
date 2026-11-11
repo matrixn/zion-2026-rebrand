@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.13** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.14** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.13** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.14** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -40,6 +40,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Contul meu cu selector vizual 1.1.14
+
+- [x] **Aspect → Zion Theme → Contul meu**: Atelier, Studio Editorial, Technical, Contrast Premium și Focus Account. Cinci preview-uri aprobate, selector, lightbox accesibil, salvare Ajax cu spinner, reset de secțiune și import/export.
+- [x] Un singur `account_design` global în `zion_theme_settings`; implicit Atelier. Același cont pentru 3D și Software, fără utilizatori, adrese sau comenzi duplicate.
+- [x] Renderer comun peste `[woocommerce_my_account]`, independent de slugul paginii. Navigație, autentificare, recuperare parolă, comenzi, descărcări, adrese și formularele de cont rămân native WooCommerce. Linkuri în administrare către pagina nativă și Site Editor; conținutul existent nu este rescris.
+- [x] Dashboard cu acces rapid, ultimele trei comenzi ale utilizatorului curent, stare goală și linkuri reale spre fișiere/adrese. Funcțiile eliminate din meniul nativ de extensii nu sunt reintroduse de dashboard.
+- [x] Stiluri responsive și focus vizibil, tokenuri din `theme.json`, variantă Contrast Premium. Traduceri de rezervă pentru etichetele native ale contului; traducerile instalate și formatarea datelor WooCommerce au prioritate. Fără JavaScript nou pe frontend și fără suprascrieri de template-uri PHP WooCommerce.
+- [x] PHPUnit: 45 teste / 378 aserțiuni. Testul dedicat verifică cele cinci variante la 390/768/1024/1440 px pentru clienți și vizitatori, endpointurile native și izolarea comenzilor între clienți.
+- [x] Suita completă Playwright: **51 scenarii trecute**, inclusiv salvarea detaliilor contului și logoutul nativ. Build, WPCS, integrarea și migrarea/rollback-ul pe date sintetice trecute. ZIP-urile 1.1.14 generate.
+- [ ] Verificare 1.1.14 pe staging.
+
+Ghid: [designurile contului](docs/account-designs.md).
+
 ## Administrare compactă și taguri categorii 1.1.13
 
 - [x] Filtre active: un singur titlu **Categorii**, numele categoriilor afișate ca taguri, fără repetarea vizuală „Category:”. WooCommerce păstrează butoanele native, etichetele accesibile complete, parametrii și interogările.
@@ -49,7 +62,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Suita completă Playwright: **50 scenarii trecute**, inclusiv cele două teste noi pentru taguri și lightbox. Integrarea și migrarea/rollback-ul au trecut pe date sintetice.
 - [x] Theme și Core 1.1.13 instalate pe staging după backup privat. Patru categorii 3D și două Software grupate corect; eliminare individuală și reset verificate. Preview compact și lightbox în toate cele patru secțiuni; Escape, buton de închidere și focus restaurat, plus lightbox checkout la 390 px. Fără erori de consolă în taburile verificate. Alegerile persistente și coșul nu au fost modificate; producția a rămas neatinsă.
 - [x] Cinci concepte vizuale **Contul meu** prezentate pentru alegere: Atelier, Studio Editorial, Technical, Contrast Premium, Focus Account.
-- [ ] Alegerea și implementarea paginii Contul meu pe baza funcțiilor native WooCommerce. Această versiune nu modifică pagina contului.
+- [x] Cele cinci variante Contul meu au fost aprobate și implementate în 1.1.14, pe baza funcțiilor native WooCommerce.
 
 Ghid: [preview-uri și filtre](docs/admin-previews-and-filter-tags.md).
 

@@ -61,7 +61,7 @@ test('Control Center persists validated settings and applies inheritance on publ
   try {
     await importSettings(page, empty);
     await openSection(page, 'general');
-    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(15);
+    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(16);
 
     await openSection(page, 'cards');
     await expect(field(page, 'catalog_density')).toHaveValue('');
@@ -1071,7 +1071,7 @@ test('checkout design selector preserves native form, validation and totals at f
 
 test('all design sections use compact previews and keyboard accessible lightboxes', async ({ page }) => {
   await login(page);
-  for (const section of ['cards', 'product', 'cart', 'checkout']) {
+  for (const section of ['cards', 'product', 'cart', 'checkout', 'account']) {
     await page.setViewportSize({ width: 1440, height: 950 });
     await openSection(page, section);
     const opener = page.locator('.zion-design-preview a');
@@ -1130,5 +1130,90 @@ test('active category chips share one heading and preserve native removal and hi
     await page.request.put(`/wp-json/wc/v3/products/${original.id}`, { headers, data: { categories: original.categories.map(c => ({ id: c.id })) } });
     await page.request.delete(`/wp-json/wc/v3/products/categories/${term.id}?force=true`, { headers });
     await guest.close();
+  }
+});
+
+test('account designs preserve native endpoints, authentication and customer order isolation', async ({ page, browser, baseURL }) => {
+  test.setTimeout(300_000);
+  await login(page); await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const headers = { 'X-WP-Nonce': await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text() };
+  const admin = await (await page.request.get('/wp-json/wp/v2/users/me', { headers })).json();
+  const created = [];
+  const orders = [];
+  const password = randomUUID();
+  const memberContext = await browser.newContext({ baseURL });
+  const guestContext = await browser.newContext({ baseURL });
+  const member = await memberContext.newPage(); const guest = await guestContext.newPage();
+  const errors = []; member.on('pageerror', e => errors.push(e.message)); guest.on('pageerror', e => errors.push(e.message));
+  try {
+    for (let i = 0; i < 2; i++) {
+      const username = 'zion-account-' + randomUUID().slice(0, 8);
+      const response = await page.request.post('/wp-json/wp/v2/users', { headers, data: { username, password, email: username+'@example.test', roles: ['customer'] } });
+      expect(response.status()).toBe(201); created.push(await response.json());
+      const order = await page.request.post('/wp-json/wc/v3/orders', { headers, data: { customer_id: created[i].id, status: 'on-hold' } });
+      expect(order.status()).toBe(201); orders.push(await order.json());
+    }
+    await login(member, created[0].slug, password);
+    const apiPages = await (await page.request.get('/wp-json/wp/v2/pages?slug=my-account', { headers })).json();
+    expect(apiPages.length).toBe(1);
+    const account = new URL(apiPages[0].link).pathname;
+    const designs = ['atelier', 'editorial', 'technical', 'contrast', 'focus'];
+    for (const design of designs) {
+      await openSection(page, 'account');
+      await field(page, 'account_design').selectOption(design);
+      await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+      await save(page);
+      for (const width of [1440, 390, 768, 1024]) {
+        await member.setViewportSize({ width, height: 1000 }); await guest.setViewportSize({ width, height: 1000 });
+        await member.goto(account); await guest.goto(account);
+        const root = member.locator(`.zion-account--${design}`);
+        await expect(root).toBeVisible();
+        await expect(root.locator('.woocommerce-MyAccount-navigation')).toHaveCount(1);
+        await expect(root.locator('.zion-account-orders')).toContainText('#'+orders[0].number);
+        await expect(root.locator('.zion-account-orders')).not.toContainText('#'+orders[1].number);
+        await expect(guest.locator(`.zion-account--${design} form.login`)).toBeVisible();
+        await expect(guest.locator('.zion-account-orders')).toHaveCount(0);
+        expect(await member.evaluate(() => document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+        expect(await guest.evaluate(() => document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+        if (width === 1440 || width === 390) await root.screenshot({ path: `build/account-${design}-${width}-1.1.14.png` });
+      }
+      for (const width of [390, 1440]) {
+        await member.setViewportSize({ width, height: 1000 });
+        for (const endpoint of ['orders', 'downloads', 'edit-address', 'edit-account']) {
+          await member.goto(account+endpoint+'/');
+          await expect(member.locator(`.zion-account--${design} .woocommerce-MyAccount-content`)).toBeVisible();
+          expect(await member.evaluate(() => document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+          if (endpoint === 'edit-account') await expect(member.locator('form.edit-account')).toHaveCount(1);
+        }
+        await member.goto(account+'view-order/'+orders[0].id+'/');
+        await expect(member.locator('.woocommerce-MyAccount-content')).toContainText(orders[0].number);
+        await member.goto(account+'view-order/'+orders[1].id+'/');
+        await expect(member.locator('.woocommerce-MyAccount-content')).toContainText('Comandă invalidă.');
+        await expect(member.locator('.woocommerce-order-details')).toHaveCount(0);
+      }
+    }
+    await guest.goto(account+'lost-password/');
+    await expect(guest.locator('.lost_reset_password')).toBeVisible();
+    await member.goto(account+'edit-account/');
+    await member.locator('#account_first_name').fill('Zion');
+    await member.locator('#account_last_name').fill('Test');
+    await member.locator('#account_display_name').fill('Zion Account Test');
+    await member.locator('button[name=save_account_details]').click();
+    await expect(member.locator('.woocommerce-message, .wc-block-components-notice-banner.is-success')).toBeVisible();
+    await expect(member.locator('#account_display_name')).toHaveValue('Zion Account Test');
+    await member.goto(account);
+    await expect(member.locator('.woocommerce-MyAccount-content')).toContainText('Zion Account Test');
+    await member.locator('.woocommerce-MyAccount-navigation-link--customer-logout a').click();
+    await expect(member.locator('form.login')).toBeVisible();
+    expect(errors).toEqual([]);
+    await openSection(page, 'account');
+    await page.getByRole('button', {name:'Resetează secțiunea',exact:true}).click();
+    await expect(field(page,'account_design')).toHaveValue('');
+  } finally {
+    await importSettings(page, original);
+    for (const order of orders) await page.request.delete(`/wp-json/wc/v3/orders/${order.id}?force=true`, { headers });
+    for (const user of created) await page.request.delete(`/wp-json/wp/v2/users/${user.id}?force=true&reassign=${admin.id}`, { headers });
+    await memberContext.close(); await guestContext.close();
   }
 });
