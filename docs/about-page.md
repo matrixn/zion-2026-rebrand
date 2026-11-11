@@ -25,7 +25,7 @@ wp eval-file /cale/catre/repo/scripts/staging-editorial.php about
 wp eval-file /cale/catre/repo/scripts/staging-editorial.php about apply
 ```
 
-Prima comandă este preview, fără scriere. Modul `about` vizează exclusiv `despre-noi`; scriptul refuză producția și mediile care nu sunt staging. Aplicarea păstrează ID-ul, URL-ul, titlul, părintele, starea și metadatele SEO. Salvează o revizie, înlocuiește conținutul cu blocuri native și elimină de pe această pagină selecția vechiului șablon și modul Elementor. Datele Elementor originale rămân disponibile în backup și în metadatele existente. O reaplicare identică nu rescrie pagina.
+Prima comandă este preview, fără scriere. Modul `about` vizează exclusiv `despre-noi`; scriptul refuză producția și mediile care nu sunt staging. Aplicarea folosește `wp_update_post` și păstrează ID-ul, URL-ul, titlul, autorul, data publicării, excerptul, părintele, starea și metadatele SEO. Salvează o revizie, înlocuiește conținutul cu blocuri native și elimină de pe această pagină selecția vechiului șablon și modul Elementor. Datele Elementor originale rămân disponibile în backup și în metadatele existente. O reaplicare identică nu rescrie pagina.
 
 Pentru revenirea conținutului, folosește revizia anterioară din editor. Selecția de șablon și modul editorului se restaurează din snapshotul privat al paginii, dacă este necesar; backupul complet al bazei și arhiva componentelor permit revenirea întregii livrări pe staging. Nu rula din nou `about apply` peste modificări editoriale fără a le salva mai întâi.
 

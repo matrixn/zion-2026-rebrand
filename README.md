@@ -44,7 +44,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 
 - [x] Pagină editorială cu hero „Oameni curioși. Idei care prind formă.”, notă tipografică Zion, poveste, atelier și software, principii de lucru și invitație la dialog. Negru, lime, Paper și același fundal CAD animat, cu reducerea mișcării.
 - [x] Conținut din blocuri Gutenberg native, pattern reutilizabil și șablon HTML `page-despre-noi`. Header/footer editabile în Site Editor; seed-ul local creează doar pagina lipsă și păstrează editările existente. Fără asseturi JavaScript noi.
-- [x] Mod staging `about` pentru preview și aplicare exclusiv pe această pagină, după backup. Păstrează URL-ul, ID-ul și metadatele SEO; salvează revizia și elimină selecția vechiului editor/șablon de pe pagina reconstruită.
+- [x] Mod staging `about` pentru preview și aplicare exclusiv pe această pagină, după backup. Actualizarea nativă păstrează URL-ul, ID-ul, autorul, data publicării, excerptul și metadatele SEO; salvează revizia și elimină selecția vechiului editor/șablon de pe pagina reconstruită.
 - [x] Cinci teste About: 390/768/1024/1440 px, zero overflow, ancoră din tastatură, contrast, reduced motion, fără JavaScript și blocuri valide în editorul nativ. Integrare pentru conținut nativ și păstrarea modificărilor la seed.
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **41/41 teste storefront** trecute. Referințe About noi și referințele existente actualizate pentru linkul Despre noi introdus în meniul și footer-ul demo.
 - [ ] Verificările finale, staging, CI, ZIP-urile 1.1.19 și livrarea pe `main`.

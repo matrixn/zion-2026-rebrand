@@ -218,7 +218,8 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 		if ( $zion_theme_stage_about && $zion_theme_stage_page ) {
 			wp_save_post_revision( $zion_theme_stage_page->ID );
 		}
-		$zion_theme_stage_result = wp_insert_post(
+		$zion_theme_stage_writer = $zion_theme_stage_about ? 'wp_update_post' : 'wp_insert_post';
+		$zion_theme_stage_result = $zion_theme_stage_writer(
 			wp_slash(
 				array(
 					'ID'           => $zion_theme_stage_page ? $zion_theme_stage_page->ID : 0,
