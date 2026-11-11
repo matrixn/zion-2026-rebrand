@@ -15,6 +15,23 @@ require_once __DIR__ . '/../../themes/zion-theme/includes/class-zion-theme-setti
  */
 final class ZionThemeSettingsTest extends TestCase {
 	/**
+	 * The five header designs share one validated, global, portable setting.
+	 */
+	public function test_header_designs_are_global_and_round_trip(): void {
+		$config = Zion_Theme_Settings::empty_config();
+		self::assertSame( 'atelier', Zion_Theme_Settings::resolve( $config, 'header_design' )['value'] );
+		self::assertCount( 5, Zion_Theme_Settings::header_designs() );
+		self::assertSame( array( 'global' ), Zion_Theme_Settings::registry()['header_design']['contexts'] );
+		foreach ( array_keys( Zion_Theme_Settings::header_designs() ) as $design ) {
+			$config['global']['header_design'] = $design;
+			$config                            = Zion_Theme_Settings::normalize( $config );
+			self::assertSame( $design, Zion_Theme_Settings::resolve( $config, 'header_design' )['value'] );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Standalone unit test.
+			self::assertSame( $config, Zion_Theme_Settings::import( json_encode( $config, JSON_THROW_ON_ERROR ) ) );
+		}
+		self::assertTrue( Zion_Theme_Settings::registry()['header_cart_badge']['default'] );
+	}
+	/**
 	 * Account presentation shares the registry, never commercial settings.
 	 */
 	public function test_account_designs_are_global_and_round_trip(): void {

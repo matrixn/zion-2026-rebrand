@@ -2,6 +2,8 @@
 
 ## Header
 
+Din **1.1.17**, selectorul **Design meniu și header** oferă Atelier, Nexus Mega, Capsule, Technical Contrast și Signature, cu preview și lightbox. Iconițele, starea paginii active și linia lime completă se aplică aceluiași meniu nativ. Vezi [designurile meniului](menu-designs.md) pentru diferențe, niveluri și comportamentul mobil.
+
 În **Aspect → Zion Theme → Header și navigație**, controlezi headerul fix, transparența pe homepage, submeniurile late, căutarea de produse, contul, mini-coșul, badge-ul și afișarea CTA. Linkul din secțiune deschide **Header** în Site Editor, unde editezi logo-ul, structura meniului și butonul. Titlul site-ului este folosit ca marcă textuală când logo-ul lipsește.
 
 Submeniul lat pune linkurile unui dropdown WordPress în două coloane pe desktop. Meniul mobil, deschiderea și navigarea cu tastatura folosesc blocul Navigație. Căutarea trimite `s` și `post_type=product` către WooCommerce. Contul și mini-coșul folosesc blocurile native, iar badge-ul citește cantitatea din coșul WooCommerce. [Referința blocurilor WooCommerce](https://developer.woocommerce.com/docs/block-development/reference/block-references/)

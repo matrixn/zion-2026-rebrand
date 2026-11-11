@@ -137,7 +137,7 @@ test('Control Center persists validated settings and applies inheritance on publ
     await field(page, 'back_to_top').selectOption('1');
     await save(page);
     await page.goto('/product/zion-catalog-tools/');
-    await expect(page.locator('header a.zion-current-shop').first()).toHaveText('Magazin Software');
+    await expect(page.locator('header a.zion-current-shop .zion-menu-text').first()).toHaveText('Magazin Software');
     await expect(page.getByRole('link', { name: /Înapoi sus/ })).toHaveAttribute('href', '#zion-page-top');
 
     await openSection(page, 'blog');
@@ -1304,4 +1304,105 @@ test('cart link badge follows native quantities and Ajax while the mini-cart is 
     await expect(guest.locator('script[src*="header-cart-count.js"]')).toHaveCount(0);
     expect(errors).toEqual([]);
   } finally { await importSettings(page, original); await context.close(); await otherContext.close(); }
+});
+
+test('five header designs preserve an edited native menu, active ancestors and mobile navigation', async ({ page, browser, baseURL }) => {
+  test.setTimeout(300_000);
+  await login(page); await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const nonce = await (await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text();
+  const headers = { 'X-WP-Nonce': nonce };
+  const headerRoute = '/wp-json/wp/v2/template-parts/zion-theme//header';
+  const originalHeader = await (await page.request.get(headerRoute+'?context=edit', {headers})).json();
+  const context = await browser.newContext({baseURL,reducedMotion:'reduce'}); const guest = await context.newPage();
+  const fixtureRoutes = []; let headerEdited = false;
+  const errors = []; guest.on('pageerror', error=>errors.push(error.message));
+  const create = async (resource, data) => {
+    const response = await page.request.post('/wp-json/wp/v2/'+resource,{headers,data:{status:'publish',...data}});
+    expect(response.status(), await response.text()).toBe(201);
+    const result = await response.json(); fixtureRoutes.unshift('/wp-json/wp/v2/'+resource+'/'+result.id+'?force=true'); return result;
+  };
+  const item = (label,url,children='') => children ? `<!-- wp:navigation-submenu ${JSON.stringify({label,url,kind:'custom'})} -->${children}<!-- /wp:navigation-submenu -->` : `<!-- wp:navigation-link ${JSON.stringify({label,url,kind:'custom'})} /-->`;
+  try {
+    const group = await create('pages',{title:'WordPress & WooCommerce test',slug:'zion-menu-group-'+randomUUID().slice(0,8)});
+    const leaf = await create('pages',{title:'Zion Privacy test',parent:group.id,slug:'zion-privacy-test',content:'<!-- wp:paragraph --><p>Pagină demonstrativă de navigație.</p><!-- /wp:paragraph -->'});
+    const content = item('Acasă',baseURL+'/')+item('Magazin 3D',baseURL+'/magazin-3d/')+
+      item('Servicii',baseURL+'/servicii/',item('Printare 3D',baseURL+'/printare-3d/')+item('Proiectare și modelare 3D',baseURL+'/proiectare-3d/')+item('Software personalizat pentru afaceri',baseURL+'/software-personalizat/')+item('Platforme și produse SaaS',baseURL+'/platforme-saas/')+item('Pluginuri și integrări software',baseURL+'/pluginuri-si-integrari/')+item('Aplicații Windows și Linux',baseURL+'/aplicatii-windows-linux/')+item('Integrări AI și automatizări inteligente',baseURL+'/integrari-ai/'))+
+      item('Software',baseURL+'/magazin-software/',item('WordPress & WooCommerce',group.link,item('Zion Privacy',leaf.link))+item('Magazin Software',baseURL+'/magazin-software/'))+
+      item('Zion Food','https://food.zion3d.ro/')+item('Resurse',baseURL+'/jurnal/',item('Blog',baseURL+'/jurnal/'))+item('Despre noi',group.link)+item('Contact',group.link);
+    const menu = await create('navigation',{title:'Zion edited menu fixture',content});
+    const canonicalMenu = (await (await page.request.get('/wp-json/wp/v2/navigation/'+menu.id+'?context=edit',{headers})).json()).content.raw;
+    const customHeader = `<!-- wp:group {"className":"zion-shell zion-header"} --><div class="wp-block-group zion-shell zion-header"><!-- wp:site-logo {"width":56,"className":"zion-header-logo"} /--><!-- wp:site-title {"level":0,"className":"zion-wordmark"} /--><!-- wp:navigation {"ref":${menu.id},"ariaLabel":"Meniu principal","overlayMenu":"mobile","className":"zion-navigation","layout":{"type":"flex","justifyContent":"right"}} /--><!-- wp:group {"className":"zion-header-tools"} --><div class="wp-block-group zion-header-tools"><!-- wp:woocommerce/customer-account {"displayStyle":"icon_only","className":"zion-header-account"} /--><!-- wp:woocommerce/mini-cart {"hasHiddenPrice":true,"className":"zion-header-cart"} /--></div><!-- /wp:group --></div><!-- /wp:group -->`;
+    const updated = await page.request.post(headerRoute,{headers,data:{content:customHeader}});
+    expect(updated.ok(),await updated.text()).toBe(true); headerEdited=true;
+    await importSettings(page, JSON.stringify({version:2,global:{header_cart:false,header_cart_badge:true},shops:{},items:{}}));
+    const designs=['atelier','nexus','capsule','technical','signature'];
+    const labels=['Atelier','Nexus Mega','Capsule','Technical Contrast','Signature'];
+    for(let index=0;index<designs.length;index++) {
+      await page.setViewportSize({width:1440,height:950}); await openSection(page,'header');
+      const picker=page.locator('[data-zion-design-picker][data-control="zion-field-header_design"]');
+      await expect(picker.locator('[data-zion-design]')).toHaveCount(5);
+      await picker.getByRole('button',{name:labels[index],exact:true}).click();
+      await expect(field(page,'header_design')).toHaveValue(designs[index]);
+      await expect.poll(()=>picker.locator('figure img').evaluate(e=>e.complete&&e.naturalWidth>0)).toBe(true);
+      if(index===0) {
+        await picker.locator('figure a').click(); await expect(picker.locator('dialog')).toBeVisible();
+        await page.keyboard.press('Escape'); await expect(picker.locator('figure a')).toBeFocused();
+        await page.screenshot({path:'build/menu-selector-1.1.17.png'});
+      }
+      const adminTime=await page.evaluate(()=>performance.timeOrigin); await save(page);
+      expect(await page.evaluate(()=>performance.timeOrigin)).toBe(adminTime);
+      for(const width of [390,768,1024,1440]) {
+        await guest.setViewportSize({width,height:950}); await guest.goto(leaf.link+'?menu-check='+designs[index]);
+        await expect(guest.locator('body')).toHaveClass(new RegExp('zion-menu-'+designs[index]));
+        const nav=guest.locator('header nav.zion-navigation'); const active=nav.locator(`a[href="${leaf.link}"]`);
+        await expect(active).toHaveAttribute('aria-current','page');
+        await expect(active.locator('.zion-menu-icon--shield')).toHaveCount(1);
+        await expect(nav.locator('.zion-nav-ancestor')).toHaveCount(3);
+        await expect(guest.locator('.zion-header-logo img')).toBeVisible();
+        const geometry=await guest.locator('.wp-site-blocks > header').evaluate(e=>({left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right,width:document.documentElement.clientWidth,line:getComputedStyle(e,'::after').height}));
+        expect(Math.abs(geometry.left)).toBeLessThanOrEqual(1); expect(Math.abs(geometry.right-geometry.width)).toBeLessThanOrEqual(1); expect(geometry.line).toBe('1px');
+        expect(await guest.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+        if(width<1101) {
+          const opener=nav.locator('.wp-block-navigation__responsive-container-open'); await opener.focus(); await guest.keyboard.press('Enter');
+          await expect(nav.getByRole('dialog')).toBeVisible(); await expect(active).toBeVisible();
+          const parent=nav.getByRole('button',{name:/WordPress/}); await expect(parent).toHaveAttribute('aria-expanded','true');
+          const services=nav.getByRole('button',{name:/Servicii/}); await expect(services).toHaveAttribute('aria-expanded','false');
+          if(designs[index]==='technical') await expect(parent.locator('..').locator(':scope > ul')).toHaveCSS('background-color','rgb(241, 244, 235)');
+          await parent.focus(); await guest.keyboard.press('Enter'); await expect(parent).toHaveAttribute('aria-expanded','false'); await expect(active).toBeHidden();
+          await guest.keyboard.press('Enter'); await expect(active).toBeVisible();
+          await nav.locator('.wp-block-navigation__responsive-container-close').focus(); await guest.keyboard.press('Shift+Tab');
+          expect(await nav.evaluate(e=>e.contains(document.activeElement))).toBe(true);
+          if(width===390) await guest.screenshot({path:`build/menu-${designs[index]}-${width}-1.1.17.png`});
+          await guest.keyboard.press('Escape'); await expect(nav.getByRole('dialog')).toBeHidden(); await expect(opener).toBeFocused();
+        } else {
+          const software=nav.getByRole('button',{name:/^Software/}).first(); await software.focus(); await guest.keyboard.press('Enter');
+          const parent=nav.getByRole('button',{name:/WordPress/}); await expect(parent).toBeVisible();
+          await parent.focus(); await guest.keyboard.press('Enter'); await expect(active).toBeVisible();
+          if(['nexus','signature'].includes(designs[index])) {
+            const panel = software.locator('..').locator(':scope > .wp-block-navigation__submenu-container');
+            const panelBox=await panel.boundingBox(); const headerBox=await guest.locator('.zion-header').boundingBox();
+            expect(Math.abs(panelBox.x-headerBox.x)).toBeLessThanOrEqual(1);
+            expect(Math.abs(panelBox.width-headerBox.width)).toBeLessThanOrEqual(1);
+            await expect(active.locator('xpath=ancestor::ul[1]')).toHaveCSS('position','static');
+          }
+          const bounds=await active.boundingBox(); expect(bounds.x).toBeGreaterThanOrEqual(0); expect(bounds.x+bounds.width).toBeLessThanOrEqual(width);
+          await guest.screenshot({path:`build/menu-${designs[index]}-${width}-1.1.17.png`});
+        }
+      }
+      const savedMenu=await (await page.request.get('/wp-json/wp/v2/navigation/'+menu.id+'?context=edit',{headers})).json();
+      expect(savedMenu.content.raw).toBe(canonicalMenu);
+    }
+    const noJsContext=await browser.newContext({baseURL,javaScriptEnabled:false,viewport:{width:390,height:950}}); const noJs=await noJsContext.newPage();
+    try { await noJs.goto(leaf.link); await expect(noJs.locator(`header nav a[href="${leaf.link}"]`)).toBeVisible(); expect(await noJs.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0); } finally {await noJsContext.close();}
+    expect(errors).toEqual([]);
+    await openSection(page,'header'); await page.getByRole('button',{name:'Resetează secțiunea',exact:true}).click(); await expect(field(page,'header_design')).toHaveValue('');
+  } finally {
+    if(headerEdited) {
+      if(originalHeader.source==='custom') await page.request.post(headerRoute,{headers,data:{content:originalHeader.content.raw}});
+      else await page.request.delete(headerRoute+'?force=true',{headers});
+    }
+    for(const route of fixtureRoutes) await page.request.delete(route,{headers});
+    await importSettings(page,original); await context.close();
+  }
 });

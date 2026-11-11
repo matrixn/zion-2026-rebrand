@@ -22,6 +22,12 @@ $zion_core_fixture = json_decode(
 );
 
 switch_theme( 'zion-theme' );
+if ( ! get_theme_mod( 'custom_logo' ) ) {
+	$zion_core_logo = (int) trim( WP_CLI::runcommand( 'media import ' . escapeshellarg( get_theme_file_path( 'assets/brand/zion-logo.webp' ) ) . ' --title="Zion 3D" --porcelain', array( 'return' => true ) ) );
+	if ( $zion_core_logo ) {
+		set_theme_mod( 'custom_logo', $zion_core_logo );
+	}
+}
 update_option( 'blogname', 'Zion 3D' );
 update_option( 'woocommerce_currency', 'RON' );
 update_option( 'woocommerce_coming_soon', 'no' );

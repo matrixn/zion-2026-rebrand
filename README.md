@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.16** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.17** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.16** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.17** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,20 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Cinci meniuri cu selector vizual 1.1.17
+
+- [x] **Aspect → Zion Theme → Header și navigație → Design meniu și header**: Atelier, Nexus Mega, Capsule, Technical Contrast și Signature. Cele cinci imagini aprobate, preview compact, lightbox, salvare Ajax, reset de secțiune și import/export.
+- [x] Un singur `header_design` global în registrul și opțiunea `zion_theme_settings`; implicit Atelier. Același bloc Navigație și aceleași linkuri editabile în Site Editor, inclusiv meniuri salvate ca `wp_navigation`. Schimbarea stilului nu rescrie meniul salvat.
+- [x] Iconițe SVG proprii pentru servicii, magazine, software, WordPress, Synology, confidențialitate, SMS, resurse și contact. Descrieri scurte pentru destinațiile cunoscute în mega meniuri; linkurile personalizate primesc un simbol neutru, fără descrieri inventate.
+- [x] Pagina activă și toate nivelurile părinte sunt evidențiate după URL. Parametrii de filtrare/sortare nu pierd selecția; linkurile externe și grupurile fără URL nu devin accidental active. Meniul mobil se deschide pe traseul paginii curente, cu acordioane accesibile, focus vizibil, navigare cu tastatura și Escape.
+- [x] Linia lime aparține containerului exterior al Header-ului și traversează pagina, independent de lățimea conținutului sau de Capsule. Culori din `theme.json`, suprafețe contrastante și variantă Technical cu submeniuri deschise la culoare. Sticky header, căutarea, contul, CTA și coșul păstrează controalele existente.
+- [x] Logo-ul Zion este inclus ca asset de brand și folosește blocul Site Logo. Seed-ul local îl importă numai dacă lipsește logo-ul; logo-urile configurate se păstrează. Structura implicită grupează Software și Resurse; meniurile personalizate nu sunt înlocuite.
+- [x] Test dedicat pentru cinci variante × 390/768/1024/1440 px, cu meniu WordPress editat și trei niveluri, verificarea traseului activ, a contrastului Technical, a liniei pe întreaga lățime, preview/lightbox, acordioane, tastatură și fallback mobil fără JavaScript. PHPUnit: 46 teste / 394 aserțiuni.
+- [x] Build, WPCS, PHPUnit, integrarea catalogului și migrare/rollback trecute. Cele 54 de cazuri Playwright acoperite local: 52 trecute în suita completă, apoi testul Control Center ajustat pentru descrierile noi și testul dependent de clasificare trecute separat. Referințe vizuale actualizate pentru noul header și logo; ZIP-urile Theme/Core 1.1.17 generate.
+- [ ] Instalare și verificare pe staging, confirmarea rulării GitHub Actions și raportul final de livrare.
+
+Ghid: [designurile meniului](docs/menu-designs.md).
 
 ## Număr produse pe pictograma Coș 1.1.16
 

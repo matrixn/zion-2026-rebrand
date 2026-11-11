@@ -99,6 +99,7 @@ try {
 			'directories' => array(
 				'assets/blocks' => array( 'js' ),
 				'assets/admin'  => array( 'css', 'png' ),
+				'assets/brand'  => array( 'webp' ),
 				'assets/dist'   => array( 'css' ),
 				'includes'      => array( 'php' ),
 				'parts'         => array( 'html' ),

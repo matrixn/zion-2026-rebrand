@@ -681,7 +681,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 								<option value="<?php echo esc_attr( (string) $choice ); ?>" <?php selected( $value, (string) $choice ); ?>><?php echo esc_html( $label ); ?></option>
 							<?php endforeach; ?>
 						</select>
-						<?php if ( in_array( $key, array( 'card_preset', 'product_design', 'cart_design', 'checkout_design', 'account_design' ), true ) ) : ?>
+						<?php if ( in_array( $key, array( 'card_preset', 'product_design', 'cart_design', 'checkout_design', 'account_design', 'header_design' ), true ) ) : ?>
 							<?php
 							zion_theme_card_picker(
 								$value ? $value : (string) $inherited,
@@ -691,6 +691,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 								'cart_design' => 'cart',
 								'checkout_design' => 'checkout',
 								'account_design' => 'account',
+								'header_design' => 'header',
 								default => 'card' }
 							);
 							?>
@@ -725,6 +726,7 @@ function zion_theme_card_picker( string $selected, string $control_id, string $k
 		'cart' => Zion_Theme_Settings::cart_designs(),
 		'checkout' => Zion_Theme_Settings::checkout_designs(),
 		'account' => Zion_Theme_Settings::account_designs(),
+		'header' => Zion_Theme_Settings::header_designs(),
 		default => Zion_Theme_Settings::card_designs(),
 	};
 	$label = match ( $kind ) {
@@ -732,6 +734,7 @@ function zion_theme_card_picker( string $selected, string $control_id, string $k
 		'cart' => 'Variante pentru coșul de cumpărături',
 		'checkout' => 'Variante pentru finalizarea comenzii',
 		'account' => 'Variante pentru Contul meu',
+		'header' => 'Variante pentru meniu și header',
 		default => 'Variante vizuale pentru carduri',
 	};
 	$preview = $designs[ $selected ] ?? $designs['atelier'];
@@ -754,7 +757,17 @@ function zion_theme_card_picker( string $selected, string $control_id, string $k
 			<img alt="" width="1536" height="1024">
 			<p class="zion-preview-caption"></p>
 		</dialog>
-		<p class="description"><?php echo esc_html( 'account' === $kind ? 'Preview conceptual cu date ilustrative. Comenzile, adresele și fișierele reale aparțin utilizatorului autentificat și sunt gestionate de WooCommerce.' : 'Preview conceptual cu produs ilustrativ. Fotografiile, prețurile, stocurile și atributele din magazin provin din produsele WooCommerce.' ); ?></p>
+		<p class="description">
+		<?php
+		echo esc_html(
+			match ( $kind ) {
+			'header' => 'Preview conceptual desktop și mobil. Linkurile reale, logo-ul și CTA provin din Header și blocul Navigație editabile în Site Editor. Structura submeniurilor urmează meniul salvat.',
+			'account' => 'Preview conceptual cu date ilustrative. Comenzile, adresele și fișierele reale aparțin utilizatorului autentificat și sunt gestionate de WooCommerce.',
+			default => 'Preview conceptual cu produs ilustrativ. Fotografiile, prețurile, stocurile și atributele din magazin provin din produsele WooCommerce.'
+			}
+		);
+		?>
+		</p>
 	</div>
 	<?php
 }

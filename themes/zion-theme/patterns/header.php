@@ -10,7 +10,7 @@
 ?>
 <!-- wp:group {"className":"zion-shell zion-header","anchor":"zion-top"} -->
 <div class="wp-block-group zion-shell zion-header" id="zion-top">
-<!-- wp:site-logo {"width":112,"className":"zion-header-logo"} /-->
+<!-- wp:site-logo {"width":56,"className":"zion-header-logo"} /-->
 <!-- wp:site-title {"level":0,"className":"zion-wordmark"} /-->
 <!-- wp:navigation {"ariaLabel":"Meniu principal","overlayMenu":"mobile","className":"zion-navigation","layout":{"type":"flex","justifyContent":"right"}} -->
 <?php echo zion_theme_primary_navigation(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Serialized native blocks with sanitized URLs. ?>

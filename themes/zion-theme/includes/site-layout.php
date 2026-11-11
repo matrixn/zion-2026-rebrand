@@ -12,6 +12,7 @@
  * @return array
  */
 function zion_theme_site_classes( array $classes ): array {
+	$classes[] = 'zion-menu-' . zion_theme_setting( 'header_design' );
 	foreach ( array( 'sticky', 'mega' ) as $flag ) {
 		if ( zion_theme_setting( 'header_' . $flag ) ) {
 			$classes[] = 'zion-header-' . $flag;

@@ -22,6 +22,15 @@ final class Zion_Theme_Settings {
 	 */
 	public static function registry(): array {
 		static $fields   = array(
+			'header_design'           => array(
+				'label'       => 'Design meniu și header',
+				'description' => 'Cinci prezentări pentru același meniu WordPress. Linkurile, logo-ul și CTA se editează în Site Editor; pagina curentă și părinții ei rămân evidențiați.',
+				'section'     => 'header',
+				'type'        => 'choice',
+				'default'     => 'atelier',
+				'allowed'     => array_combine( array_keys( self::header_designs() ), array_column( self::header_designs(), 0 ) ),
+				'contexts'    => array( 'global' ),
+			),
 			'account_design'          => array(
 				'label'       => 'Design Contul meu',
 				'description' => 'Aspectul contului nativ WooCommerce, inclusiv autentificare și endpointuri. Datele și permisiunile rămân gestionate de WooCommerce.',
@@ -479,7 +488,7 @@ final class Zion_Theme_Settings {
 			'header' => array(
 				'header_sticky'      => array( 'Header fix', 'Păstrează headerul la vedere la derulare.', false ),
 				'header_transparent' => array( 'Header transparent pe homepage', 'Afișează headerul transparent deasupra secțiunii introductive.', false ),
-				'header_mega'        => array( 'Submeniuri late', 'Afișează submeniurile de primul nivel în coloane pe desktop. Editează linkurile în blocul Navigație.', false ),
+				'header_mega'        => array( 'Submeniuri late', 'Extinde dropdownul Atelier pe două coloane. Nexus Mega și Signature au propriile layouturi late; celelalte variante păstrează prezentarea lor.', false ),
 				'header_search'      => array( 'Căutare produse', 'Afișează formularul WooCommerce pentru căutare în catalog.', true ),
 				'header_account'     => array( 'Cont WooCommerce', 'Afișează accesul la Contul meu când pagina este configurată în WooCommerce.', true ),
 				'header_cart'        => array( 'Mini-coș', 'Activat: butonul Coș deschide panoul lateral WooCommerce. Dezactivat: același acces din header duce la pagina Coș. Butonul se editează în Header din Site Editor.', true ),
@@ -824,6 +833,21 @@ final class Zion_Theme_Settings {
 			'technical' => array( 'Technical', 'Navigație orizontală, contururi precise și panouri inspirate de CAD.', 'account-technical.png' ),
 			'contrast'  => array( 'Contrast Premium', 'Navigație întunecată și conținut pe o suprafață deschisă, cu contrast ridicat.', 'account-contrast.png' ),
 			'focus'     => array( 'Focus Account', 'Compoziție centrală, navigație orizontală și acces clar la funcțiile contului.', 'account-focus.png' ),
+		);
+	}
+
+	/**
+	 * Approved presentations of the same native navigation block.
+	 *
+	 * @return array
+	 */
+	public static function header_designs(): array {
+		return array(
+			'atelier'   => array( 'Atelier', 'Header discret, dropdown compact, iconițe și stare activă lime.', 'menu-atelier.png' ),
+			'nexus'     => array( 'Nexus Mega', 'Mega meniu pe coloane cu iconițe și descrieri pentru destinațiile cunoscute.', 'menu-nexus.png' ),
+			'capsule'   => array( 'Capsule', 'Header flotant rotunjit, dropdownuri compacte și linie lime independentă.', 'menu-capsule.png' ),
+			'technical' => array( 'Technical Contrast', 'Header desktop pe două rânduri și submeniuri pe suprafață deschisă, cu contrast puternic.', 'menu-technical.png' ),
+			'signature' => array( 'Signature', 'Mega meniu editorial, spațiere generoasă și accent CAD discret.', 'menu-signature.png' ),
 		);
 	}
 

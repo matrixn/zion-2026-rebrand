@@ -64,8 +64,6 @@ function zion_theme_primary_navigation(): string {
 	$extensions = zion_theme_published_page_url( 'pluginuri-woocommerce' );
 	$software   = array(
 		zion_theme_nav_item( 'Magazin Software', zion_theme_published_page_url( 'magazin-software' ) ),
-		zion_theme_nav_item( 'Zion ReleaseStation – Git deployment automatizat pentru Synology DSM', zion_theme_published_page_url( 'zion-releasestation-git-deployment-automatizat-pentru-synology-dsm' ) ),
-		zion_theme_nav_item( 'Zion ReleaseStation – Automated Git deployment for Synology DSM', zion_theme_published_page_url( 'zion-releasestation-automated-git-deployment-for-synology-dsm' ) ),
 		zion_theme_nav_item(
 			'WordPress & WooCommerce',
 			$extensions,
@@ -75,15 +73,29 @@ function zion_theme_primary_navigation(): string {
 				zion_theme_nav_item( 'Zion Multi-Currency', zion_theme_published_page_url( 'zion-multi-currency-for-woocommerce' ) ),
 			)
 		),
-		zion_theme_nav_item( 'Zion Food', 'https://food.zion3d.ro' ),
+		zion_theme_nav_item(
+			'Synology DSM',
+			'',
+			array(
+				zion_theme_nav_item( 'Zion ReleaseStation', zion_theme_published_page_url( 'zion-releasestation-git-deployment-automatizat-pentru-synology-dsm' ) ),
+				zion_theme_nav_item( 'Zion ReleaseStation · English', zion_theme_published_page_url( 'zion-releasestation-automated-git-deployment-for-synology-dsm' ) ),
+			)
+		),
 	);
 
 	return zion_theme_nav_item( 'Acasă', home_url( '/' ) ) .
 		zion_theme_nav_item( 'Magazin 3D', zion_theme_shop_url( 'magazin-3d' ) ) .
 		zion_theme_nav_item( 'Servicii', zion_theme_published_page_url( 'servicii' ), $services ) .
 		zion_theme_nav_item( 'Software', $extensions, $software ) .
-		zion_theme_nav_item( 'Blog', zion_theme_journal_url() ) .
-		zion_theme_nav_item( 'Întrebări', zion_theme_published_page_url( 'intrebari' ) ) .
+		zion_theme_nav_item( 'Zion Food', 'https://food.zion3d.ro' ) .
+		zion_theme_nav_item(
+			'Resurse',
+			zion_theme_journal_url(),
+			array(
+				zion_theme_nav_item( 'Blog', zion_theme_journal_url() ),
+				zion_theme_nav_item( 'Întrebări', zion_theme_published_page_url( 'intrebari' ) ),
+			)
+		) .
 		zion_theme_nav_item( 'Despre noi', zion_theme_published_page_url( 'despre-noi' ) ) .
 		zion_theme_nav_item( 'Contact', zion_theme_published_page_url( 'contact' ) );
 }

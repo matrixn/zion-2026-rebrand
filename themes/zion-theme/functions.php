@@ -23,6 +23,7 @@ require_once __DIR__ . '/includes/service-landings.php';
 require_once __DIR__ . '/includes/service-detail-copy.php';
 require_once __DIR__ . '/includes/services-overview.php';
 require_once __DIR__ . '/includes/navigation.php';
+require_once __DIR__ . '/includes/menu-design.php';
 require_once __DIR__ . '/includes/seo.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/includes/control-center.php';
