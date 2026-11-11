@@ -49,7 +49,8 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Referințele vizuale au fost regenerate pentru fonturile imaginii oficiale și inspectate, fără relaxarea pragurilor de comparație.
 - [x] Date fixe pentru articolele și recenzia demo în seed-ul exclusiv local; capturile nu mai depind de data instalării WordPress. Sincronizare cu randarea imaginilor în testul homepage.
 - [x] Build, WPCS, PHPUnit (45 teste / 378 aserțiuni), integrarea catalogului și migrarea/rollback-ul trecute. Regresiile pentru header și clasificare au trecut după restrângerea selectorului la drawer-ul coșului; nouă verificări vizuale revalidate separat în imaginea oficială.
-- [ ] Confirmarea noii rulări Actions pe GitHub și verificarea ambelor moduri pe staging.
+- [x] Theme și Core 1.1.15 instalate pe staging după backup privat. Mini-coș dezactivat: pictogramă și link către `/cos/`, navigare cu Enter. Activat: drawer nativ, URL păstrat, Escape funcțional. Ambele moduri verificate la 390/768/1024/1440 px, fără overflow; accesul verificat și pe homepage și magazinul Software. Fără erori în consola tabului verificat. Selecția inițială „Nu” a fost restaurată; coșul existent, comenzile și producția nu au fost modificate. Ambele ZIP-uri 1.1.15 generate.
+- [x] **GitHub Actions verde**, verificat pe commitul `571dc67`: [rularea 43054985763](https://github.com/matrixn/zion-2026-rebrand/actions/runs/43054985763). Build/CSS generat, WPCS, PHPUnit, integrare și migrare trecute; **52/52 teste Playwright trecute în 6,8 minute**, pe instanță WordPress proaspătă și browserul oficial Playwright 1.65.0. Containerul a fost oprit corect la final.
 
 Ghiduri: [header și navigație](docs/site-navigation.md), [CI și browserul reproductibil](docs/ci.md).
 
