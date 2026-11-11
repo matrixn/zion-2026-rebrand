@@ -482,7 +482,7 @@ final class Zion_Theme_Settings {
 				'header_mega'        => array( 'Submeniuri late', 'Afișează submeniurile de primul nivel în coloane pe desktop. Editează linkurile în blocul Navigație.', false ),
 				'header_search'      => array( 'Căutare produse', 'Afișează formularul WooCommerce pentru căutare în catalog.', true ),
 				'header_account'     => array( 'Cont WooCommerce', 'Afișează accesul la Contul meu când pagina este configurată în WooCommerce.', true ),
-				'header_cart'        => array( 'Mini-coș', 'Afișează mini-coșul nativ WooCommerce.', true ),
+				'header_cart'        => array( 'Mini-coș', 'Activat: butonul Coș deschide panoul lateral WooCommerce. Dezactivat: același acces din header duce la pagina Coș. Butonul se editează în Header din Site Editor.', true ),
 				'header_cart_badge'  => array( 'Badge cantitate coș', 'Afișează cantitatea calculată de mini-coșul WooCommerce.', true, 'header_cart' ),
 				'header_cta'         => array( 'Buton principal', 'Afișează butonul al cărui text și link se editează în Header din Site Editor.', false ),
 			),

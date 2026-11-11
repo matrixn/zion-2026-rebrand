@@ -16,7 +16,11 @@ for (const width of [390, 768, 1024, 1440]) {
         for (const image of elements) image.loading = 'eager';
         await Promise.all(elements.map(image => image.decode()));
       });
-      for (const image of await images.all()) await image.scrollIntoViewIfNeeded();
+      for (const image of await images.all()) {
+        await image.scrollIntoViewIfNeeded();
+        // Let Chromium commit decoded image layers before moving them offscreen.
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      }
       await page.evaluate(() => window.scrollTo(0, 0));
       await expect.poll(() => images.evaluateAll(elements =>
         elements.every(image => image.complete && image.naturalWidth > 0),

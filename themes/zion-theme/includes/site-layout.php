@@ -71,10 +71,12 @@ function zion_theme_site_chrome( ?string $output, array $block ): ?string {
 		return $output;
 	}
 	$names = explode( ' ', $attrs['className'] ?? '' );
-	$map   = array(
+	if ( 'woocommerce/mini-cart' === $name && in_array( 'zion-header-cart', $names, true ) && ! zion_theme_setting( 'header_cart' ) ) {
+		return zion_theme_header_cart_link( $attrs );
+	}
+	$map = array(
 		'zion-header-search'    => 'header_search',
 		'zion-header-account'   => 'header_account',
-		'zion-header-cart'      => 'header_cart',
 		'zion-header-cta'       => 'header_cta',
 		'zion-footer-cta'       => 'footer_cta',
 		'zion-footer-contact'   => 'footer_contact',
@@ -107,6 +109,21 @@ function zion_theme_site_chrome( ?string $output, array $block ): ?string {
 	return $output;
 }
 add_filter( 'pre_render_block', 'zion_theme_site_chrome', 10, 2 );
+
+/**
+ * Keep access to the native cart when the drawer is disabled, without its assets.
+ *
+ * @param array $attrs Editable mini-cart block attributes.
+ * @return string
+ */
+function zion_theme_header_cart_link( array $attrs ): string {
+	if ( ! function_exists( 'wc_get_cart_url' ) || ! function_exists( 'wc_get_page_id' ) || 'publish' !== get_post_status( wc_get_page_id( 'cart' ) ) ) {
+		return '';
+	}
+	$icons = '\\Automattic\\WooCommerce\\Blocks\\Utils\\MiniCartUtils';
+	$icon  = is_callable( array( $icons, 'get_svg_icon' ) ) ? $icons::get_svg_icon( $attrs['miniCartIcon'] ?? '' ) : 'Coș';
+	return '<a class="zion-header-cart zion-header-cart-link" href="' . esc_url( wc_get_cart_url() ) . '" aria-label="Coș"><span aria-hidden="true">' . $icon . '</span><span class="screen-reader-text">Coș</span></a>';
+}
 
 /**
  * Pass the count preference to the native mini-cart block.

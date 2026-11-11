@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.14** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.15** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.14** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.15** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Acces permanent la coș și CI 1.1.15
+
+- [x] **Header și navigație → Mini-coș** controlează acțiunea accesului Coș: activat deschide drawer-ul nativ WooCommerce; dezactivat păstrează pictograma și trimite la pagina Coș configurată în WooCommerce, inclusiv cu slug personalizat. Headerul rămâne editabil în Site Editor.
+- [x] Link accesibil la tastatură, SVG nativ și focus vizibil. În modul link nu se randează mini-coșul și nu sunt cerute asseturile drawer-ului de către acest control. Badge-ul cantității rămâne opțiunea mini-coșului nativ.
+- [x] GitHub Actions: Chromium rulează în imaginea oficială Playwright cu dependențele deja instalate, la aceeași versiune cu lockfile-ul. Elimină pasul APT care eșua la rezolvarea DNS pentru `azure.archive.ubuntu.com`; buildul și toate testele rămân obligatorii.
+- [x] Rulările depășite de un commit nou sunt anulate; commiturile exclusiv de documentație nu pornesc din nou suita. Rulare manuală disponibilă. Exporturile din testele de administrare folosesc un flux compatibil cu browserul remote.
+- [x] Referințele vizuale au fost regenerate pentru fonturile imaginii oficiale și inspectate, fără relaxarea pragurilor de comparație.
+- [x] Date fixe pentru articolele și recenzia demo în seed-ul exclusiv local; capturile nu mai depind de data instalării WordPress. Sincronizare cu randarea imaginilor în testul homepage.
+- [x] Build, WPCS, PHPUnit (45 teste / 378 aserțiuni), integrarea catalogului și migrarea/rollback-ul trecute. Regresiile pentru header și clasificare au trecut după restrângerea selectorului la drawer-ul coșului; nouă verificări vizuale revalidate separat în imaginea oficială.
+- [ ] Confirmarea noii rulări Actions pe GitHub și verificarea ambelor moduri pe staging.
+
+Ghiduri: [header și navigație](docs/site-navigation.md), [CI și browserul reproductibil](docs/ci.md).
 
 ## Contul meu cu selector vizual 1.1.14
 

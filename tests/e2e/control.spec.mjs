@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
 
 const base = '/wp-admin/themes.php?page=zion-theme';
@@ -37,7 +36,9 @@ async function exportSettings(page) {
   await page.getByRole('button', { name: 'Descarcă JSON' }).click();
   const download = await pending;
   expect(download.suggestedFilename()).toBe('zion-theme-settings.json');
-  return readFile(await download.path(), 'utf8');
+  const chunks = [];
+  for await (const chunk of await download.createReadStream()) chunks.push(chunk);
+  return Buffer.concat(chunks).toString('utf8');
 }
 
 async function importSettings(page, json) {
@@ -521,7 +522,8 @@ test('site chrome, journal pagination and page overrides use the native editor a
       await page.goto(child.link);
       await expect(page.locator('body')).toHaveClass(/zion-page-width-full/);
       await expect(page.locator('.zion-standard-header')).toHaveClass(/zion-standard-header/);
-      await expect(page.locator('.zion-page-title, .zion-header-cart')).toHaveCount(0);
+      await expect(page.locator('.zion-page-title')).toHaveCount(0);
+      await expect(page.locator('.zion-header-cart-link')).toHaveAttribute('href', /\/cart\/$/);
       await expect(page.locator('aside .zion-page-sidebar')).toBeVisible();
       await expect(page.getByRole('navigation', { name: 'Fir de navigare' }).getByRole('link', { name: 'Părinte Zion test' })).toHaveAttribute('href', parent.link);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
@@ -1216,4 +1218,40 @@ test('account designs preserve native endpoints, authentication and customer ord
     for (const user of created) await page.request.delete(`/wp-json/wp/v2/users/${user.id}?force=true&reassign=${admin.id}`, { headers });
     await memberContext.close(); await guestContext.close();
   }
+});
+
+test('header cart stays visible and switches between cart page and native drawer', async ({ page, browser, baseURL }) => {
+  test.setTimeout(120_000);
+  await login(page); await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const context = await browser.newContext({ baseURL }); const guest = await context.newPage();
+  try {
+    for (const enabled of ['0', '1']) {
+      await openSection(page, 'header');
+      await field(page, 'header_cart').selectOption(enabled); await save(page);
+      for (const width of [390, 768, 1024, 1440]) {
+        await guest.setViewportSize({ width, height: 950 });
+        await guest.goto('/magazin-3d/');
+        const header = guest.locator('.zion-header');
+        await expect(header.locator('.zion-header-cart')).toHaveCount(1);
+        if (enabled === '0') {
+          const link = header.getByRole('link', { name: 'Coș', exact: true });
+          await expect(link).toHaveAttribute('href', /\/cart\/$/);
+          await expect(link.locator('svg')).toHaveCount(1);
+          await expect(header.locator('.wc-block-mini-cart__button')).toHaveCount(0);
+          await link.focus(); await guest.keyboard.press('Enter');
+          await expect(guest).toHaveURL(/\/cart\/$/);
+          await expect(guest.getByRole('dialog')).toHaveCount(0);
+        } else {
+          const url = guest.url();
+          await header.locator('.wc-block-mini-cart__button').focus(); await guest.keyboard.press('Enter');
+          await expect(guest.locator('.wc-block-mini-cart__drawer[role="dialog"]')).toBeVisible();
+          expect(guest.url()).toBe(url);
+          await guest.keyboard.press('Escape');
+          await expect(guest.locator('.wc-block-mini-cart__drawer[role="dialog"]')).toBeHidden();
+        }
+        expect(await guest.evaluate(() => document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+      }
+    }
+  } finally { await importSettings(page, original); await context.close(); }
 });

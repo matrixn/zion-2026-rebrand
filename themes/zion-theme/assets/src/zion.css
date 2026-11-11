@@ -3016,3 +3016,7 @@ body:has(.zion-product-page--sticky) {
 .zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.woocommerce-MyAccount-navigation-link { padding: 0; margin: 0; }
 .zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.woocommerce-MyAccount-navigation-link > a { min-height: 44px; padding: .6rem .85rem; text-decoration: none; font-weight: 500; }
 .zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.is-active > a { font-weight: 650; }
+/* A disabled mini-cart changes the action, not access to the cart. */
+.zion-header-tools .zion-header-cart-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: var(--wp--preset--color--text); text-decoration: none; border-radius: 3px; }
+.zion-header-cart-link svg { display: block; width: 32px; height: 32px; }
+.zion-header-cart-link:focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }

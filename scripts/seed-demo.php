@@ -76,6 +76,25 @@ if ( ! get_page_by_path( 'jurnal-prototip-zion', OBJECT, 'post' ) ) {
 	}
 }
 
+// Keep visual fixtures independent of the day on which CI installs WordPress.
+foreach (
+	array(
+		'jurnal-prototip-zion' => '2026-11-10 10:00:00',
+		'hello-world'          => '2026-11-10 09:00:00',
+	) as $zion_core_slug => $zion_core_date
+) {
+	$zion_core_sample = get_page_by_path( $zion_core_slug, OBJECT, 'post' );
+	if ( $zion_core_sample ) {
+		wp_update_post(
+			array(
+				'ID'            => $zion_core_sample->ID,
+				'post_date'     => $zion_core_date,
+				'post_date_gmt' => $zion_core_date,
+			)
+		);
+	}
+}
+
 $zion_core_shop_ids = zion_core_shop_term_ids( true );
 if ( is_wp_error( $zion_core_shop_ids ) ) {
 	WP_CLI::error( $zion_core_shop_ids->get_error_message() );

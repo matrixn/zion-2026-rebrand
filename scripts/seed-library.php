@@ -15,14 +15,15 @@ if ( $zion_core_services['failed'] ) {
 }
 $zion_core_reference = wc_get_product_id_by_sku( 'ZION-DEMO-SW-01' );
 
-if ( $zion_core_reference && ! get_comments(
+$zion_core_reviews = get_comments(
 	array(
 		'post_id'      => $zion_core_reference,
 		'type'         => 'review',
 		'author_email' => 'review@example.test',
 		'number'       => 1,
 	)
-) ) {
+);
+if ( $zion_core_reference && ! $zion_core_reviews ) {
 	wp_insert_comment(
 		wp_slash(
 			array(
@@ -32,8 +33,20 @@ if ( $zion_core_reference && ! get_comments(
 				'comment_author_email' => 'review@example.test',
 				'comment_content'      => 'Exemplu demonstrativ pentru afișarea unei recenzii WooCommerce în biblioteca Zion.',
 				'comment_approved'     => 1,
+				'comment_date'         => '2026-11-10 10:00:00',
+				'comment_date_gmt'     => '2026-11-10 10:00:00',
 				'comment_meta'         => array( 'rating' => 5 ),
 			)
+		)
+	);
+}
+
+foreach ( $zion_core_reviews as $zion_core_review ) {
+	wp_update_comment(
+		array(
+			'comment_ID'       => $zion_core_review->comment_ID,
+			'comment_date'     => '2026-11-10 10:00:00',
+			'comment_date_gmt' => '2026-11-10 10:00:00',
 		)
 	);
 }

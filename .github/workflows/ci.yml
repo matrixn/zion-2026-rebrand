@@ -1,6 +1,15 @@
 name: Zion checks
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore: ['**/*.md', 'docs/**']
+  pull_request:
+    paths-ignore: ['**/*.md', 'docs/**']
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -8,7 +17,10 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-22.04
-    timeout-minutes: 25
+    timeout-minutes: 35
+    env:
+      ZION_BROWSER_CONTAINER: zion-browser-${{ github.run_id }}-${{ github.run_attempt }}
+      ZION_PLAYWRIGHT_WS_ENDPOINT: ws://127.0.0.1:9347
     steps:
       - uses: actions/checkout@v7
         with:
@@ -33,8 +45,12 @@ jobs:
       - run: npm run demo:test
       - run: npm run test:integration
       - run: npm run test:migration
-      - run: npx playwright install --with-deps chromium
+      - name: Start Chromium with preinstalled system dependencies
+        run: bash scripts/ci-browser.sh start
       - run: npm run test:e2e
+      - name: Stop browser container
+        if: always()
+        run: bash scripts/ci-browser.sh stop
       - uses: actions/upload-artifact@v7
         if: failure()
         with:

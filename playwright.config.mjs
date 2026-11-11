@@ -13,6 +13,7 @@ export default defineConfig({
   use: {
     baseURL: process.env.ZION_TEST_URL || 'http://localhost:8917',
     browserName: 'chromium',
+    ...(process.env.ZION_PLAYWRIGHT_WS_ENDPOINT ? { connectOptions: { wsEndpoint: process.env.ZION_PLAYWRIGHT_WS_ENDPOINT } } : {}),
     colorScheme: 'dark',
     reducedMotion: 'reduce',
     trace: 'retain-on-failure',

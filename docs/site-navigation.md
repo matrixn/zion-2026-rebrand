@@ -6,6 +6,8 @@
 
 Submeniul lat pune linkurile unui dropdown WordPress în două coloane pe desktop. Meniul mobil, deschiderea și navigarea cu tastatura folosesc blocul Navigație. Căutarea trimite `s` și `post_type=product` către WooCommerce. Contul și mini-coșul folosesc blocurile native, iar badge-ul citește cantitatea din coșul WooCommerce. [Referința blocurilor WooCommerce](https://developer.woocommerce.com/docs/block-development/reference/block-references/)
 
+Din 1.1.15, **Mini-coș** stabilește comportamentul pictogramei Coș, fără să o ascundă: **Da** deschide panoul lateral nativ și păstrează pagina curentă; **Nu** păstrează pictograma ca link către pagina Coș configurată în WooCommerce. Funcționează și cu un slug precum `/cos/`. În modul link nu se încarcă drawer-ul prin acest control; badge-ul cantității se configurează numai pentru mini-coșul activ. Ambele moduri au acces la tastatură și focus vizibil. Poți elimina controlul explicit din Header în Site Editor. Dacă WooCommerce sau pagina publicată Coș lipsesc, nu este afișat un link nefuncțional.
+
 ## Footer Zion Nexus
 
 Footerul folosește grila tehnică discretă din paleta temei. În **Footer**, alegi ce grupuri se afișează. În Site Editor modifici CTA, grupurile de linkuri, contactul, Social Icons și copyrightul. Modelul implicit afișează contactul când există o pagină publicată cu slugul `contact`, politica de confidențialitate aleasă în WordPress și termenii selectați în WooCommerce. Adaugă profilurile sociale ale site-ului în blocul Social Icons.
