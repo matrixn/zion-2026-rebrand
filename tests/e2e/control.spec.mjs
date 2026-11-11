@@ -1245,7 +1245,10 @@ test('header cart stays visible and switches between cart page and native drawer
         } else {
           const url = guest.url();
           await header.locator('.wc-block-mini-cart__button').focus(); await guest.keyboard.press('Enter');
-          await expect(guest.locator('.wc-block-mini-cart__drawer[role="dialog"]')).toBeVisible();
+          const drawer = guest.locator('.wc-block-mini-cart__drawer[role="dialog"]');
+          await expect(drawer).toBeVisible();
+          // WooCommerce mounts its focus trap after the drawer becomes visible.
+          await expect.poll(() => drawer.evaluate(element => element.contains(document.activeElement))).toBe(true);
           expect(guest.url()).toBe(url);
           await guest.keyboard.press('Escape');
           await expect(guest.locator('.wc-block-mini-cart__drawer[role="dialog"]')).toBeHidden();
@@ -1393,6 +1396,12 @@ test('five header designs preserve an edited native menu, active ancestors and m
       const savedMenu=await (await page.request.get('/wp-json/wp/v2/navigation/'+menu.id+'?context=edit',{headers})).json();
       expect(savedMenu.content.raw).toBe(canonicalMenu);
     }
+    await page.setViewportSize({width:390,height:950}); await page.goto(leaf.link);
+    await page.locator('header nav.zion-navigation .wp-block-navigation__responsive-container-open').click();
+    const adminBar=await page.locator('#wpadminbar').boundingBox();
+    const closeButton=page.locator('header nav.zion-navigation .wp-block-navigation__responsive-container-close');
+    const closeBox=await closeButton.boundingBox(); expect(closeBox.y).toBeGreaterThanOrEqual(adminBar.y+adminBar.height);
+    await closeButton.press('Escape');
     const noJsContext=await browser.newContext({baseURL,javaScriptEnabled:false,viewport:{width:390,height:950}}); const noJs=await noJsContext.newPage();
     try { await noJs.goto(leaf.link); await expect(noJs.locator(`header nav a[href="${leaf.link}"]`)).toBeVisible(); expect(await noJs.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0); } finally {await noJsContext.close();}
     expect(errors).toEqual([]);

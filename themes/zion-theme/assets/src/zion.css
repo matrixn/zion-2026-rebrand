@@ -3106,6 +3106,8 @@ body:has(.zion-product-page--sticky) {
 	.zion-header .zion-navigation .is-menu-open .wp-block-navigation__responsive-dialog { margin: 0; padding: 1.25rem; min-height: 100svh; box-sizing: border-box; }
 	.zion-header .zion-navigation .is-menu-open .wp-block-navigation__responsive-container-close { inset: 1rem 1rem auto auto; min-width: 44px; min-height: 44px; color: var(--wp--preset--color--text); }
 	.zion-header .zion-navigation .is-menu-open .wp-block-navigation__responsive-container-content { padding-top: 4rem; align-items: stretch; gap: 0; }
+	.admin-bar .zion-header .zion-navigation .is-menu-open .wp-block-navigation__responsive-container-close { inset-block-start: calc(1rem + var(--wp-admin--admin-bar--height, 0px)); }
+	.admin-bar .zion-header .zion-navigation .is-menu-open .wp-block-navigation__responsive-container-content { padding-block-start: calc(4rem + var(--wp-admin--admin-bar--height, 0px)); }
 	.zion-header .zion-navigation .is-menu-open .wp-block-navigation__container { width: 100%; align-items: stretch; gap: .2rem; }
 	.zion-header nav.zion-navigation .is-menu-open .wp-block-navigation__container { font-size: 1rem; }
 	.zion-header .zion-navigation .is-menu-open .wp-block-navigation-item { display: flex; flex-wrap: wrap; flex-direction: row; align-items: center; width: 100%; border-bottom: 1px solid color-mix(in srgb, var(--wp--preset--color--text) 9%, transparent); }

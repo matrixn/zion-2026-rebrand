@@ -28,6 +28,8 @@ WordPress furnizează linkurile și marcajele serverului. Scriptul Zion complete
 
 La maximum 1100 px se folosește meniul mobil, astfel încât meniurile cu multe destinații și iconițe să rămână lizibile. WordPress gestionează deschiderea și închiderea overlay-ului, Escape și blocarea derulării. Zion adaugă acordioane pe butoanele native, extinde traseul curent și ajustează ciclul Tab/Shift+Tab pentru linkurile vizibile. La revenirea la desktop, overlay-ul mobil este închis prin controlul nativ. Fără JavaScript, pe mobil linkurile se afișează în fluxul paginii.
 
+Pentru utilizatorii autentificați, butonul de închidere și începutul listei rezervă înălțimea barei WordPress prin variabila nativă `--wp-admin--admin-bar--height`. Bara de administrare nu acoperă controalele overlay-ului.
+
 Iconițele decorative sunt SVG-uri originale, fără font de iconițe sau bibliotecă externă. Destinațiile cunoscute sunt potrivite după eticheta meniului; etichetele personalizate rămân intacte și au un simbol neutru când nu există o potrivire. Descrierile vizuale sunt ascunse cititoarelor de ecran pentru a păstra numele scurte ale linkurilor.
 
 ## Stiluri și verificări
