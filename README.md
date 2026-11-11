@@ -47,7 +47,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Lightbox nativ `dialog`: imagine mare, fundal discret, închidere prin buton/Escape/fundal și revenirea focusului la preview. Fără biblioteci noi; fără JavaScript, linkul deschide în continuare imaginea originală.
 - [x] Teste dedicate pentru toate cele patru secțiuni, desktop/mobil, focus, eliminare taguri, reset și navigare înapoi. Build, WPCS și 41 teste PHPUnit / 359 aserțiuni trecute.
 - [x] Suita completă Playwright: **50 scenarii trecute**, inclusiv cele două teste noi pentru taguri și lightbox. Integrarea și migrarea/rollback-ul au trecut pe date sintetice.
-- [ ] Verificare 1.1.13 pe staging.
+- [x] Theme și Core 1.1.13 instalate pe staging după backup privat. Patru categorii 3D și două Software grupate corect; eliminare individuală și reset verificate. Preview compact și lightbox în toate cele patru secțiuni; Escape, buton de închidere și focus restaurat, plus lightbox checkout la 390 px. Fără erori de consolă în taburile verificate. Alegerile persistente și coșul nu au fost modificate; producția a rămas neatinsă.
 - [x] Cinci concepte vizuale **Contul meu** prezentate pentru alegere: Atelier, Studio Editorial, Technical, Contrast Premium, Focus Account.
 - [ ] Alegerea și implementarea paginii Contul meu pe baza funcțiilor native WooCommerce. Această versiune nu modifică pagina contului.
 

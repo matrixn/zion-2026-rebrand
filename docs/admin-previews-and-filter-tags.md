@@ -16,6 +16,16 @@ Stilurile sunt limitate la catalogul Zion. Fără JavaScript, WooCommerce afișe
 
 ## Validare și următorul pas
 
-Testele dedicate verifică preview compact, imagine mare, închidere, focus restaurat, componente încadrate pe mobil, două categorii active cu un singur titlu, eliminare individuală, reset și istoric. Suita completă Playwright a trecut: **50 scenarii**, alături de build, WPCS, 41 teste PHPUnit / 359 aserțiuni, integrare și migrare/rollback pe date sintetice. Verificarea pe staging urmează după publicarea sursei.
+Testele dedicate verifică preview compact, imagine mare, închidere, focus restaurat, componente încadrate pe mobil, două categorii active cu un singur titlu, eliminare individuală, reset și istoric. Suita completă Playwright a trecut: **50 scenarii**, alături de build, WPCS, 41 teste PHPUnit / 359 aserțiuni, integrare și migrare/rollback pe date sintetice.
+
+## Staging verificat
+
+Zion Theme și Zion Core 1.1.13 au fost instalate exclusiv pe `zion-stage.on-forge.com`, din commitul `47a99f018f8a647e448501d1a8b7c3959b4ea096`. Backupul bazei, setărilor și componentelor este privat, în `.zion-migration/previews-before-1113.sql`, `previews-settings-before-1113.json` și `previews-components-before-1113.tar.gz`; jurnalul instalării este `previews-deploy-1113.log`.
+
+- Magazin 3D: A6 C6, E82, F32 și Mercedes-Benz, un singur titlu Categorii. Eliminarea E82 a păstrat celelalte trei selecții și sortarea.
+- Magazin Software: Digital Products și Wordpress Plugins au apărut în aceeași grupă. Resetarea a eliminat grupa și tagurile vizibile.
+- Carduri, pagini de produs, coș și checkout: preview compact, dialog mare, Escape/buton de închidere și revenirea focusului verificate. La 390 px dialogul checkoutului s-a încadrat în ecran, iar imaginea a fost încărcată; emularea a fost eliminată la final.
+- Nicio alegere de design nu a fost salvată în cursul verificării. Coșul, comenzile și producția nu au fost modificate. Consolele taburilor de administrare și catalog verificate nu au raportat erori.
+- Dovezi locale, excluse din ZIP: `build/staging-admin-compact-1.1.13.png`, `build/staging-lightbox-1.1.13.png`, `build/staging-category-tags-1.1.13.png`.
 
 Cele cinci imagini pentru Contul meu sunt concepte cu date ilustrative, generate cu imagegen. Implementarea contului se face după alegerea designului; funcțiile comerciale vor rămâne cele native WooCommerce.
