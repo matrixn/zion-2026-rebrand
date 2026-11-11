@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.15** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.16** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.15** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.16** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,17 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Număr produse pe pictograma Coș 1.1.16
+
+- [x] **Header și navigație → Badge cantitate coș** este disponibil și când mini-coșul este dezactivat. Pictograma păstrează linkul către pagina Coș; cu mini-coșul activ rămâne drawer-ul nativ.
+- [x] Numărul reprezintă cantitatea totală WooCommerce, inclusiv mai multe bucăți din același produs. Badge lime, focus vizibil și etichetă accesibilă în română; zero pentru coșul gol.
+- [x] Contorul citește store-ul nativ `wc/store/cart`, reacționează la modificările native și evenimentele Ajax și se resincronizează la restaurarea paginii din browser. Fără calcul propriu, endpoint nou sau număr personalizat în HTML-ul cache-uit. Până la răspunsul WooCommerce, linkul funcționează fără număr.
+- [x] Script încărcat numai când linkul Coș cu badge este randat; dezactivarea badge-ului păstrează pictograma și elimină scriptul suplimentar. Datele și regulile comerciale rămân în WooCommerce.
+- [x] Build, WPCS, PHPUnit (45 teste / 378 aserțiuni), integrarea catalogului și migrarea/rollback-ul trecute. Suita locală completă: **53/53 teste Playwright**, inclusiv contorul la 390/768/1024/1440 px, adăugare din catalog și pagina produsului, cantități multiple, eliminare, coș gol, izolare între sesiuni și dezactivarea badge-ului. ZIP-urile Theme/Core 1.1.16 generate.
+- [ ] Verificare pe staging și confirmarea rulării GitHub Actions.
+
+Ghid: [header și navigație](docs/site-navigation.md).
 
 ## Acces permanent la coș și CI 1.1.15
 

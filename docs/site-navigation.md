@@ -6,7 +6,11 @@
 
 Submeniul lat pune linkurile unui dropdown WordPress în două coloane pe desktop. Meniul mobil, deschiderea și navigarea cu tastatura folosesc blocul Navigație. Căutarea trimite `s` și `post_type=product` către WooCommerce. Contul și mini-coșul folosesc blocurile native, iar badge-ul citește cantitatea din coșul WooCommerce. [Referința blocurilor WooCommerce](https://developer.woocommerce.com/docs/block-development/reference/block-references/)
 
-Din 1.1.15, **Mini-coș** stabilește comportamentul pictogramei Coș, fără să o ascundă: **Da** deschide panoul lateral nativ și păstrează pagina curentă; **Nu** păstrează pictograma ca link către pagina Coș configurată în WooCommerce. Funcționează și cu un slug precum `/cos/`. În modul link nu se încarcă drawer-ul prin acest control; badge-ul cantității se configurează numai pentru mini-coșul activ. Ambele moduri au acces la tastatură și focus vizibil. Poți elimina controlul explicit din Header în Site Editor. Dacă WooCommerce sau pagina publicată Coș lipsesc, nu este afișat un link nefuncțional.
+Din 1.1.15, **Mini-coș** stabilește comportamentul pictogramei Coș, fără să o ascundă: **Da** deschide panoul lateral nativ și păstrează pagina curentă; **Nu** păstrează pictograma ca link către pagina Coș configurată în WooCommerce. Funcționează și cu un slug precum `/cos/`. În modul link nu se încarcă drawer-ul prin acest control. Ambele moduri au acces la tastatură și focus vizibil. Poți elimina controlul explicit din Header în Site Editor. Dacă WooCommerce sau pagina publicată Coș lipsesc, nu este afișat un link nefuncțional.
+
+Din **1.1.16**, **Badge cantitate coș** controlează numărul în ambele moduri și este activ implicit. Este suma cantităților, nu numărul de linii distincte: un produs cu trei bucăți afișează **3**. Coșul gol afișează **0**. Cu mini-coșul dezactivat, scriptul citește [`wc/store/cart`](https://developer.woocommerce.com/docs/block-development/reference/data-store/cart/) și urmărește actualizările native, plus evenimentele WooCommerce pentru adăugare/eliminare Ajax și coșul clasic. Nu deschide drawer-ul și nu interceptează linkul către Coș.
+
+HTML-ul public nu include cantitatea vizitatorului; numărul apare după rezolvarea store-ului nativ, evitând păstrarea unei valori străine în cache. Fără JavaScript sau dacă datele nu pot fi citite, pictograma continuă să deschidă pagina Coș, fără număr. Cu badge-ul dezactivat nu se încarcă scriptul acestui contor. Eticheta accesibilă include cantitatea actuală în română.
 
 ## Footer Zion Nexus
 

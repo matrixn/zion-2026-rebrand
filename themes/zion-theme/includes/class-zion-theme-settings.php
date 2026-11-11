@@ -483,7 +483,7 @@ final class Zion_Theme_Settings {
 				'header_search'      => array( 'Căutare produse', 'Afișează formularul WooCommerce pentru căutare în catalog.', true ),
 				'header_account'     => array( 'Cont WooCommerce', 'Afișează accesul la Contul meu când pagina este configurată în WooCommerce.', true ),
 				'header_cart'        => array( 'Mini-coș', 'Activat: butonul Coș deschide panoul lateral WooCommerce. Dezactivat: același acces din header duce la pagina Coș. Butonul se editează în Header din Site Editor.', true ),
-				'header_cart_badge'  => array( 'Badge cantitate coș', 'Afișează cantitatea calculată de mini-coșul WooCommerce.', true, 'header_cart' ),
+				'header_cart_badge'  => array( 'Badge cantitate coș', 'Afișează cantitatea totală din coșul WooCommerce pe pictograma Coș, inclusiv când mini-coșul este dezactivat.', true ),
 				'header_cta'         => array( 'Buton principal', 'Afișează butonul al cărui text și link se editează în Header din Site Editor.', false ),
 			),
 			'footer' => array(

@@ -1235,7 +1235,7 @@ test('header cart stays visible and switches between cart page and native drawer
         const header = guest.locator('.zion-header');
         await expect(header.locator('.zion-header-cart')).toHaveCount(1);
         if (enabled === '0') {
-          const link = header.getByRole('link', { name: 'Coș', exact: true });
+          const link = header.locator('.zion-header-cart-link');
           await expect(link).toHaveAttribute('href', /\/cart\/$/);
           await expect(link.locator('svg')).toHaveCount(1);
           await expect(header.locator('.wc-block-mini-cart__button')).toHaveCount(0);
@@ -1254,4 +1254,54 @@ test('header cart stays visible and switches between cart page and native drawer
       }
     }
   } finally { await importSettings(page, original); await context.close(); }
+});
+
+test('cart link badge follows native quantities and Ajax while the mini-cart is disabled', async ({ page, browser, baseURL }) => {
+  test.setTimeout(180_000);
+  await login(page); await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const context = await browser.newContext({ baseURL }); const guest = await context.newPage();
+  const otherContext = await browser.newContext({ baseURL }); const other = await otherContext.newPage();
+  const errors = []; guest.on('pageerror', error => errors.push(error.message));
+  try {
+    await openSection(page, 'header');
+    await field(page, 'header_cart').selectOption('0');
+    await expect(field(page, 'header_cart_badge')).toBeVisible();
+    await field(page, 'header_cart_badge').selectOption('1'); await save(page);
+    for (const width of [390, 768, 1024, 1440]) {
+      await guest.setViewportSize({ width, height: 950 }); await guest.goto('/magazin-software/');
+      await expect(guest.locator('.zion-header-cart-count')).toHaveText('0');
+      await expect(guest.locator('.zion-header-cart-count')).toBeVisible();
+      expect(await guest.evaluate(() => document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+    }
+    for (const width of [390, 1440]) {
+      await guest.setViewportSize({ width, height: 950 }); await guest.goto('/magazin-software/');
+      const card = guest.locator('.zion-product-card').filter({ has: guest.getByRole('heading', { name: 'Zion Catalog Tools', exact: true }) });
+      const time = await guest.evaluate(() => performance.timeOrigin);
+      await card.getByRole('button', { name: /Adaugă în coș/i }).click();
+      await expect(guest.locator('.zion-header-cart-count')).toHaveText('1');
+      expect(await guest.evaluate(() => performance.timeOrigin)).toBe(time);
+      await guest.goto('/product/zion-catalog-tools/');
+      await guest.locator('form.cart input.qty').fill('2');
+      const productTime = await guest.evaluate(() => performance.timeOrigin);
+      await guest.locator('form.cart .single_add_to_cart_button').click();
+      await expect(guest.locator('.zion-header-cart-count')).toHaveText('3');
+      await expect(guest.locator('.zion-header-cart-link')).toHaveAccessibleName('Coș, 3 produse');
+      expect(await guest.evaluate(() => performance.timeOrigin)).toBe(productTime);
+      await other.goto('/'); await expect(other.locator('.zion-header-cart-count')).toHaveText('0');
+      await guest.locator('.zion-header-cart-link').press('Enter'); await expect(guest).toHaveURL(/\/cart\/$/);
+      await expect(guest.locator('.zion-header-cart-count')).toHaveText('3');
+      await guest.getByRole('button', {name:/Mărește cantitatea pentru/}).click();
+      await expect(guest.locator('.zion-header-cart-count')).toHaveText('4');
+      await guest.getByRole('button', {name:/Elimină .* din coș/}).click();
+      await expect(guest.locator('.zion-header-cart-count')).toHaveText('0');
+      await expect(guest.locator('.wc-block-mini-cart__drawer')).toHaveCount(0);
+    }
+    await openSection(page, 'header'); await field(page, 'header_cart_badge').selectOption('0'); await save(page);
+    await guest.goto('/');
+    await expect(guest.locator('.zion-header-cart-link')).toBeVisible();
+    await expect(guest.locator('.zion-header-cart-count')).toHaveCount(0);
+    await expect(guest.locator('script[src*="header-cart-count.js"]')).toHaveCount(0);
+    expect(errors).toEqual([]);
+  } finally { await importSettings(page, original); await context.close(); await otherContext.close(); }
 });

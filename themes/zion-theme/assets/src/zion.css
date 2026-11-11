@@ -3017,6 +3017,8 @@ body:has(.zion-product-page--sticky) {
 .zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.woocommerce-MyAccount-navigation-link > a { min-height: 44px; padding: .6rem .85rem; text-decoration: none; font-weight: 500; }
 .zion-account.woocommerce .woocommerce-MyAccount-navigation ul > li.is-active > a { font-weight: 650; }
 /* A disabled mini-cart changes the action, not access to the cart. */
-.zion-header-tools .zion-header-cart-link { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: var(--wp--preset--color--text); text-decoration: none; border-radius: 3px; }
+.zion-header-tools .zion-header-cart-link { position: relative; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; color: var(--wp--preset--color--text); text-decoration: none; border-radius: 3px; }
 .zion-header-cart-link svg { display: block; width: 32px; height: 32px; }
 .zion-header-cart-link:focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
+.zion-header-cart-count { position: absolute; inset-block-start: 0; inset-inline-end: -3px; display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding-inline: 4px; box-sizing: border-box; border-radius: 999px; background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); font-size: 11px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.zion-header-cart-count[hidden] { display: none; }

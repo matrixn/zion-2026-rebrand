@@ -122,7 +122,12 @@ function zion_theme_header_cart_link( array $attrs ): string {
 	}
 	$icons = '\\Automattic\\WooCommerce\\Blocks\\Utils\\MiniCartUtils';
 	$icon  = is_callable( array( $icons, 'get_svg_icon' ) ) ? $icons::get_svg_icon( $attrs['miniCartIcon'] ?? '' ) : 'Coș';
-	return '<a class="zion-header-cart zion-header-cart-link" href="' . esc_url( wc_get_cart_url() ) . '" aria-label="Coș"><span aria-hidden="true">' . $icon . '</span><span class="screen-reader-text">Coș</span></a>';
+	$badge = '';
+	if ( zion_theme_setting( 'header_cart_badge' ) ) {
+		wp_enqueue_script( 'zion-header-cart-count', get_theme_file_uri( 'assets/blocks/header-cart-count.js' ), array( 'wp-data', 'wc-blocks-data-store', 'jquery' ), wp_get_theme()->get( 'Version' ), true );
+		$badge = '<span class="zion-header-cart-count" aria-hidden="true" hidden>0</span>';
+	}
+	return '<a class="zion-header-cart zion-header-cart-link" href="' . esc_url( wc_get_cart_url() ) . '" aria-label="Coș"><span aria-hidden="true">' . $icon . '</span>' . $badge . '<span class="screen-reader-text">Coș</span></a>';
 }
 
 /**
