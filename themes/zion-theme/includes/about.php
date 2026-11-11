@@ -121,5 +121,106 @@ function zion_theme_about_content(): string {
 			)
 		)
 	);
-	return zion_theme_service_group( 'zion-services-overview zion-about', $hero . $story . $worlds . $values . $note . $end );
+	return zion_theme_service_group( 'zion-services-overview zion-about', $hero . $story . zion_theme_about_forge() . $worlds . $values . $note . $end );
 }
+
+/**
+ * An editable narrative progressively enhanced by the spatial renderer.
+ *
+ * @return string
+ */
+function zion_theme_about_forge(): string {
+	$phases = '';
+	foreach (
+		array(
+			'Schiță'   => 'O întrebare, câteva linii, o direcție. Totul începe cu locul pe care îl lași unei idei.',
+			'Straturi' => 'Desfacem ideea, încercăm și ajustăm. Fiecare pas adaugă ceva care o face mai clară.',
+			'Obiect'   => 'Forma capătă volum. Dintr-o posibilitate apare un lucru pe care îl poți vedea, proba și folosi.',
+			'Cod'      => 'Aceeași curiozitate continuă în lumea digitală. Conexiuni și instrumente care lucrează pentru tine.',
+		) as $title => $copy
+	) {
+		$phases .= zion_theme_service_group( 'zion-forge-phase', zion_theme_service_text( $title, 3 ) . zion_theme_service_text( $copy ) );
+	}
+	return zion_theme_service_group(
+		'zion-overview-band zion-about-forge',
+		zion_theme_service_group(
+			'zion-forge-stage',
+			zion_theme_service_text( 'ZION / DIN IDEE ÎN LUMEA TA', 0, 'zion-overview-label' ) .
+			zion_theme_service_text( 'Privește cum prinde formă.', 2 ) .
+			zion_theme_service_group( 'zion-forge-viewport', '' ) .
+			zion_theme_service_group( 'zion-forge-phases', $phases ) .
+			zion_theme_service_text( 'De la prima linie la următoarea posibilitate.', 0, 'zion-forge-footnote' )
+		)
+	);
+}
+
+/**
+ * Insert the experience without replacing authored About sections.
+ *
+ * @param string $content Existing native page content.
+ * @return string
+ */
+function zion_theme_about_add_forge( string $content ): string {
+	$blocks = parse_blocks( $content );
+	foreach ( $blocks as &$block ) {
+		$classes = explode( ' ', $block['attrs']['className'] ?? '' );
+		if ( 'core/group' !== $block['blockName'] || ! in_array( 'zion-about', $classes, true ) ) {
+			continue;
+		}
+		$index = 1;
+		foreach ( $block['innerBlocks'] as $position => $child ) {
+			$child_classes = explode( ' ', $child['attrs']['className'] ?? '' );
+			if ( in_array( 'zion-about-forge', $child_classes, true ) ) {
+				return $content;
+			}
+			if ( in_array( 'zion-about-story', $child_classes, true ) ) {
+				$index = $position + 1;
+			}
+		}
+		$forge = parse_blocks( zion_theme_about_forge() )[0];
+		array_splice( $block['innerBlocks'], $index, 0, array( $forge ) );
+		// Match the insertion to native child placeholders, preserving wrapper HTML.
+		$seen = 0;
+		foreach ( $block['innerContent'] as $offset => $chunk ) {
+			if ( null === $chunk && $seen++ === $index ) {
+				array_splice( $block['innerContent'], $offset, 0, array( null ) );
+				return serialize_blocks( $blocks );
+			}
+		}
+		array_splice( $block['innerContent'], -1, 0, array( null ) );
+		return serialize_blocks( $blocks );
+	}
+	return $content;
+}
+
+/**
+ * Keep canvases out of saved blocks and load the renderer only when present.
+ *
+ * @param string $html Native group HTML.
+ * @param array  $block Parsed block.
+ * @return string
+ */
+function zion_theme_about_spatial_markup( string $html, array $block ): string {
+	if ( is_admin() || wp_is_serving_rest_request() ) {
+		return $html;
+	}
+	$classes = explode( ' ', $block['attrs']['className'] ?? '' );
+	$seed    = in_array( 'zion-about-note', $classes, true );
+	$forge   = in_array( 'zion-forge-viewport', $classes, true );
+	if ( ! $seed && ! $forge ) {
+		return $html;
+	}
+	wp_enqueue_script(
+		'zion-about-spatial',
+		get_theme_file_uri( 'assets/blocks/about-spatial.js' ),
+		array(),
+		wp_get_theme()->get( 'Version' ),
+		array(
+			'strategy'  => 'defer',
+			'in_footer' => true,
+		)
+	);
+	$canvas = '<canvas class="zion-spatial-canvas" data-zion-spatial="' . ( $seed ? 'seed' : 'forge' ) . '" aria-hidden="true"></canvas>';
+	return preg_replace( '~(</div>\s*)$~', $canvas . '$1', $html, 1 ) ?? $html;
+}
+add_filter( 'render_block_core/group', 'zion_theme_about_spatial_markup', 25, 2 );

@@ -6,7 +6,11 @@
 
 Pagina are un hero asimetric, o notă tipografică Zion, povestea atelierului, legătura dintre producția 3D și software, trei principii de colaborare și o invitație personală la dialog. Tonul este direct, la persoana întâi plural. Textul păstrează contextul atelierului din Râmnicu Vâlcea din conținutul existent; nu adaugă nume de fondatori, portrete, statistici sau o biografie neverificată.
 
-Culorile provin din `theme.json`. Benzile întunecate și Paper folosesc fundalul CAD animat existent, cu aceeași reducere a mișcării. Nota cu monograma Z și simbolurile pentru atelier/cod sunt prezentare CSS; nu se încarcă fotografii sau biblioteci JavaScript noi.
+Culorile provin din `theme.json`. Benzile întunecate și Paper folosesc fundalul CAD animat existent. Din 1.1.20, **Zion Continuum** adaugă o sculptură Z proiectată în Canvas 2D și o secvență de derulare în patru etape: Schiță → Straturi → Obiect → Cod. Un plan luminos traversează geometria, particulele dezvăluie volumul, iar ultima etapă desface obiectul într-o rețea digitală. Monograma din hero răspunde la cursor pe dispozitive cu pointer fin. Nu folosește fotografii, video, WebGL sau frameworkuri de animație.
+
+Rendererul se încarcă o singură dată, exclusiv când există componentele About. Folosește culorile native, puncte deterministe, o singură buclă `requestAnimationFrame`, maximum aproximativ 30 cadre/s pe desktop și 24 pe mobil, cu rezoluția Canvas limitată. Acestea sunt limite de programare, nu o garanție de FPS pe orice dispozitiv. Randarea continuă se oprește când scenele ies din viewport sau documentul este ascuns.
+
+Derularea este nativă, fără interceptarea rotiței sau a gesturilor. Etapele pot fi alese și din butoane, inclusiv din tastatură. Controlul **Pauză animație** din hero și din scena centrală oprește simultan geometria și fundalul CAD; alegerea manuală rămâne disponibilă. Preferința sistemului `prefers-reduced-motion`, schimbată inclusiv cu pagina deschisă, și opțiunea existentă de reducere a mișcării din temă elimină scena lungă fixată și prezintă toate textele împreună cu geometria statică. Fără JavaScript rămân toate blocurile editoriale și nota tipografică. Canvas este decorativ, cu `aria-hidden`, adăugat numai la randarea frontend, fără a invalida blocurile salvate în editor.
 
 ## Editare
 
@@ -29,6 +33,15 @@ Prima comandă este preview, fără scriere. Modul `about` vizează exclusiv `de
 
 Pentru revenirea conținutului, folosește revizia anterioară din editor. Selecția de șablon și modul editorului se restaurează din snapshotul privat al paginii, dacă este necesar; backupul complet al bazei și arhiva componentelor permit revenirea întregii livrări pe staging. Nu rula din nou `about apply` peste modificări editoriale fără a le salva mai întâi.
 
+Pentru actualizarea paginii native existente la Continuum, folosește modul dedicat după același backup:
+
+```sh
+wp eval-file /cale/catre/repo/scripts/staging-editorial.php about-motion
+wp eval-file /cale/catre/repo/scripts/staging-editorial.php about-motion apply
+```
+
+Acest mod inserează doar grupul nou după poveste, păstrează blocurile editate și toate metadatele și salvează o revizie. Refuză o pagină fără structura About nativă; dacă secțiunea există deja, nu rescrie conținutul. Actualizarea temei singure nu modifică automat paginile salvate. Pentru modificarea textelor scenei folosește cele patru grupuri ale secțiunii „Privește cum prinde formă.” în lista de blocuri; clasele `zion-forge-*` conectează prezentarea și rendererul.
+
 ## Verificare
 
-Testele locale verifică blocurile înregistrate, un singur H1, păstrarea editărilor la seed, layoutul la 390/768/1024/1440 px, navigarea la poveste din tastatură, contrastul benzilor, reducerea mișcării, citirea fără JavaScript și validitatea blocurilor în editorul WordPress. Capturile About de la 390 și 1440 px sunt referințe vizuale în browserul Docker al proiectului.
+Testele locale verifică blocurile înregistrate, un singur H1, păstrarea editărilor la seed și inserare, idempotența, layoutul la 390/768/1024/1440 px, navigarea din tastatură, contrastul benzilor, citirea fără JavaScript și validitatea blocurilor în editorul WordPress. Testele Continuum verifică pixeli desenați, schimbarea efectivă a geometriei la derulare și cursor, pauză/reluare, butoanele etapelor, oprirea în afara viewportului, preferința de mișcare modificată în timp real și încărcarea condițională. Capturile statice About de la 390 și 1440 px sunt referințe vizuale în browserul Docker al proiectului.

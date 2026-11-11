@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.19** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.20** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.19** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.20** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,17 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Continuum · animație spațială About 1.1.20
+
+- [x] Monogramă Z cu geometrie proiectată, particule, plan luminos și perspectivă care răspunde cursorului. Secvență centrală legată de derulare: **Schiță → Straturi → Obiect → Cod**, cu etape selectabile din tastatură. Paleta existentă negru/lime și texte Gutenberg editabile.
+- [x] Canvas 2D propriu, fără frameworkuri sau video. Asset condițional, o singură buclă pentru ambele scene, număr redus de particule și rezoluție limitată pe mobil; randarea continuă se suspendă în afara viewportului și în documente ascunse.
+- [x] Pauză/reluare pentru întreaga animație About, inclusiv fundalul CAD. Preferința OS și opțiunea temei pentru mișcare redusă afișează geometrie statică și toate textele; fără JavaScript rămâne pagina editorială completă. Derulare nativă, fără scroll-jacking.
+- [x] Actualizare staging `about-motion`: preview fără scriere, inserare punctuală cu revizie și păstrarea blocurilor editate și a metadatelor; reaplicarea nu dublează scena.
+- [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **44 teste storefront** trecute, dintre care opt pentru About și Continuum; referințele vizuale About actualizate. ZIP-uri Theme/Core **1.1.20** generate.
+- [ ] Verificarea completă a administrării, instalare și QA staging, GitHub Actions și consemnarea livrării pe `main`.
+
+Ghid tehnic și actualizare: [Despre noi / Continuum](docs/about-page.md).
 
 ## Despre noi, cu vocea Zion 1.1.19
 

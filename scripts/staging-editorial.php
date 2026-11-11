@@ -2,7 +2,7 @@
 /**
  * Rebuild menu destinations on a cloned staging site using native blocks.
  *
- * Usage: wp eval-file scripts/staging-editorial.php [apply|services [apply]|overview [apply]|details [apply]|about [apply]]
+ * Usage: wp eval-file scripts/staging-editorial.php [apply|services [apply]|overview [apply]|details [apply]|about [apply]|about-motion [apply]]
  * Take a database snapshot before passing apply. Elementor metadata is retained.
  *
  * @package Zion_Theme
@@ -163,17 +163,23 @@ if ( 'overview' === $zion_theme_stage_mode ) {
 if ( 'details' === $zion_theme_stage_mode ) {
 	$zion_theme_stage_paths = array_keys( array_filter( $zion_theme_stage_services ) );
 }
-if ( 'about' === $zion_theme_stage_mode ) {
+if ( in_array( $zion_theme_stage_mode, array( 'about', 'about-motion' ), true ) ) {
 	$zion_theme_stage_paths = array( 'despre-noi' );
 }
-$zion_theme_stage_apply = 'apply' === ( in_array( $zion_theme_stage_mode, array( 'services', 'overview', 'details', 'about' ), true ) ? ( $args[1] ?? '' ) : $zion_theme_stage_mode );
+$zion_theme_stage_apply = 'apply' === ( in_array( $zion_theme_stage_mode, array( 'services', 'overview', 'details', 'about', 'about-motion' ), true ) ? ( $args[1] ?? '' ) : $zion_theme_stage_mode );
 foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 	$zion_theme_stage_page    = get_page_by_path( $zion_theme_stage_path );
 	$zion_theme_stage_title   = $zion_theme_stage_page ? $zion_theme_stage_page->post_title : 'Servicii';
 	$zion_theme_stage_content = '';
 	$zion_theme_stage_landing = isset( $zion_theme_stage_services[ $zion_theme_stage_path ] );
 	$zion_theme_stage_about   = 'about' === $zion_theme_stage_mode && 'despre-noi' === $zion_theme_stage_path;
-	if ( $zion_theme_stage_about ) {
+	$zion_theme_stage_motion  = 'about-motion' === $zion_theme_stage_mode;
+	if ( $zion_theme_stage_motion ) {
+		if ( ! $zion_theme_stage_page || ! str_contains( $zion_theme_stage_page->post_content, '"zion-services-overview zion-about"' ) ) {
+			WP_CLI::error( 'about-motion requires the existing native Zion About page.' );
+		}
+		$zion_theme_stage_content = zion_theme_about_add_forge( $zion_theme_stage_page->post_content );
+	} elseif ( $zion_theme_stage_about ) {
 		$zion_theme_stage_content = zion_theme_about_content();
 	} elseif ( $zion_theme_stage_landing ) {
 		$zion_theme_stage_content = zion_theme_service_landing( $zion_theme_stage_services[ $zion_theme_stage_path ] );
@@ -203,11 +209,31 @@ foreach ( $zion_theme_stage_paths as $zion_theme_stage_path ) {
 		WP_CLI::warning( 'Necesită verificare: ' . $zion_theme_stage_path );
 		continue;
 	}
-	if ( ! $zion_theme_stage_landing && ! $zion_theme_stage_about && ! str_starts_with( $zion_theme_stage_path, 'magazin-' ) ) {
+	if ( ! $zion_theme_stage_landing && ! $zion_theme_stage_about && ! $zion_theme_stage_motion && ! str_starts_with( $zion_theme_stage_path, 'magazin-' ) ) {
 		$zion_theme_stage_content = zion_theme_stage_block( 'group', '<div class="wp-block-group zion-editorial-panel">' . $zion_theme_stage_content . '</div>', array( 'className' => 'zion-editorial-panel' ) );
 	}
 	WP_CLI::log( sprintf( '%s %s: %d bytes', $zion_theme_stage_apply ? 'Apply' : 'Preview', $zion_theme_stage_path, strlen( $zion_theme_stage_content ) ) );
 	if ( $zion_theme_stage_apply ) {
+		if ( $zion_theme_stage_motion ) {
+			if ( $zion_theme_stage_page->post_content === $zion_theme_stage_content ) {
+				WP_CLI::log( 'Already current: despre-noi' );
+				continue;
+			}
+			wp_save_post_revision( $zion_theme_stage_page->ID );
+			$zion_theme_stage_result = wp_update_post(
+				wp_slash(
+					array(
+						'ID'           => $zion_theme_stage_page->ID,
+						'post_content' => $zion_theme_stage_content,
+					)
+				),
+				true
+			);
+			if ( is_wp_error( $zion_theme_stage_result ) ) {
+				WP_CLI::error( $zion_theme_stage_result->get_error_message() );
+			}
+			continue;
+		}
 		if ( $zion_theme_stage_about && $zion_theme_stage_page &&
 			$zion_theme_stage_page->post_content === $zion_theme_stage_content &&
 			! get_post_meta( $zion_theme_stage_page->ID, '_wp_page_template', true ) &&

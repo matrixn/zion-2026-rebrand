@@ -10,12 +10,15 @@ for (const width of [390, 768, 1024, 1440]) {
     await expect(page.locator('main h1')).toHaveCount(1);
     await expect(about.locator('.zion-about-note')).toBeVisible();
     await expect(about.locator('h2')).toHaveText([
-      'Mai întâi, curiozitatea.', 'Două lumi. Același fel de a gândi.',
+      'Mai întâi, curiozitatea.', 'Privește cum prinde formă.', 'Două lumi. Același fel de a gândi.',
       'Lucrurile bune se construiesc cu grijă.', 'Nu ai nevoie de un brief perfect.', 'Spune-ne ce ai în minte.'
     ]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
     await expect(about.locator('.zion-about-world')).toHaveCount(2);
     await expect(about.locator('.zion-about-value')).toHaveCount(3);
+    await expect(about.locator('.zion-forge-phase')).toHaveCount(4);
+    for (const phase of await about.locator('.zion-forge-phase').all()) await expect(phase).toBeVisible();
+    await expect(about.locator('canvas[data-render-mode="static"]')).toHaveCount(2);
     await expect(about.locator('.zion-about-hero')).toHaveCSS('color', 'rgb(243, 246, 239)');
     await expect(about.locator('.zion-about-story')).toHaveCSS('color', 'rgb(8, 13, 9)');
     expect(await about.locator('.zion-about-hero').evaluate(e => getComputedStyle(e, '::after').animationName)).toBe('none');
@@ -37,6 +40,7 @@ test('About remains readable without JavaScript and valid in the native editor',
   try {
     const noJs = await context.newPage(); await noJs.goto('/despre-noi/');
     await expect(noJs.locator('main h1')).toBeVisible();
+    for (const phase of await noJs.locator('.zion-forge-phase').all()) await expect(phase).toBeVisible();
     await expect(noJs.locator('.zion-about-end a').first()).toHaveAttribute('href', /^(mailto:|https?:)/);
     expect(await noJs.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
   } finally { await context.close(); }

@@ -3195,3 +3195,56 @@ body:has(.zion-product-page--sticky) {
 	.zion-about .zion-about-monogram { font-size: 14rem; }
 	.zion-about .zion-about-question { margin-block-start: 6rem; }
 }
+
+/* Zion Continuum: native editorial blocks remain the no-script experience. */
+.zion-spatial-canvas { display: none; }
+.zion-about > .zion-about-forge { --overview-bg: var(--wp--preset--color--ink); --overview-fg: var(--wp--preset--color--text); --circuit-signal: var(--wp--preset--color--accent); }
+.zion-forge-stage > * { margin-block: 0; }
+.zion-about .zion-forge-stage > h2 { max-width: 20ch; margin-block: .4rem 1.5rem; }
+.zion-forge-phases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
+.zion-forge-phase { padding-block-start: 1rem; border-block-start: 1px solid var(--wp--preset--color--deep); }
+.zion-forge-phase h3 { margin-block: 0 .6rem; color: var(--wp--preset--color--accent); font-size: 1.3rem; }
+.zion-forge-phase p { max-width: 55ch; margin-block: 0; line-height: 1.65; color: var(--wp--preset--color--muted); }
+.zion-forge-footnote { margin-block-start: 1.5rem; color: var(--wp--preset--color--muted); font: .7rem/1.6 var(--wp--preset--font-family--mono); }
+.is-spatial-ready > .zion-spatial-canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.zion-about .zion-about-note.is-spatial-ready { display: flex; flex-direction: column; justify-content: flex-end; min-height: 34rem; padding: 1.5rem; color: var(--wp--preset--color--text); background: radial-gradient(ellipse at 50% 38%, color-mix(in srgb, var(--wp--preset--color--deep) 24%, var(--wp--preset--color--ink)), var(--wp--preset--color--ink) 70%); border-radius: 1rem; transform: perspective(1000px) rotateX(var(--zion-note-rx, 0deg)) rotateY(var(--zion-note-ry, 0deg)); box-shadow: 0 1.5rem 5rem color-mix(in srgb, var(--wp--preset--color--ink) 60%, transparent); }
+.zion-about-note.is-spatial-ready > .zion-spatial-canvas { height: 70%; }
+.zion-about .is-spatial-ready .zion-about-monogram { display: none; }
+.zion-about .is-spatial-ready .zion-about-question { max-width: none; margin-block: auto .6rem; padding-block-start: 18rem; font-size: clamp(2.2rem, 3.1vw, 3.1rem); z-index: 1; }
+.zion-about .is-spatial-ready .zion-about-note-label { position: absolute; inset: 1.5rem 1.5rem auto; color: var(--wp--preset--color--accent); z-index: 1; }
+.zion-about .is-spatial-ready .zion-about-note-copy { margin-block: 0; font-size: .95rem; color: var(--wp--preset--color--muted); }
+.zion-about .is-spatial-ready .zion-about-note-footer { margin-block: 1.25rem 2.5rem; border-color: var(--wp--preset--color--deep); color: var(--wp--preset--color--muted); font-size: .58rem; }
+.zion-about .zion-spatial-pause { position: absolute; inset: auto 1.5rem .5rem auto; min-height: 44px; padding: .5rem .75rem; border: 0; background: transparent; color: var(--wp--preset--color--muted); font: .7rem/1.3 var(--wp--preset--font-family--mono); cursor: pointer; z-index: 2; }
+.zion-spatial-pause[hidden] { display: none; }
+.zion-about.is-spatial:not(.is-spatial-static) > .zion-about-forge { min-height: 280svh; padding-block: 0; }
+.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-stage { position: sticky; top: var(--zion-forge-top, 110px); height: var(--zion-forge-height, 75svh); box-sizing: border-box; display: grid; grid-template-rows: auto auto minmax(130px, 1fr) auto auto auto; padding-block: 1rem; }
+.zion-about.is-spatial .zion-forge-viewport { position: relative; min-height: 130px; }
+.zion-about.is-spatial .zion-forge-stage > h2 { margin-block: .3rem .1rem; font-size: clamp(1.8rem, 3.2vw, 3rem); }
+.zion-forge-controls { display: flex; justify-content: center; flex-wrap: wrap; gap: .4rem; padding-block: .7rem; }
+.zion-forge-controls button { min-height: 44px; padding: .65rem 1rem; border: 1px solid var(--wp--preset--color--deep); border-radius: 100px; background: transparent; color: var(--wp--preset--color--muted); font: .7rem/1.2 var(--wp--preset--font-family--mono); cursor: pointer; }
+.zion-forge-controls button[aria-pressed="true"] { color: var(--wp--preset--color--ink); background: var(--wp--preset--color--accent); border-color: var(--wp--preset--color--accent); }
+.zion-about :is(.zion-forge-controls button, .zion-spatial-pause):focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 4px; }
+.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-phases { display: grid; grid-template-columns: 1fr; }
+.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-phase { grid-area: 1 / 1; visibility: hidden; text-align: center; border: 0; padding: .3rem 0; }
+.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-phase p { margin-inline: auto; }
+.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-phase h3 { display: none; }
+.zion-about.is-spatial:not(.is-spatial-static) :is([data-phase="0"] .zion-forge-phase:nth-child(1), [data-phase="1"] .zion-forge-phase:nth-child(2), [data-phase="2"] .zion-forge-phase:nth-child(3), [data-phase="3"] .zion-forge-phase:nth-child(4)) { visibility: visible; }
+.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-footnote { text-align: center; margin-block-start: .6rem; font-size: .62rem; }
+.zion-about .zion-forge-stage > .zion-spatial-pause { inset: .2rem 0 auto auto; }
+.zion-about.is-spatial-static .zion-forge-viewport { height: clamp(16rem, 40vw, 27rem); }
+.zion-about.is-spatial-paused > .zion-overview-band::before, .zion-about.is-spatial-paused > .zion-overview-band::after { animation-play-state: paused; }
+@media (max-width: 900px) {
+	.zion-forge-phases { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+	.zion-about .zion-about-note.is-spatial-ready { min-height: 29rem; margin-inline: 0; width: 100%; }
+	.zion-about .is-spatial-ready .zion-about-question { padding-block-start: 16rem; }
+	.zion-forge-phases { grid-template-columns: 1fr; }
+	.zion-about.is-spatial:not(.is-spatial-static) > .zion-about-forge { min-height: 230svh; }
+	.zion-forge-controls { gap: .35rem; padding-block: .5rem; }
+	.zion-forge-controls button { flex: 1 1 42%; padding: .6rem .4rem; font-size: .65rem; }
+	.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-phase p { font-size: .875rem; line-height: 1.5; }
+	.zion-forge-stage > .zion-overview-label { font-size: .6rem; }
+	.zion-about .zion-forge-stage > .zion-spatial-pause { inset: auto 0 -.7rem auto; font-size: .6rem; }
+	.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-footnote { text-align: left; max-width: 55%; font-size: .55rem; }
+}
