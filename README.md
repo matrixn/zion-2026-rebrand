@@ -49,7 +49,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Card Technical: butoanele nu se mai întind la apariția linkului „Vezi coșul”. Corecția comună acoperă homepage-ul și ambele magazine, inclusiv celelalte preseturi.
 - [x] Build și WPCS; PHPUnit: 41 teste / 359 aserțiuni. Integrarea verifică toate cele cinci clase de checkout și păstrarea conținutului salvat. Migrarea/rollback-ul pe date sintetice au trecut.
 - [x] Suita completă Playwright: 48 scenarii trecute, inclusiv 20 de randări checkout, 12 cazuri Technical după adăugare, validare nativă, totaluri, cupoane și checkout local cu ramburs, taxă și livrare.
-- [ ] Instalare și verificare 1.1.12 pe staging.
+- [x] Zion Theme și Zion Core 1.1.12 instalate pe staging după backup privat. Selector și preview-uri funcționale; cinci checkouturi × 390/768/1024/1440 px, formular/acțiune unice, zero overflow, total nativ păstrat la 356,99 lei. Corecția Technical verificată după adăugare Ajax în ambele magazine la 390 și 1440 px: butoane de 44 px, aliniate pe desktop. Presetul 3D Compact Studio, presetul Software Technical și coșul existent au fost păstrate; checkoutul a revenit la Moștenește / Atelier. Fără comenzi sau plăți trimise și fără modificări în producție. Gateway-urile externe rămân în afara acestei validări.
 
 Ghid: [designurile checkoutului](docs/checkout-designs.md).
 

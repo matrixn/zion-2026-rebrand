@@ -38,4 +38,13 @@ Linkul WooCommerce „Vezi coșul” adăugat prin Ajax mărea coloana de cumpă
 
 ## Staging
 
-Backupul privat al bazei, setărilor și celor două componente a fost confirmat pe `zion-stage.on-forge.com`. Instalarea și verificarea 1.1.12 urmează după publicarea sursei. Producția nu este inclusă în această livrare.
+Zion Theme și Zion Core **1.1.12** au fost instalate pe `zion-stage.on-forge.com` din commitul `6c0ab4b64a5d7802d82c673ba831ed07f120961f`. Producția nu a fost modificată.
+
+- Backup privat, în afara directorului public: `.zion-migration/checkout-before-1112.sql`, `checkout-settings-before-1112.json` și `checkout-components-before-1112.tar.gz`. Jurnalul instalării: `.zion-migration/checkout-deploy-1112.log`. Ambele versiuni instalate au fost confirmate și Zion Core este activ.
+- Pagina existentă conține blocul nativ Checkout. Șablonul nou este folosit efectiv, fără rescrierea paginii. Selectorul, cele cinci preview-uri și salvarea Ajax au fost verificate.
+- Fiecare design la **390, 768, 1024 și 1440 px**: un singur formular și buton de plasare, două produse, zero overflow și total nativ **356,99 lei** în toate cele 20 de randări. Nu au fost înregistrate erori în consola tabului de test.
+- Card Technical verificat în Magazin Software și Magazin 3D după adăugarea unui produs prin Ajax. La 1440 px butoanele au aceeași poziție verticală și înălțimea de **44 px**; linkul „Vezi coșul” este separat. La 390 px acțiunile sunt verticale, fără întindere sau overflow. Verificarea locală acoperă suplimentar homepage-ul și lățimile 768/1024 px.
+- Cele două produse adăugate numai pentru test au fost eliminate. Coșul preexistent a fost comparat cu starea inițială: aceleași produse, cantități și total. Magazinul 3D a revenit la **Compact Studio**, Software a păstrat **Technical**, iar checkoutul a revenit la **Moștenește / Atelier**. Emularea viewportului a fost eliminată.
+- Nu s-au trimis comenzi sau plăți pe staging. Validarea câmpurilor și fluxul comercial sintetic au fost testate local; gateway-urile externe și tranzacțiile reale nu sunt declarate validate.
+
+Captura locală `build/staging-checkout-selector-1.1.12.png` arată secțiunea administrativă finală. Rapoartele și capturile din `build/` sunt excluse din arhivele WordPress.
