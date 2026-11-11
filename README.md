@@ -48,7 +48,10 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Actualizare staging `about-motion`: preview fără scriere, inserare punctuală cu revizie și păstrarea blocurilor editate și a metadatelor; reaplicarea nu dublează scena.
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **44 teste storefront** trecute, dintre care opt pentru About și Continuum; referințele vizuale About actualizate. ZIP-uri Theme/Core **1.1.20** generate.
 - [x] Suita locală completă: **62/62 teste Playwright** trecute (14,9 minute). După ajustarea proporțiilor Canvas din hero, toate cele **8 teste About/Continuum** au fost repetate cu succes, inclusiv raportul corect între pixelii Canvas și dimensiunea afișată.
-- [ ] QA staging final, GitHub Actions și consemnarea livrării pe `main`.
+- [x] Theme/Core 1.1.20 instalate pe staging din sursa `ce7e3f3`, după backup privat SQL, arhiva componentelor și snapshotul paginii. Preview fără scriere, inserare unică și reaplicare ignorată. Confirmate toate metadatele și câmpurile originale ale paginii, conținutul editorial din afara scenei și întreaga opțiune a temei. Helperul temporar de cache a fost eliminat. CSS/JS instalate au aceleași SHA-256 ca fișierele locale.
+- [x] QA staging pe WordPress **7.1.4** / WooCommerce **11.2.2**, la **390/768/1024/1440 px**: zero overflow, un H1, scenă și controale în viewport, etape din tastatură, trecere la Cod prin derulare, reacție reală la cursor, pauză și reduced motion cu toate cele patru texte vizibile. Fără erori JavaScript în pagina verificată. Catalogul nu încarcă rendererul; badge-ul coșului a rămas 3. Producția nu a fost modificată.
+- [x] README și ghid actualizate, arhivele versionate Theme/Core 1.1.20 generate și codul publicat pe `main`.
+- [ ] **CI încă neconfirmat:** [rularea 43098276316](https://github.com/matrixn/zion-2026-rebrand/actions/runs/43098276316) pentru `ce7e3f3` este în coadă la **11 noiembrie 2026, 20:56 UTC**. [API-ul oficial GitHub Status](https://www.githubstatus.com/api/v2/summary.json) raportează `major_outage` pentru Actions (actualizare la 20:48 UTC). Rezultatele locale de mai sus sunt trecute; această rulare CI nu este declarată verde.
 
 Ghid tehnic și actualizare: [Despre noi / Continuum](docs/about-page.md).
 
