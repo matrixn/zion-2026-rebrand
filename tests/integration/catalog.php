@@ -132,4 +132,5 @@ try {
 require __DIR__ . '/about.php';
 require __DIR__ . '/home-continuum.php';
 require __DIR__ . '/services-continuum.php';
+require __DIR__ . '/contact.php';
 WP_CLI::success( 'Catalog integration passed.' );

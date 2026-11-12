@@ -59,7 +59,7 @@ function zion_theme_migration_native_blocks( array $blocks ): bool {
 		if ( null === $name && '' === trim( $block['innerHTML'] ) ) {
 			continue;
 		}
-		if ( ! is_string( $name ) || ! preg_match( '#^(?:core|woocommerce|zion)/#', $name ) ||
+		if ( ! is_string( $name ) || ( ! preg_match( '#^(?:core|woocommerce|zion)/#', $name ) && 'contact-form-7/contact-form-selector' !== $name ) ||
 			in_array( $name, array( 'core/html', 'core/shortcode', 'core/freeform', 'core/block', 'core/pattern' ), true ) ||
 			! WP_Block_Type_Registry::get_instance()->is_registered( $name ) ||
 			! zion_theme_migration_native_blocks( $block['innerBlocks'] ) ) {

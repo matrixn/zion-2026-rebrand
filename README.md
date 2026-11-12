@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.22** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.23** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.22** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.23** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,21 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Continuum · Contact 1.1.23
+
+- [x] Pagină Contact nativă, editabilă în Site Editor: hero cu nod de comunicare Continuum, e-mail/telefon/WhatsApp, adresă existentă, îndrumări pentru proiect și traseul colaborării. Trei scene în motorul comun, cu perspectivă, semnale, progres contextual, pauză globală și mișcare redusă.
+- [x] Formularul este blocul **Contact Form 7**, cu selectorul și shortcode-ul gestionate de plugin, fără un al doilea motor de validare sau trimitere. Patru câmpuri obligatorii, telefon opțional, mesaje în română, serviciu preselectat din linkurile existente și feedback AJAX vizibil. Spațiu rezervat mesajelor de eroare pentru a păstra butonul stabil la corectare.
+- [x] Asseturi CF7 numai pentru formulare efectiv randate, inclusiv în template parts; încărcare după înregistrarea nativă a scripturilor. Lipsa/dezactivarea formularului păstrează contactele directe. Pagina și formularul rămân funcționale fără JavaScript.
+- [x] Mediu reproductibil fixat la **WordPress 7.1.4 / CF7 6.2.5**, versiunile existente pe staging. Seeder exclusiv local, formular și transport de test sintetice; repară imaginile demo lipsă după schimbarea directorului de core wp-env, păstrând ID-urile atașamentelor.
+- [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **10/10 teste Contact** și patru referințe vizuale; teste reale ale endpointului CF7, conținutului mailului capturat, erorilor, retrimiterii după corectare, accesibilității, reduced motion și lipsei JavaScript.
+- [x] Noua pagină demo activează legăturile Contact deja prevăzute în navigația și footerul native. Cele nouă referințe vizuale generale au fost actualizate pentru această destinație nouă; fiecare imagine crește cu exact 32 px, rândul suplimentar din footer. Structura și stilurile celorlalte pagini rămân păstrate.
+- [x] Backup privat staging SQL, componente, configurație și **39 înregistrări editoriale/CF7 cu metadate**, înaintea oricărei modificări. Script dedicat cu preview, backup obligatoriu și reaplicare fără rescrierea conținutului deja editat. Destinatarul existent nu este introdus în Git.
+- [x] ZIP-uri Theme/Core **1.1.23** generate.
+- [ ] Suita completă Playwright și CI.
+- [ ] Instalare 1.1.23 și QA staging la 390/768/1024/1440 px, verificarea formularului și transportului de e-mail, ZIP-uri, commit și push finale. Producția nu face parte din această livrare.
+
+Ghid: [Contact / Continuum și CF7](docs/contact-page.md).
 
 ## Zion Continuum · Servicii 1.1.22
 

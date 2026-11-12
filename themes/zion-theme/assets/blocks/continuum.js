@@ -1,7 +1,7 @@
 /* Zion Continuum: one scheduler and projection system, contextual sculptures. */
 (() => {
   'use strict';
-  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum');
+  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum, .zion-contact');
   if (!root || !window.IntersectionObserver || !window.ResizeObserver) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(pointer: fine)');
@@ -11,6 +11,8 @@
   const palette = { accent: color('accent'), text: color('text'), muted: color('muted'), ink: color('ink') };
   const home = root.classList.contains('zion-homepage');
   const services = root.classList.contains('zion-service-continuum');
+  const contact = root.classList.contains('zion-contact');
+  const contactModel = { filled: [], labels: [], phase: 'init' };
   const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
   const mix = (a, b, t) => a + (b - a) * t;
   const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
@@ -29,7 +31,7 @@
   const reduced = () => motion.matches || document.body.classList.contains('zion-motion-reduced');
   let phaseButtons = [];
   const pauseButtons = [];
-  const eligible = scene => scene.visible && (!scene.preview || scene.engaged);
+  const eligible = scene => scene.visible && (!scene.preview || scene.engaged) && (scene.type !== 'contact-console' || contactModel.filled.some(Boolean) || contactModel.phase === 'submitting');
 
   for (const canvas of root.querySelectorAll('[data-zion-spatial]')) {
     const context = canvas.getContext('2d', { alpha: true });
@@ -37,7 +39,7 @@
     const host = canvas.parentElement;
     const forge = canvas.dataset.zionSpatial === 'forge';
     const type = canvas.dataset.zionSpatial;
-    const section = home || services ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
+    const section = home || services || contact ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
     const preview = type === 'service-preview';
     const card = preview ? host.closest('.zion-overview-card') : null;
     const scene = { canvas, context, host, section, forge, type, preview, engaged: false, concept: canvas.dataset.zionConcept || root.dataset.zionService, foreground: getComputedStyle(card || section).color, steps: section?.querySelectorAll('.zion-service-card').length || 3, active: 0, scroll: .25, visible: false, width: 0, height: 0, pointer: [0, 0], aim: [0, 0], progress: forge ? 0 : 2, selected: null, rect: null };
@@ -69,6 +71,7 @@
   }
   if (!scenes.length) return;
   const forge = scenes.find(scene => scene.forge);
+  if (contact) bindContact();
   if (home) {
     const network = scenes.find(scene => scene.type === 'home-services');
     root.querySelectorAll('.zion-home-service').forEach((card, index) => {
@@ -155,7 +158,7 @@
 
   function onScroll() {
     for (const scene of scenes) if (!scene.forge) scene.rect = scene.host.getBoundingClientRect();
-    if ((home || services) && !reduced() && !paused) {
+    if ((home || services || contact) && !reduced() && !paused) {
       for (const scene of scenes) {
         const rect = scene.section.getBoundingClientRect();
         scene.scroll = clamp((innerHeight - rect.top) / (innerHeight + rect.height));
@@ -164,6 +167,8 @@
       if (process) process.section.dataset.continuumStep = String(Math.min(2, Math.floor(process.scroll * 3)));
       const serviceProcess = scenes.find(scene => scene.type === 'service-process');
       if (serviceProcess) serviceProcess.section.dataset.continuumStep = String(Math.min(serviceProcess.steps - 1, Math.floor(serviceProcess.scroll * serviceProcess.steps)));
+      const contactProcess = scenes.find(scene => scene.type === 'contact-route');
+      if (contactProcess) contactProcess.section.dataset.continuumStep = String(Math.min(2, Math.floor(contactProcess.scroll * 3)));
       schedule();
     }
     if (!forge || reduced()) return;
@@ -175,6 +180,7 @@
   }
 
   function draw(scene) {
+    if (contact) { drawContact(scene); return; }
     if (services) { drawService(scene); return; }
     if (home) { drawHome(scene); return; }
     const { context: ctx, width: w, height: h, forge: isForge } = scene;
@@ -290,6 +296,104 @@
     coords.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
     if (close) ctx.closePath();
     ctx.stroke();
+  }
+
+  function bindContact() {
+    const form = root.querySelector('.wpcf7 form');
+    if (!form) return;
+    const fields = [...form.querySelectorAll('[aria-required="true"]')].filter(e => ['INPUT','SELECT','TEXTAREA'].includes(e.tagName) && e.type !== 'hidden');
+    const progress = root.querySelector('.zion-contact-progress');
+    const refresh = () => {
+      contactModel.filled = fields.map(field => field.type === 'checkbox' ? field.checked : Boolean(field.value.trim()));
+      contactModel.labels = fields.map(field => {
+        const text = [...(field.closest('label')?.childNodes || [])].filter(n => n.nodeType === 3).map(n => n.textContent).join('').replace('*','').trim().toUpperCase();
+        return text.length > 12 ? `${text.slice(0,11)}…` : text;
+      });
+      const complete = contactModel.filled.filter(Boolean).length;
+      if (progress && fields.length) progress.textContent = `${complete} / ${fields.length} CÂMPURI COMPLETATE`;
+      root.dataset.contactState = contactModel.phase;
+      for (const scene of scenes) draw(scene);
+      schedule();
+    };
+    // Context comes from the single PHP service registry, not an arbitrary URL value.
+    const requested = new URL(location.href).searchParams.get('serviciu');
+    const select = form.querySelector('select[name="your-service"]');
+    let serviceMap = {};
+    try { serviceMap = JSON.parse(root.dataset.zionContactServices || '{}'); } catch { /* Native form stays usable. */ }
+    if (select && !select.value && Object.hasOwn(serviceMap, requested) && [...select.options].some(option => option.value === serviceMap[requested])) select.value = serviceMap[requested];
+    const edit = () => { if (!['submitting','validating'].includes(contactModel.phase)) contactModel.phase = 'editing'; refresh(); };
+    form.addEventListener('input', edit); form.addEventListener('change', edit);
+    root.addEventListener('wpcf7statuschanged', event => {
+      if (!form.contains(event.target) && !event.target.contains(form)) return;
+      contactModel.phase = event.detail.status;
+      refresh();
+    });
+    form.addEventListener('reset', () => requestAnimationFrame(refresh));
+    refresh();
+  }
+
+  function drawContact(scene) {
+    const { context: ctx, width: w, height: h, type } = scene;
+    if (!w || !h) return;
+    const t = reduced() ? 0 : clock;
+    const busy = contactModel.phase === 'submitting';
+    const sent = contactModel.phase === 'sent';
+    const ink = palette.accent;
+    ctx.clearRect(0,0,w,h);ctx.strokeStyle=ink;ctx.fillStyle=ink;
+    const line=(coords,alpha=.5,width=1,close=false)=>trace(ctx,coords,alpha,width,close);
+    const dot=(p,r=2,alpha=1)=>{
+      ctx.fillStyle=ink;ctx.globalAlpha=alpha;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();
+      ctx.globalAlpha=alpha*.12;ctx.beginPath();ctx.arc(p[0],p[1],r*3.5,0,Math.PI*2);ctx.fill();
+    };
+    const packet=(a,b,offset=0)=>{
+      const phase=(t*(busy?.36:.16)+offset)%1;
+      dot([mix(a[0],b[0],phase),mix(a[1],b[1],phase)],busy?2.8:2);
+    };
+    const label=(text,x,y,align='left',maxWidth=w)=>{
+      ctx.globalAlpha=.7;ctx.fillStyle=palette.muted;ctx.font=`${compact?8:9}px monospace`;ctx.textAlign=align;ctx.fillText(text,x,y,maxWidth);ctx.textAlign='left';
+    };
+    if(type==='contact-signal') {
+      const pointer=reduced()?[0,0]:scene.pointer;
+      const project=projector(w,Math.min(w*.29,h*.27),-.18+pointer[1]*.1,-.48+Math.sin(t*.2)*.12+pointer[0]*.18,h*.46);
+      const path=(coords,alpha=.4,close=false)=>line(coords.map(p=>project(...p)),alpha,1,close);
+      const spread=reduced()?1.1:1+scene.scroll*.22;
+      const rings=[];
+      for(let i=0;i<9;i++) {
+        const x=mix(-spread,spread,i/8),radius=.54+Math.cos(i*Math.PI/4)*.10;
+        const ring=Array.from({length:6},(_,j)=>{const a=j*Math.PI/3+Math.PI/6;return project(x,Math.cos(a)*radius,Math.sin(a)*radius);});
+        rings.push(ring);line(ring,i===0||i===8?.8:.14,1,true);
+      }
+      for(let i=0;i<6;i++)line(rings.map(r=>r[i]),.23);
+      const center=project(0,0,0);
+      for(let i=0;i<6;i++) {
+        line([rings[0][i],center,rings[8][(i+3)%6]],.35);
+        if(i%2===0||sent||busy)packet(rings[0][i],rings[8][(i+3)%6],i/6);
+      }
+      const diamond=[project(0,-.35,0),project(.32,0,0),project(0,.35,0),project(-.32,0,0),project(0,0,.32),project(0,0,-.32)];
+      for(const i of [0,2,4,5])for(const j of [1,3])line([diamond[i],diamond[j]],sent?1:.7,1.2);
+      dot(center,sent?4:2.4);
+      for(const z of [-.8,.8])path([[-1.35,.9,z],[1.35,.9,z]],.12);
+      ctx.strokeStyle=palette.muted;line([[18,37],[18,h-63],[w-18,h-63]],.2);
+      label('ZION / CANAL DESCHIS',18,22);label('EMISIE / CONEXIUNE / RECEPȚIE',18,h-47);
+    } else if(type==='contact-console') {
+      const count=Math.min(contactModel.filled.length||4,8),inset=w/(count*2),y=h*.39;
+      const center=[w*.5,h*.10];
+      for(let i=0;i<count;i++) {
+        const p=[mix(inset,w-inset,count===1?.5:i/(count-1)),y];
+        const active=contactModel.filled[i];
+        line([p,[p[0],center[1]],center],active?.45:.12);
+        const r=active?5:4;
+        line([[p[0],p[1]-r],[p[0]+r,p[1]],[p[0],p[1]+r],[p[0]-r,p[1]]],active?.95:.3,1,true);
+        if(active||busy)packet(p,center,i/count);
+        label(contactModel.labels[i]||`0${i+1}`,p[0],p[1]+24,'center',w/count-12);
+      }
+      dot(center,sent?4:2,.8);
+    } else if(type==='contact-route') {
+      const nodes=[[w*.1,h*.42],[w*.5,h*.28],[w*.9,h*.42]];
+      for(let i=0;i<2;i++){const a=nodes[i],b=nodes[i+1];line([a,[b[0],a[1]],b],.3);packet(a,b,i/2);}
+      nodes.forEach((p,i)=>{const r=compact?9:14;line([[p[0]-r,p[1]],[p[0],p[1]-r],[p[0]+r,p[1]],[p[0],p[1]+r]],.7,1,true);dot(p,Math.min(2,Math.floor(scene.scroll*3))===i?3:1.5);label(`0${i+1}`,p[0],p[1]+r+20,'center');});
+    }
+    ctx.globalAlpha=1;
   }
 
   function drawService(scene) {

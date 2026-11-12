@@ -1,11 +1,11 @@
 {
   "$schema": "https://schemas.wp.org/trunk/wp-env.json",
-  "core": "https://wordpress.org/wordpress-6.9.4.zip",
+  "core": "https://wordpress.org/wordpress-7.1.4.zip",
   "phpVersion": "8.3",
   "mariadbVersion": "10.11",
   "port": 8916,
   "testsPort": 8917,
-  "plugins": ["https://downloads.wordpress.org/plugin/woocommerce.10.8.1.zip", "./plugins/zion-core"],
+  "plugins": ["https://downloads.wordpress.org/plugin/woocommerce.10.8.1.zip", "https://downloads.wordpress.org/plugin/contact-form-7.6.2.5.zip", "./plugins/zion-core"],
   "themes": ["./themes/zion-theme"],
   "mappings": {
     "wp-content/zion-config": "./config",

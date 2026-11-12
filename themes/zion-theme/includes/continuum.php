@@ -129,7 +129,7 @@ function zion_theme_services_continuum( string $html, array $block ): string {
 	} elseif ( in_array( 'zion-overview-end', $classes, true ) && ! in_array( 'zion-about-end', $classes, true ) ) {
 		$panel = zion_theme_service_motion_panel( 'handoff' );
 		$html  = preg_replace( '~</h2>~', '$0' . $panel, $html, 1 ) ?? $html;
-	} elseif ( in_array( 'zion-services-overview', $classes, true ) && ! array_intersect( array( 'zion-homepage', 'zion-about' ), $classes ) ) {
+	} elseif ( in_array( 'zion-services-overview', $classes, true ) && ! array_intersect( array( 'zion-homepage', 'zion-about', 'zion-contact' ), $classes ) ) {
 		$key = 'directory';
 		if ( in_array( 'zion-service-detail', $classes, true ) ) {
 			$key = '';

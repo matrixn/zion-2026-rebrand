@@ -3222,6 +3222,94 @@ body:has(.zion-product-page--sticky) {
 	.zion-homepage :is(.zion-home-motion--services, .zion-home-motion--process) { height: 9rem; }
 }
 .zion-spatial-canvas { display: none; }
+/* Contact / Continuum: native CF7 remains responsible for the form. */
+.zion-contact > :is(.zion-contact-hero, .zion-contact-channels, .zion-contact-process) { --overview-bg: var(--wp--preset--color--ink); --overview-fg: var(--wp--preset--color--text); --overview-rule: var(--wp--preset--color--deep); --circuit-signal: var(--wp--preset--color--accent); }
+.zion-contact > .zion-contact-write { --overview-bg: var(--wp--preset--color--paper); --overview-fg: var(--wp--preset--color--ink); }
+.zion-contact-hero-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(2rem, 4vw, 4rem); align-items: center; }
+.zion-contact-lead { min-width: 0; }
+.zion-contact .zion-contact-lead h1 { max-width: 13ch; font-size: clamp(2.6rem, 5.6vw, 5.8rem); line-height: 1.02; letter-spacing: -.055em; }
+.zion-contact-lead h1 em { font-style: normal; color: var(--wp--preset--color--accent); }
+.zion-contact-intro { max-width: 49ch; color: var(--wp--preset--color--muted); font-size: clamp(1rem, 1.4vw, 1.15rem); }
+.zion-contact-coordinate { margin-block-start: 1.5rem; font: .62rem/1.7 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--muted); }
+.zion-contact-signal { position: relative; min-width: 0; box-sizing: border-box; padding: 1rem; border: 1px solid var(--wp--preset--color--deep); border-radius: 1rem; background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--wp--preset--color--deep) 28%, var(--wp--preset--color--ink)), var(--wp--preset--color--ink) 78%); }
+.zion-contact-signal-label, .zion-contact-signal-caption { margin: 0; font: .6rem/1.6 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--muted); }
+.zion-contact-signal-caption { max-width: 60%; min-height: 2.25rem; display: flex; align-items: center; }
+.zion-contact-signal-fallback { display: grid; place-items: center; height: 20rem; margin: 0; color: var(--wp--preset--color--accent); font-size: 9rem; }
+.zion-contact-signal.is-spatial-ready { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; }
+.zion-contact-signal.is-spatial-ready > .zion-spatial-canvas { position: relative; grid-row: 2; inset: auto; width: 100%; height: clamp(19rem, 29vw, 25rem); }
+.zion-contact-signal.is-spatial-ready .zion-contact-signal-fallback { display: none; }
+.zion-contact-channel-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.zion-contact-channel { min-width: 0; padding: clamp(1.25rem, 2.5vw, 2rem); border: 1px solid var(--wp--preset--color--deep); border-radius: .65rem; background: color-mix(in srgb, var(--wp--preset--color--surface) 65%, transparent); }
+.zion-contact .zion-contact-channel h3 { max-width: 19ch; margin-block: 1.5rem 1rem; font-size: clamp(1.4rem, 2vw, 1.8rem); line-height: 1.15; }
+.zion-contact-channel > p:not(.zion-overview-label) { color: var(--wp--preset--color--muted); font-size: .9rem; overflow-wrap: anywhere; }
+.zion-contact-channel-link a { color: var(--wp--preset--color--accent); text-decoration: none; font-size: clamp(.95rem, 1.2vw, 1.1rem); }
+.zion-contact-channel-link a:hover { text-decoration: underline; text-underline-offset: .25em; }
+.zion-contact .zion-contact-channel .wp-block-button__link { padding: .5rem .75rem; font-size: .8rem; }
+.zion-contact-write { scroll-margin-top: 8rem; }
+.zion-contact-write-grid { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+.zion-contact-prompt { padding-block: 1.4rem; border-block-start: 1px solid color-mix(in srgb, currentColor 20%, transparent); }
+.zion-contact .zion-contact-prompt h3 { margin: 0 0 .6rem; font-size: 1.3rem; }
+.zion-contact-prompt p { margin: 0; max-width: 43ch; font-size: .95rem; line-height: 1.75; }
+.zion-contact-panel { min-width: 0; box-sizing: border-box; padding: clamp(1.2rem, 3vw, 2.5rem); border-radius: .85rem; border: 1px solid var(--wp--preset--color--deep); background: var(--wp--preset--color--ink); color: var(--wp--preset--color--text); box-shadow: 0 1.5rem 3rem color-mix(in srgb, var(--wp--preset--color--ink) 12%, transparent); }
+.zion-contact .zion-contact-panel h3 { margin-block: .75rem .6rem; font-size: clamp(1.7rem, 2.5vw, 2.3rem); }
+.zion-contact .zion-contact-panel .zion-overview-label { color: var(--wp--preset--color--accent); }
+.zion-contact-form-help, .zion-contact-privacy { font-size: .8rem; line-height: 1.7; color: var(--wp--preset--color--muted); }
+.zion-contact-console { position: relative; min-width: 0; }
+.zion-contact-console.is-spatial-ready { height: 8.5rem; margin-block: 1.25rem; border-block: 1px solid var(--wp--preset--color--deep); }
+.zion-contact-console .zion-contact-progress { margin-block: .8rem; color: var(--wp--preset--color--muted); font: .55rem/1.6 var(--wp--preset--font-family--mono); }
+.zion-contact-console.is-spatial-ready .zion-contact-progress { position: absolute; inset: auto auto .7rem 0; max-width: 60%; margin: 0; }
+.zion-contact .wpcf7 { min-width: 0; margin: 0; }
+.zion-contact .wpcf7 form { margin: 0; }
+.zion-contact-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem 1rem; }
+.zion-contact-field { min-width: 0; }
+.zion-contact-field > p { margin: 0; }
+.zion-contact-fields label { min-width: 0; display: block; color: var(--wp--preset--color--text); font-size: .85rem; font-weight: 500; line-height: 1.6; }
+.zion-contact-message { grid-column: 1 / -1; }
+.zion-contact-optional { color: var(--wp--preset--color--muted); font-size: .7rem; font-weight: 400; }
+.zion-contact .wpcf7-form-control-wrap { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(1.35rem, auto); row-gap: .25rem; margin-block-start: .45rem; }
+.zion-contact .wpcf7-form-control-wrap::after { content: ""; grid-area: 2 / 1; min-height: 1.35rem; pointer-events: none; }
+.zion-contact .wpcf7-form-control-wrap > .wpcf7-form-control { grid-area: 1 / 1; }
+.zion-contact .wpcf7 :is(input:not([type="submit"]):not([type="hidden"]), select, textarea) { display: block; box-sizing: border-box; width: 100%; min-width: 0; min-height: 48px; max-width: 100%; padding: .8rem .85rem; border: 1px solid color-mix(in srgb, var(--wp--preset--color--muted) 45%, transparent); border-radius: .4rem; background: var(--wp--preset--color--surface); color: var(--wp--preset--color--text); font: inherit; font-size: 1rem; }
+.zion-contact .wpcf7 textarea { resize: vertical; min-height: 9rem; }
+.zion-contact .wpcf7 :is(input, select, textarea):focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
+.zion-contact .wpcf7 [aria-invalid="true"] { border-color: var(--wp--preset--color--accent); border-style: dashed; }
+.zion-contact .wpcf7 .wpcf7-not-valid-tip { grid-area: 2 / 1; margin: 0; padding-inline-start: .6rem; border-inline-start: 2px solid var(--wp--preset--color--accent); color: var(--wp--preset--color--accent); font-size: .8rem; line-height: 1.4; }
+.zion-contact .wpcf7 form.wpcf7-form .wpcf7-response-output { margin: 1.25rem 0 0; padding: 1rem; border: 1px solid var(--wp--preset--color--accent); border-radius: .4rem; color: var(--wp--preset--color--text); font-size: .9rem; line-height: 1.7; }
+.zion-contact .wpcf7 form:is(.failed,.spam,.aborted,.invalid,.unaccepted) .wpcf7-response-output { border-style: dashed; }
+.zion-contact-submit { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; margin-block-start: 1.25rem; }
+.zion-contact-submit > p { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; width: 100%; margin: 0; }
+.zion-contact .wpcf7 input[type="submit"] { box-sizing: border-box; min-height: 48px; max-width: 100%; padding: .9rem 1.4rem; border: 1px solid var(--wp--preset--color--accent); border-radius: .35rem; background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); font: 700 .95rem/1.4 var(--wp--preset--font-family--body); cursor: pointer; }
+.zion-contact .wpcf7 input[type="submit"]:disabled { opacity: .65; cursor: wait; }
+.zion-contact .wpcf7 .wpcf7-spinner { margin: 0; width: 20px; height: 20px; border: 2px solid var(--wp--preset--color--accent); border-inline-end-color: transparent; border-radius: 50%; background: transparent; animation: zion-commerce-spin .7s linear infinite; }
+.zion-contact .wpcf7 .wpcf7-spinner::before { display: none; }
+.zion-contact .wpcf7 form.submitting .zion-contact-submit::after { content: "Se trimite mesajul…"; color: var(--wp--preset--color--muted); font-size: .8rem; }
+.zion-contact-route { position: relative; min-width: 0; }
+.zion-contact-route.is-spatial-ready { height: 10rem; margin-block: 1.5rem; border-block: 1px solid var(--wp--preset--color--deep); }
+.zion-contact-route.is-spatial-ready .zion-contact-route-fallback { display: none; }
+.zion-contact .zion-spatial-pause { position: absolute; inset: auto 0 0 auto; min-height: 44px; padding: .6rem .5rem; border: 0; border-radius: .3rem; background: var(--wp--preset--color--ink); color: var(--wp--preset--color--muted); font: .6rem/1.4 var(--wp--preset--font-family--mono); cursor: pointer; z-index: 1; }
+.zion-contact .zion-contact-signal .zion-spatial-pause { inset: auto .75rem .45rem auto; }
+.zion-contact .zion-spatial-pause:focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 2px; }
+.zion-contact.is-spatial-paused > .zion-overview-band::before, .zion-contact.is-spatial-paused > .zion-overview-band::after { animation-play-state: paused; }
+.zion-contact.is-spatial:not(.is-spatial-static) [data-continuum-step="0"] .zion-service-card:nth-child(1),
+.zion-contact.is-spatial:not(.is-spatial-static) [data-continuum-step="1"] .zion-service-card:nth-child(2),
+.zion-contact.is-spatial:not(.is-spatial-static) [data-continuum-step="2"] .zion-service-card:nth-child(3) { border-color: var(--wp--preset--color--accent); }
+@media (max-width: 900px) {
+	.zion-contact-hero-grid, .zion-contact-write-grid { grid-template-columns: minmax(0, 1fr); }
+	.zion-contact .zion-contact-lead h1 { max-width: 17ch; }
+	.zion-contact-channel-grid { grid-template-columns: minmax(0, 1fr); }
+	.zion-contact-signal { width: min(100%, 34rem); margin-inline: auto; }
+	.zion-contact-brief { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+	.zion-contact-fields, .zion-contact-brief { grid-template-columns: minmax(0, 1fr); }
+	.zion-contact-hero-grid { gap: 2rem; }
+	.zion-contact .zion-contact-lead h1 { max-width: 14ch; }
+	.zion-contact .zion-contact-panel { padding: 1.15rem; }
+	.zion-contact .wpcf7 input[type="submit"] { width: 100%; }
+	.zion-contact-signal { padding: .75rem; }
+}
+@media (prefers-reduced-motion: reduce) { .zion-contact .wpcf7 .wpcf7-spinner { animation: none; } }
+.zion-motion-reduced .zion-contact .wpcf7 .wpcf7-spinner { animation: none; }
 /* Services share Continuum's renderer; every original block remains editable. */
 .zion-service-motion { display: none; }
 .zion-service-continuum .zion-service-motion.is-spatial-ready { display: block; position: relative; min-width: 0; box-sizing: border-box; }

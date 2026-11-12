@@ -13,6 +13,31 @@ if ( ! class_exists( 'WooCommerce' ) || ! taxonomy_exists( 'zion_shop' ) ) {
 	WP_CLI::error( 'Activate WooCommerce and Zion Core before seeding.' );
 }
 
+/**
+ * Restore known synthetic media after wp-env replaces its core download directory.
+ *
+ * @param int    $attachment_id Existing fixture attachment.
+ * @param string $source Known repository fixture file.
+ * @return void
+ */
+function zion_core_restore_demo_media( int $attachment_id, string $source ): void {
+	$file    = get_attached_file( $attachment_id );
+	$uploads = wp_upload_dir();
+	if ( ! $file || is_file( $file ) ) {
+		return;
+	}
+	if ( ! str_starts_with( wp_normalize_path( $file ), trailingslashit( wp_normalize_path( $uploads['basedir'] ) ) ) || str_contains( wp_normalize_path( $file ), '/../' ) || ! is_file( $source ) ) {
+		WP_CLI::error( 'The synthetic media destination must remain inside test uploads.' );
+	}
+	wp_mkdir_p( dirname( $file ) );
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_copy -- Only missing files of known synthetic fixtures in the local environment.
+	if ( ! copy( $source, $file ) ) {
+		WP_CLI::error( 'Could not restore a missing synthetic media file.' );
+	}
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $file ) );
+}
+
 $zion_core_fixture = json_decode(
 	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Read a local fixture in WP-CLI.
 	file_get_contents( WP_CONTENT_DIR . '/zion-config/demo-catalog.json' ),
@@ -28,6 +53,7 @@ if ( ! get_theme_mod( 'custom_logo' ) ) {
 		set_theme_mod( 'custom_logo', $zion_core_logo );
 	}
 }
+zion_core_restore_demo_media( (int) get_theme_mod( 'custom_logo' ), get_theme_file_path( 'assets/brand/zion-logo.webp' ) );
 update_option( 'blogname', 'Zion 3D' );
 update_option( 'woocommerce_currency', 'RON' );
 update_option( 'woocommerce_coming_soon', 'no' );
@@ -171,6 +197,7 @@ foreach ( $zion_core_fixture['products'] as $zion_core_item ) {
 			)
 		);
 	}
+	zion_core_restore_demo_media( (int) $zion_core_product->get_image_id(), WP_CONTENT_DIR . '/zion-config/demo-images/' . strtolower( $zion_core_item['sku'] ) . '.png' );
 }
 
 if ( function_exists( 'zion_theme_create_service_pages' ) ) {

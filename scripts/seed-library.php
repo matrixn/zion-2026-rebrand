@@ -14,6 +14,7 @@ if ( $zion_core_services['failed'] ) {
 	WP_CLI::error( 'Could not create all Zion service pages.' );
 }
 $zion_core_reference = wc_get_product_id_by_sku( 'ZION-DEMO-SW-01' );
+require __DIR__ . '/seed-contact.php';
 
 if ( ! get_page_by_path( 'despre-noi' ) ) {
 	$zion_core_about = wp_insert_post(
