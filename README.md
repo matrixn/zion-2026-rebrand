@@ -50,6 +50,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute; **14 aserțiuni noi de integrare** pentru șabloane, renderer, păstrarea datelor, restaurarea contextului WordPress și protecția prin parolă.
 - [x] **9/9 teste Playwright noi** trecute în 55 s, cu opt referințe vizuale la 390/1440 px și verificări de layout la 390/768/1024/1440 px. Acoperă categorie, căutare limitată la articole, paginare, back/forward, draft/private/parolă, animație/pauză/progres, setările existente, fără JavaScript și validitate în Site Editor. Scenariile care creează articole rulează izolat, între storefront și control, și restaurează datele/configurația.
 - [ ] Suita completă **100 de scenarii** și CI.
+- [x] Cele două teste Control Center adaptate la metadatele separate ale articolului și cardurilor asociate: **2/2 trecute local** în 47,9 s. Verifică în continuare override-ul articolului și păstrarea autorului/datei în cardul altui articol. Prima rulare CI a trecut 97 de scenarii și a identificat aceste două aserțiuni vechi; verificarea completă se repetă după corecție.
 - [ ] Instalare 1.1.24 și QA staging inclusiv 390/768/1024/1440 px, confirmarea snapshotului, README, arhive Theme/Core, commit și push finale pe `main`. Producția nu face parte din această livrare.
 
 Ghid: [Jurnal / Continuum](docs/journal-continuum.md).

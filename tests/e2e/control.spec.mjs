@@ -149,7 +149,7 @@ test('Control Center persists validated settings and applies inheritance on publ
     await field(page, 'reading_time').selectOption('');
     await expect(field(page, 'reading_speed')).toBeHidden();
     await page.goto('/jurnal-prototip-zion/');
-    await expect(page.locator('.zion-reading-time')).toHaveText('1 min de citit');
+    await expect(page.locator('.zion-article-meta .zion-reading-time')).toHaveText('1 min de citit');
     await openSection(page, 'blog');
     await field(page, 'reading_time').selectOption('0');
     await save(page);
@@ -511,8 +511,12 @@ test('site chrome, journal pagination and page overrides use the native editor a
     await expect(page.locator('.zion-post-card')).toHaveCount(1);
     await expect(page.locator('.wp-block-query-pagination-next')).toBeVisible();
     await page.goto(article.link);
-    await expect(page.locator('main .zion-blog-author, main .zion-blog-date, main .zion-blog-excerpt, main .zion-blog-comments')).toHaveCount(0);
-    await expect(page.locator('main .zion-reading-time')).toHaveText('1 min de citit');
+    await expect(page.locator('.zion-article-hero .zion-blog-author, .zion-article-hero .zion-blog-date, .zion-article-hero .zion-blog-excerpt, main .zion-blog-comments')).toHaveCount(0);
+    await expect(page.locator('.zion-article-meta .zion-reading-time')).toHaveText('1 min de citit');
+    // Related cards resolve their own posts; the current article's overrides must not leak.
+    const relatedCard = page.locator('.zion-article-related .zion-post-card').filter({ has: page.getByRole('link', { name: 'Articol asociat Zion test', exact: true }) });
+    await expect(relatedCard.locator('.zion-blog-author')).toBeVisible();
+    await expect(relatedCard.locator('.zion-blog-date')).toBeVisible();
     await expect(page.locator('.zion-article-related').getByRole('link', { name: 'Articol asociat Zion test' })).toHaveAttribute('href', related.link);
     await expect(page.getByRole('link', { name: 'Distribuie prin e-mail' })).toHaveAttribute('href', /^mailto:/);
     await expect(page.getByRole('button', { name: 'Copiază linkul' })).toBeVisible();
