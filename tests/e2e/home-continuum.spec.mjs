@@ -110,3 +110,33 @@ test('homepage stays complete without JavaScript', async ({ browser, baseURL }) 
     expect(await noJs.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
   } finally { await context.close(); }
 });
+
+test('active Continuum settles when a motion change notification is delayed', async ({ browser, baseURL }) => {
+  const context=await browser.newContext({baseURL,reducedMotion:'no-preference'});
+  try {
+    const page=await context.newPage();
+    await page.addInitScript(()=>{
+      const nativeMatchMedia=window.matchMedia.bind(window);
+      window.matchMedia=query=>{
+        const list=nativeMatchMedia(query);
+        if(query==='(prefers-reduced-motion: reduce)') {
+          const listen=list.addEventListener.bind(list);
+          // Keep the real browser preference; suppress only its notification.
+          list.addEventListener=(type,...args)=>{if(type!=='change')listen(type,...args);};
+        }
+        return list;
+      };
+    });
+    await page.goto('/');
+    const canvas=page.locator('[data-zion-spatial="home-hero"]');
+    await canvas.scrollIntoViewIfNeeded();
+    const frame=await fingerprint(canvas);
+    await expect.poll(()=>fingerprint(canvas)).not.toBe(frame);
+    await page.emulateMedia({reducedMotion:'reduce'});
+    expect(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
+    await expect(page.locator('.zion-homepage')).toHaveClass(/is-spatial-static/);
+    for(const scene of await page.locator('[data-zion-spatial]').all())await expect(scene).toHaveAttribute('data-render-mode','static');
+    const still=await fingerprint(canvas);
+    await page.waitForTimeout(120);expect(await fingerprint(canvas)).toBe(still);
+  } finally {await context.close();}
+});

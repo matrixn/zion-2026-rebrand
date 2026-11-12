@@ -648,7 +648,13 @@
 
   function tick(now) {
     raf = 0;
-    if (paused || reduced() || document.hidden || !scenes.some(eligible)) { last = 0; return; }
+    // Reconcile the live preference before stopping the last animated frame.
+    // A media change can become observable before its change callback runs.
+    if (reduced()) {
+      if (!root.classList.contains('is-spatial-static')) preferences();
+      last = 0; return;
+    }
+    if (paused || document.hidden || !scenes.some(eligible)) { last = 0; return; }
     const elapsed = last ? now - last : (compact ? 42 : 34);
     if (elapsed < (compact ? 41 : 32)) { schedule(); return; }
     clock += Math.min(elapsed, 80) / 1000; last = now;

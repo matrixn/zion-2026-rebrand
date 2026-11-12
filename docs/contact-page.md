@@ -57,7 +57,13 @@ Theme/Core 1.1.23 sunt instalate pe WordPress 7.1.4 / WooCommerce 11.2.2 / CF7 6
 
 Testul de trimitere folosește temporar un destinatar rezervat `.test`, un marker sintetic și un hook limitat la formularul selectat și hostname-ul staging. Captura se scrie în directorul privat din afara public; eșecul scrierii raportează eșec CF7. Au fost verificate validarea, spinnerul, succesul, conținutul capturii și un eșec de transport simulat. La final, Mail/Mail 2 sunt restaurate integral, iar hookul temporar și helperul de cache sunt eliminate. Acest test nu expediază e-mailuri externe.
 
-**Limitare verificată:** PHP-FPM nu are sendmail executabil și nici SMTP configurat. Pentru mesaje reale trebuie configurat un transport de e-mail separat, cu credențiale în afara repository-ului. Nu se declară livrare în inbox sau formular pregătit pentru producție pe baza capturii de test.
+**Etapă ulterioară, amânată explicit de utilizator:** configurarea și testarea livrării reale de e-mail. PHP-FPM nu are sendmail executabil și nici SMTP configurat. Pentru mesaje reale trebuie configurat un transport de e-mail separat, cu credențiale în afara repository-ului. Nu se declară livrare în inbox sau formular pregătit pentru producție pe baza capturii de test.
+
+Adresa din paragraful imbricat al paginii anterioare a fost restaurată punctual, cu revizie. Identitatea paginii și formularului, metadatele Contact și ambele configurații Mail sunt păstrate. Scriptul corectat din `5df532a` a fost reluat pe staging: preview și apply raportează `changed=false`, zero erori de configurare CF7 și păstrează exact snapshotul final al celor 39 de înregistrări cu metadate. Fișierele CSS/JS instalate au aceleași SHA-256 ca sursa și ZIP-ul local. Nu există helper sau hook QA rămas în public/MU-plugins.
+
+CI a expus și o tranziție reduced motion în motorul comun: preferința nativă era activă, dar starea statică nu fusese aplicată înaintea opririi animației. Ultimul cadru sincronizează acum starea și desenul static înainte să oprească schedulerul; nu există timer sau buclă suplimentară. Scenariul live a trecut apoi în 20/20 execuții. Testul suplimentar suprimă numai notificarea media, păstrează preferința reală a browserului și verifică starea statică a tuturor scenelor și oprirea desenului.
+
+După corecție au trecut buildul, WPCS, 46 teste PHPUnit / 394 aserțiuni, integrarea și migrarea/rollback, plus toate cele **35 de teste Contact/About/homepage/Servicii** în 2,7 minute. Referințele vizuale sunt păstrate; suita completă are acum 89 de scenarii.
 
 Pagina Contact lipsea din vechile fixture-uri locale. Crearea ei activează automat legăturile native Contact din header și footer; cele nouă referințe generale au fost actualizate pentru această schimbare intenționată, fiecare având înălțimea mărită cu exact 32 px pentru rândul nou din footer. Pe staging destinația și aceste legături existau deja; nu sunt rescrise meniurile sau footerul.
 
