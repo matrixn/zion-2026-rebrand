@@ -191,5 +191,5 @@ function zion_theme_service_landing( string $slug = '' ): string {
 			)
 		)
 	);
-	return zion_theme_service_group( 'zion-services-overview zion-service-detail', $intro . $benefits . $examples . $process . $end );
+	return zion_theme_service_group( 'zion-services-overview zion-service-detail zion-service--' . $slug, $intro . $benefits . $examples . $process . $end );
 }

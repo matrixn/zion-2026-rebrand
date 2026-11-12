@@ -1,7 +1,7 @@
 /* Zion Continuum: one scheduler and projection system, contextual sculptures. */
 (() => {
   'use strict';
-  const root = document.querySelector('.zion-about, .zion-homepage');
+  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum');
   if (!root || !window.IntersectionObserver || !window.ResizeObserver) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(pointer: fine)');
@@ -10,6 +10,7 @@
   const color = name => rootStyle.getPropertyValue(`--wp--preset--color--${name}`).trim();
   const palette = { accent: color('accent'), text: color('text'), muted: color('muted'), ink: color('ink') };
   const home = root.classList.contains('zion-homepage');
+  const services = root.classList.contains('zion-service-continuum');
   const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
   const mix = (a, b, t) => a + (b - a) * t;
   const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
@@ -28,6 +29,7 @@
   const reduced = () => motion.matches || document.body.classList.contains('zion-motion-reduced');
   let phaseButtons = [];
   const pauseButtons = [];
+  const eligible = scene => scene.visible && (!scene.preview || scene.engaged);
 
   for (const canvas of root.querySelectorAll('[data-zion-spatial]')) {
     const context = canvas.getContext('2d', { alpha: true });
@@ -35,14 +37,29 @@
     const host = canvas.parentElement;
     const forge = canvas.dataset.zionSpatial === 'forge';
     const type = canvas.dataset.zionSpatial;
-    const section = home ? host.closest('.zion-overview-band') : (forge ? host.closest('.zion-about-forge') : host);
-    const scene = { canvas, context, host, section, forge, type, active: 0, scroll: .25, visible: false, width: 0, height: 0, pointer: [0, 0], aim: [0, 0], progress: forge ? 0 : 2, selected: null, rect: null };
+    const section = home || services ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
+    const preview = type === 'service-preview';
+    const card = preview ? host.closest('.zion-overview-card') : null;
+    const scene = { canvas, context, host, section, forge, type, preview, engaged: false, concept: canvas.dataset.zionConcept || root.dataset.zionService, foreground: getComputedStyle(card || section).color, steps: section?.querySelectorAll('.zion-service-card').length || 3, active: 0, scroll: .25, visible: false, width: 0, height: 0, pointer: [0, 0], aim: [0, 0], progress: forge ? 0 : 2, selected: null, rect: null };
     scenes.push(scene);
     host.classList.add('is-spatial-ready');
     if (type === 'home-hero') host.closest('.zion-home-lab')?.classList.add('is-continuum-lab');
-    canvas.dataset.renderMode = reduced() ? 'static' : 'animated';
+    if (services && type === 'service-hero') host.parentElement.classList.add('is-continuum-service-art');
+    if (preview) card?.classList.add('is-continuum-preview');
+    canvas.dataset.renderMode = reduced() ? 'static' : preview ? 'interactive' : 'animated';
+    if (card) {
+      const engage = () => { scene.engaged = true; card.classList.add('is-continuum-engaged'); schedule(); };
+      const disengage = event => {
+        if (event.type === 'focusout' && card.contains(event.relatedTarget)) return;
+        if (event.type === 'pointerleave' && card.contains(document.activeElement)) return;
+        if (event.type === 'focusout' && card.matches(':hover')) return;
+        scene.engaged = false; card.classList.remove('is-continuum-engaged');
+      };
+      card.addEventListener('pointerenter', engage); card.addEventListener('pointerleave', disengage);
+      card.addEventListener('focusin', engage); card.addEventListener('focusout', disengage);
+    }
     if (!forge) {
-      host.addEventListener('pointermove', event => {
+      (card || host).addEventListener('pointermove', event => {
         if (!finePointer.matches || reduced() || paused) return;
         const rect = scene.rect;
         if (rect) scene.aim = [clamp((event.clientX - rect.left) / rect.width * 2 - 1, -1, 1), clamp((event.clientY - rect.top) / rect.height * 2 - 1, -1, 1)];
@@ -88,6 +105,7 @@
   }
   // This control also pauses the inherited CAD background, including the hero.
   for (const scene of scenes) {
+    if (scene.preview) continue;
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'zion-spatial-pause';
@@ -137,13 +155,15 @@
 
   function onScroll() {
     for (const scene of scenes) if (!scene.forge) scene.rect = scene.host.getBoundingClientRect();
-    if (home && !reduced() && !paused) {
+    if ((home || services) && !reduced() && !paused) {
       for (const scene of scenes) {
         const rect = scene.section.getBoundingClientRect();
         scene.scroll = clamp((innerHeight - rect.top) / (innerHeight + rect.height));
       }
       const process = scenes.find(scene => scene.type === 'home-process');
       if (process) process.section.dataset.continuumStep = String(Math.min(2, Math.floor(process.scroll * 3)));
+      const serviceProcess = scenes.find(scene => scene.type === 'service-process');
+      if (serviceProcess) serviceProcess.section.dataset.continuumStep = String(Math.min(serviceProcess.steps - 1, Math.floor(serviceProcess.scroll * serviceProcess.steps)));
       schedule();
     }
     if (!forge || reduced()) return;
@@ -155,6 +175,7 @@
   }
 
   function draw(scene) {
+    if (services) { drawService(scene); return; }
     if (home) { drawHome(scene); return; }
     const { context: ctx, width: w, height: h, forge: isForge } = scene;
     if (!w || !h) return;
@@ -269,6 +290,143 @@
     coords.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
     if (close) ctx.closePath();
     ctx.stroke();
+  }
+
+  function drawService(scene) {
+    const { context: ctx, width: w, height: h, type, preview, concept } = scene;
+    if (!w || !h) return;
+    const t = reduced() ? 0 : clock;
+    const ink = preview || type === 'service-process' ? scene.foreground : palette.accent;
+    const pointer = reduced() ? [0, 0] : scene.pointer;
+    const scroll = reduced() ? .5 : scene.scroll;
+    const scale = Math.min(w * .29, h * (preview ? .30 : .27));
+    const project = projector(w, scale, -.24 + pointer[1] * .1, -.44 + Math.sin(t * .19) * .10 + pointer[0] * .18, h * (preview ? .5 : .46));
+    ctx.clearRect(0, 0, w, h); ctx.strokeStyle = ink; ctx.fillStyle = ink;
+    const line = (coords, alpha = .5, width = 1, close = false) => trace(ctx, coords, alpha, width, close);
+    const path = (coords, alpha = .5, width = 1, close = false) => line(coords.map(p => project(...p)), alpha, width, close);
+    const dot = (p, radius = 2, alpha = 1) => {
+      ctx.fillStyle = ink; ctx.globalAlpha = alpha; ctx.beginPath(); ctx.arc(p[0], p[1], radius, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = alpha * .12; ctx.beginPath(); ctx.arc(p[0], p[1], radius * 3.5, 0, Math.PI * 2); ctx.fill();
+    };
+    const packet = (a, b, offset = 0) => {
+      const phase = (t * .22 + offset) % 1;
+      dot([mix(a[0], b[0], phase), mix(a[1], b[1], phase)], preview ? 1.3 : 2);
+    };
+    const label = (text, x, y, align = 'left') => {
+      ctx.fillStyle = ink; ctx.globalAlpha = .65; ctx.font = `${compact ? 9 : 10}px monospace`; ctx.textAlign = align;
+      ctx.fillText(text, x, y); ctx.textAlign = 'left';
+    };
+    const box = (x, y, z, sx, sy, sz, alpha = .5) => {
+      const vertices = [[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]]
+        .map(([a,b,c]) => project(x + a*sx, y + b*sy, z + c*sz));
+      for (const [a,b] of [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]]) line([vertices[a],vertices[b]], alpha);
+      return vertices;
+    };
+    const panel = (x, y, z, sx, sy, rows = 4, alpha = .6) => {
+      path([[x-sx,y-sy,z],[x+sx,y-sy,z],[x+sx,y+sy,z],[x-sx,y+sy,z]],alpha,1,true);
+      for (let row = 0; row < rows; row++) {
+        const a = project(x-sx*.73,y-sy*.5+row*sy*.35,z), b = project(x+sx*(row%2 ? .3 : .68),y-sy*.5+row*sy*.35,z);
+        line([a,b], alpha*.5); if (row === 1) packet(a,b,z*.1+.5);
+      }
+    };
+
+    if (type === 'service-process') {
+      const count = scene.steps, inset = Math.min(48, w * .12), y = h * .43;
+      const nodes = Array.from({length:count}, (_, i) => [mix(inset,w-inset,i/(count-1)),y+(i%2 ? -1 : 1)*h*.06]);
+      for (let i = 0; i < count-1; i++) {
+        const a=nodes[i], b=nodes[i+1], mid=[(a[0]+b[0])/2,a[1]];
+        line([a,mid,[mid[0],b[1]],b],.25); packet(a,b,i/count);
+      }
+      nodes.forEach((p,i) => {
+        const r = compact ? 9 : 14, active = Math.min(count-1,Math.floor(scroll*count)) === i;
+        line([[p[0],p[1]-r],[p[0]+r,p[1]],[p[0],p[1]+r],[p[0]-r,p[1]]],active ? .95 : .4,active ? 1.6 : 1,true);
+        dot(p,active ? 3 : 1.5); label(`0${i+1}`,p[0],p[1]+r+22,'center');
+      });
+    } else if (type === 'service-handoff') {
+      const center=[w*.5,h*.4], r=Math.min(17,h*.12);
+      for (let i=0;i<7;i++) {
+        const a=[w*(.08+i*.14),h*(i%2 ? .1 : .73)];
+        line([a,[(a[0]+center[0])/2,a[1]],center],.15); packet(a,center,i/7);
+      }
+      line([[center[0],center[1]-r],[center[0]+r,center[1]],[center[0],center[1]+r],[center[0]-r,center[1]]],.9,1.4,true);
+      dot(center,3);
+    } else if (concept === 'directory') {
+      const center=project(0,0,0);
+      box(0,0,0,.34,.34,.34,.9);
+      for (let i=0;i<7;i++) {
+        const a=i*Math.PI*2/7-Math.PI/2;
+        const x=Math.cos(a)*1.22,y=Math.sin(a)*1.05,z=Math.sin(i*1.7)*.35;
+        const p=project(x,y,z);
+        line([center,p],.3); packet(center,p,i/7); box(x,y,z,.13,.13,.13,.65);
+        if (!preview) label(`0${i+1}`,p[0]+12,p[1]-10);
+      }
+      // A travelling section plane ties seven disciplines into one structure.
+      const z=Math.sin(t*.35)*.6;
+      path([[-1.4,-1.15,z],[1.4,-1.15,z],[1.4,1.15,z],[-1.4,1.15,z]],.12,1,true);
+    } else if (concept === 'printare-3d') {
+      const shape=[[-.9,-.75],[-.35,-.75],[-.35,.3],[.9,.3],[.9,.85],[-.9,.85]];
+      for (let i=0;i<11;i++) path(shape.map(([x,y])=>[x,y,(i-5)*.095]),.16+i*.035,1,true);
+      const phase=(t*.12+.38)%1, z=(phase-.5)*.95;
+      const side=Math.floor(phase*shape.length), next=(side+1)%shape.length, p=phase*shape.length-side;
+      const x=mix(shape[side][0],shape[next][0],p), y=mix(shape[side][1],shape[next][1],p);
+      path(shape.map(([a,b])=>[a,b,z]),.9,1.4,true);
+      path([[x-.12,y-.55,z],[x+.12,y-.55,z],[x+.07,y-.16,z],[x,y,z],[x-.07,y-.16,z]],.8,1,true);
+      dot(project(x,y,z),preview ? 1.4 : 2.5);
+      path([[-1.1,1.05,-.7],[1.1,1.05,-.7],[1.1,1.05,.7],[-1.1,1.05,.7]],.22,1,true);
+    } else if (concept === 'proiectare-3d') {
+      const spread=.28+scroll*.22+Math.sin(t*.4)*.07;
+      box(0,.18,0,.84,.48,.52,.6); box(0,-.4-spread,0,.84,.09,.52,.9);
+      for (const x of [-.65,.65]) for (const z of [-.35,.35]) {
+        path([[x,-.5-spread,z],[x,.6,z]],.25); dot(project(x,-.5-spread,z),preview ? 1 : 2);
+      }
+      path([[-1.1,.8,-.52],[-1.1,.8,.52]],.55);
+      path([[-1.2,.8,-.52],[-1,.8,-.52]],.55); path([[-1.2,.8,.52],[-1,.8,.52]],.55);
+      path([[-.84,.9,.72],[.84,.9,.72]],.55);
+    } else if (concept === 'software-personalizat') {
+      for (let i=0;i<3;i++) panel((i-1)*.34,(i-1)*-.12,(i-1)*.42,.73,.7,4,.28+i*.27);
+      const nodes=[project(-1,.9,-.45),project(0,.9,0),project(1,.9,.45)];
+      nodes.forEach((p,i)=>{ dot(p,preview ? 1.3 : 3); if(i<2){line([p,nodes[i+1]],.55);packet(p,nodes[i+1],i/3);} });
+    } else if (concept === 'platforme-saas') {
+      box(0,-.67,0,.7,.22,.48,.8);
+      const source=project(0,-.45,0);
+      for (let i=0;i<3;i++) {
+        const x=(i-1)*.8,z=(i%2)*.45;
+        for(let j=0;j<3;j++) box(x,.22+j*.23,z,.29,.07,.26,.25+j*.18);
+        const dest=project(x,.1,z);line([source,dest],.4);packet(source,dest,i/3);
+      }
+      path([[-1.2,1.05,-.5],[1.2,1.05,-.5],[1.2,1.05,.8],[-1.2,1.05,.8]],.15,1,true);
+    } else if (concept === 'pluginuri-si-integrari') {
+      const left=box(-.78,0,0,.3,.47,.3,.75),right=box(.78,0,0,.3,.47,.3,.75);
+      for (let i=0;i<3;i++) {
+        const a=project(-.45,(i-1)*.3,0),b=project(.45,(i-1)*.3,0),z=(i-1)*.3;
+        path([[-.45,z,0],[-.1,z,0],[.1,z,0],[.45,z,0]],.7);packet(a,b,i/3);
+        dot(a,preview ? 1 : 2);dot(b,preview ? 1 : 2);
+      }
+      line([left[0],project(-.78,-.9,0),project(.78,-.9,0),right[1]],.2);
+    } else if (concept === 'aplicatii-windows-linux') {
+      panel(0,-.15,0,1,.7,0,.85);
+      path([[-.12,.55,0],[-.12,.93,0],[-.48,.93,.24],[.48,.93,.24],[.12,.93,0],[.12,.55,0]],.65);
+      panel(.3,-.08,.2,.58,.38,3,.65);
+      path([[-.75,-.4,.03],[-.58,-.29,.03],[-.75,-.18,.03]],.9,1.4);
+      path([[-.5,-.15,.03],[-.27,-.15,.03]],.8);
+      for(let i=0;i<3;i++){const a=project((i-1)*.55,.95,.2),b=project((i-1)*.55,1.1,.7);line([a,b],.35);dot(b,preview ? 1 : 2);packet(a,b,i/3);}
+    } else if (concept === 'integrari-ai') {
+      const layers=[3,4,3,1].map((count,i)=>Array.from({length:count},(_,j)=>project((i-1.5)*.72,(j-(count-1)/2)*.45,Math.sin(i)*.22)));
+      layers.forEach((layer,i)=>layer.forEach((p,j)=>{
+        dot(p,preview ? 1.2 : (i===3 ? 4 : 2.5),i===3 ? 1 : .75);
+        if(i<layers.length-1) layers[i+1].forEach((q,k)=>{line([p,q],.12);if((j+k)%3===0)packet(p,q,(i+j+k)/8);});
+      }));
+      const p=layers[3][0],r=preview ? 6 : 13;
+      line([[p[0]-r,p[1]],[p[0],p[1]+r],[p[0]+r*1.5,p[1]-r]],.85,1.6);
+    }
+    if (!preview && type === 'service-hero') {
+      ctx.strokeStyle=ink;
+      line([[16,36],[16,h-64],[w-16,h-64]],.14);
+      label('ZION / CONTINUUM',18,22);
+      const labels={directory:'7 DISCIPLINE / UN FIR', 'printare-3d':'STRAT / TRASEU / OBIECT', 'proiectare-3d':'PARAMETRI / VOLUM / PRECIZIE', 'software-personalizat':'LOGICĂ / INTERFAȚĂ / FLUX', 'platforme-saas':'NUCLEU / ECHIPE / SCALARE', 'pluginuri-si-integrari':'SISTEME / API / CONEXIUNI', 'aplicatii-windows-linux':'FEREASTRĂ / COD / DISPOZITIV', 'integrari-ai':'DATE / PROPUNERE / VALIDARE'};
+      label(labels[concept] || '',18,h-48);
+    }
+    ctx.globalAlpha=1;
   }
 
   function drawHome(scene) {
@@ -386,12 +544,12 @@
 
   function tick(now) {
     raf = 0;
-    if (paused || reduced() || document.hidden || !scenes.some(scene => scene.visible)) { last = 0; return; }
+    if (paused || reduced() || document.hidden || !scenes.some(eligible)) { last = 0; return; }
     const elapsed = last ? now - last : (compact ? 42 : 34);
     if (elapsed < (compact ? 41 : 32)) { schedule(); return; }
     clock += Math.min(elapsed, 80) / 1000; last = now;
     for (const scene of scenes) {
-      if (!scene.visible) continue;
+      if (!eligible(scene)) continue;
       scene.pointer = scene.pointer.map((value, i) => mix(value, scene.aim[i], .1));
       if (scene.forge && scene.selected === null) {
         scene.progress = mix(scene.progress, scrollProgress, .14);
@@ -402,14 +560,14 @@
     schedule();
   }
   function schedule() {
-    if (!raf && !paused && !reduced() && !document.hidden && scenes.some(scene => scene.visible)) raf = requestAnimationFrame(tick);
+    if (!raf && !paused && !reduced() && !document.hidden && scenes.some(eligible)) raf = requestAnimationFrame(tick);
   }
   function preferences() {
     const staticMode = reduced();
     root.classList.toggle('is-spatial-static', staticMode);
     pauseButtons.forEach(button => { button.hidden = staticMode; });
     scenes.forEach(scene => {
-      scene.canvas.dataset.renderMode = staticMode ? 'static' : 'animated';
+      scene.canvas.dataset.renderMode = staticMode ? 'static' : scene.preview ? 'interactive' : 'animated';
       if (staticMode) { scene.pointer = [0, 0]; scene.progress = 2; }
       draw(scene);
     });

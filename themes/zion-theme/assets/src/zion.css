@@ -3222,6 +3222,44 @@ body:has(.zion-product-page--sticky) {
 	.zion-homepage :is(.zion-home-motion--services, .zion-home-motion--process) { height: 9rem; }
 }
 .zion-spatial-canvas { display: none; }
+/* Services share Continuum's renderer; every original block remains editable. */
+.zion-service-motion { display: none; }
+.zion-service-continuum .zion-service-motion.is-spatial-ready { display: block; position: relative; min-width: 0; box-sizing: border-box; }
+.zion-service-continuum .zion-service-motion--hero { height: clamp(19rem, 30vw, 27rem); width: 100%; }
+.zion-service-continuum .zion-overview-art.is-continuum-service-art { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; aspect-ratio: auto; padding: 1rem; box-sizing: border-box; border: 1px solid var(--wp--preset--color--deep); border-radius: 1rem; background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--wp--preset--color--deep) 25%, var(--wp--preset--color--ink)), var(--wp--preset--color--ink) 75%); }
+.zion-service-continuum .is-continuum-service-art > .zion-service-motion--hero { grid-row: 2; margin: 0; }
+.zion-service-continuum .is-continuum-service-art > .zion-overview-art-label { position: static; margin: 0; font-size: .6rem; }
+.zion-service-continuum .is-continuum-service-art > .zion-overview-art-label-bottom { grid-row: 3; justify-self: end; }
+.zion-service-continuum .is-continuum-service-art > :is(.zion-overview-orbit, .zion-detail-symbol),
+.zion-service-continuum .zion-overview-art.is-continuum-service-art::before,
+.zion-service-continuum .zion-overview-art.is-continuum-service-art::after { display: none; }
+.zion-service-continuum .zion-detail-scene:has(.is-continuum-service-art) { min-height: 0; padding: 0; }
+.zion-service-continuum .zion-detail-scene:has(.is-continuum-service-art)::before { display: none; }
+.zion-service-continuum .zion-detail-screen.is-continuum-service-art { display: flex; flex-direction: column; gap: .75rem; min-height: 0; width: min(100%, 32rem); padding: 1rem; box-sizing: border-box; transform: none; }
+.zion-service-continuum .zion-detail-screen.is-continuum-service-art::before { position: static; flex-shrink: 0; }
+.zion-service-continuum .zion-detail-screen.is-continuum-service-art > .zion-service-motion--hero { flex: none; }
+.zion-service-continuum .zion-detail-caption { margin: 0; font-size: .68rem; }
+.zion-service-continuum .zion-service-motion--preview { flex: 0 0 clamp(4.5rem, 9vw, 7rem); height: 5.5rem; margin: 0; }
+.zion-service-continuum .is-continuum-preview .zion-overview-icon { display: none; }
+.zion-service-continuum .is-continuum-preview .zion-overview-card-top { align-items: center; min-height: 5.5rem; }
+.zion-service-continuum .is-continuum-engaged { outline: 1px solid currentColor; outline-offset: -5px; }
+.zion-service-continuum .zion-service-motion--process { height: clamp(9rem, 15vw, 11rem); margin-block: 0 1.5rem; border-block: 1px solid color-mix(in srgb, currentColor 16%, transparent); }
+.zion-service-continuum .zion-service-motion--handoff { height: 8rem; width: min(100%, 32rem); margin-block: 1rem; }
+.zion-service-continuum .zion-spatial-pause { position: absolute; inset: auto 0 0 auto; min-height: 44px; padding: .65rem .5rem; border: 0; border-radius: .3rem; background: var(--wp--preset--color--ink); color: var(--wp--preset--color--muted); font: .6rem/1.4 var(--wp--preset--font-family--mono); cursor: pointer; }
+.zion-service-continuum .zion-service-motion--process .zion-spatial-pause { color: var(--overview-fg); background: var(--overview-bg); }
+.zion-service-continuum .zion-spatial-pause:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.zion-service-continuum.is-spatial-paused > .zion-overview-band::before,
+.zion-service-continuum.is-spatial-paused > .zion-overview-band::after { animation-play-state: paused; }
+.zion-service-continuum.is-spatial:not(.is-spatial-static) [data-continuum-step="0"] .zion-service-card:nth-child(1),
+.zion-service-continuum.is-spatial:not(.is-spatial-static) [data-continuum-step="1"] .zion-service-card:nth-child(2),
+.zion-service-continuum.is-spatial:not(.is-spatial-static) [data-continuum-step="2"] .zion-service-card:nth-child(3),
+.zion-service-continuum.is-spatial:not(.is-spatial-static) [data-continuum-step="3"] .zion-service-card:nth-child(4) { border-color: currentColor; box-shadow: inset 0 2px currentColor; }
+@media (max-width: 600px) {
+	.zion-service-continuum .zion-service-motion--hero { height: 19rem; }
+	.zion-service-continuum .zion-detail-screen.is-continuum-service-art { width: 100%; padding: .75rem; }
+	.zion-service-continuum .zion-overview-art.is-continuum-service-art { padding: .75rem; }
+	.zion-service-continuum .zion-service-motion--preview { flex-basis: 4.5rem; height: 4.75rem; }
+}
 .zion-about > .zion-about-forge { --overview-bg: var(--wp--preset--color--ink); --overview-fg: var(--wp--preset--color--text); --circuit-signal: var(--wp--preset--color--accent); }
 .zion-forge-stage > * { margin-block: 0; }
 .zion-about .zion-forge-stage > h2 { max-width: 20ch; margin-block: .4rem 1.5rem; }

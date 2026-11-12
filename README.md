@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.21** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.22** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.21** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.22** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,18 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Continuum · Servicii 1.1.22
+
+- [x] Pagina Servicii primește o rețea spațială cu șapte discipline, șapte previzualizări de card, traseul colaborării și convergență lângă CTA. Fiecare pagină individuală are trei scene, cu ilustrație proprie: fabricație pe straturi, CAD explodat, software, SaaS, API, desktop și AI cu validare umană.
+- [x] Un singur motor Canvas 2D și scheduler pentru About, homepage și servicii. Previzualizările se animă numai la hover/focus; celelalte scene numai în viewport. Pauză comună, mișcare redusă din OS sau temă, fallback editorial fără JavaScript și paleta nativă `theme.json`.
+- [x] Decorații aplicate la randare, fără rescrierea paginilor, URL-urilor sau setărilor. Conținutul și CTA-urile rămân blocuri native editabile. Rezolvarea contextului acceptă atât slugurile locale, cât și rutele canonice existente pe staging.
+- [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **8/8 teste noi** pentru cele opt pagini la **390/768/1024/1440 px**, animație, pauză, focus, suspendare offscreen, reduced motion, lipsa JavaScript și 16 referințe vizuale hero. După verificarea focusului combinat cu hover, **4/4 scenarii de mișcare Servicii/About** trecute din nou.
+- [ ] Finalizarea suitei complete Playwright și confirmarea CI.
+- [x] ZIP-uri Theme/Core **1.1.22** generate și verificate. Backup privat staging SQL, componente și **37 înregistrări editoriale cu metadate** pregătit înaintea instalării.
+- [ ] Instalare și QA staging, verificarea păstrării conținutului și setărilor, commit și push pe `main`. Producția nu face parte din această livrare.
+
+Ghid: [Continuum pe paginile Servicii](docs/services-continuum.md).
 
 ## Zion Continuum · homepage 1.1.21
 
