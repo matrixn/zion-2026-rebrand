@@ -69,6 +69,8 @@ Testele About folosesc contextul gestionat de Playwright, evitând închiderea m
 
 Corecția `206b357` este instalată pe staging, cu rendererul anterior păstrat privat. SHA-256 al JavaScriptului servit prin HTTP este identic cu sursa și ZIP-ul final. Toate cele 39 de înregistrări cu metadate, setările Zion și de citire sunt identice cu snapshotul final. Au fost reluate tranzițiile static/animat pe Contact la 390/768/1024/1440 px și homepage la 390/1440 px, plus pauza comună; zero overflow și fără erori JS în paginile verificate. Niciun test suplimentar de e-mail real pe staging.
 
+**Validare finală:** [GitHub Actions 43240756538](https://github.com/matrixn/zion-2026-rebrand/actions/runs/43240756538), pentru `4e9843b`, este verde: **91/91 teste Playwright** în 9,2 minute, **46 teste PHPUnit / 394 aserțiuni**, build reproductibil, WPCS, integrare și migrare/rollback trecute. Arhivele Theme/Core 1.1.23 și raportul sunt finalizate pe `main`. Configurarea transportului și testarea e-mailurilor reale rămân pentru etapa ulterioară cerută de utilizator; producția nu a fost modificată.
+
 Pagina Contact lipsea din vechile fixture-uri locale. Crearea ei activează automat legăturile native Contact din header și footer; cele nouă referințe generale au fost actualizate pentru această schimbare intenționată, fiecare având înălțimea mărită cu exact 32 px pentru rândul nou din footer. Pe staging destinația și aceste legături existau deja; nu sunt rescrise meniurile sau footerul.
 
 ## Revenire
