@@ -44,8 +44,23 @@ npm run package
 bash scripts/ci-browser.sh stop
 ```
 
-Opt teste noi parcurg directorul și toate cele șapte destinații native. Sunt verificate cele patru lățimi, raportul Canvas, desenarea efectivă, cadrul hero complet, zero overflow, fallback, focus, pauză, suspendare offscreen și preferințele de mișcare. Cele 16 imagini de referință acoperă fiecare hero la 390 și 1440 px, în Chromium-ul Docker fixat de proiect. Integrarea verifică scenele, rutele canonice, blocurile native și păstrarea înregistrărilor și setărilor.
+Opt teste noi parcurg directorul și toate cele șapte destinații native. Sunt verificate cele patru lățimi, raportul Canvas, desenarea efectivă, cadrul hero complet, zero overflow, fallback, focus, pauză, suspendare offscreen și preferințele de mișcare. Cele 16 imagini de referință acoperă fiecare hero la 390 și 1440 px, în Chromium-ul Docker fixat de proiect. Integrarea verifică scenele, rutele canonice, blocurile native și păstrarea înregistrărilor și setărilor. Paralelismul local de două browsere limitează încărcarea rendererului software din container; aserțiunile, timeouturile și politica fără retry rămân păstrate.
 
 Staging: `https://zion-stage.on-forge.com`. Înainte de instalare se păstrează SQL, Theme/Core, configurația Zion și snapshotul paginilor, template-urilor, părților, navigațiilor, stilurilor globale și metadatelor în directorul privat `.zion-migration`, în afara rădăcinii publice. Actualizarea instalează cele două ZIP-uri dintr-un commit publicat imuabil. Nu se rulează seed sau migrare editorială. Verificarea compară toate înregistrările, metadatele și setările cu snapshotul. Producția nu este modificată.
 
-Rezultatele finale de staging și CI se consemnează în README după executare. Revenirea acestei schimbări de prezentare înseamnă restaurarea componentelor arhivate și invalidarea punctuală a fișierelor PHP schimbate; nu este necesară restaurarea SQL pentru simpla dezactivare a decorațiilor.
+## QA staging executat
+
+Sursa instalată: `84ce127b5f48ef62f2474324cce6483acb7fadf3`, Theme/Core 1.1.22, WordPress 7.1.4 și WooCommerce 11.2.2. Au trecut toate cele 32 de combinații dintre cele opt pagini și lățimile 390/768/1024/1440 px. Fiecare pagină are un H1, contextul așteptat, toate scenele inițializate, cadrul hero întreg și zero overflow. Pauza/reluarea comună din tastatură a fost verificată pe fiecare pagină la 390 și 1440 px. Au fost verificate și șapte miniaturi prin focus, păstrarea focusului când cursorul părăsește cardul, procesul 0 → 3 prin derulare, meniul mobil și reduced motion. Nu au fost observate erori JavaScript în paginile verificate.
+
+Comparația cu snapshotul privat confirmă 37 înregistrări editoriale, toate metadatele lor, inventarul, setările de citire și întreaga opțiune Zion neschimbate. Comparația DOM înainte/după confirmă opt H1, 34 H2 și 45 de legături din conținut. Helperul temporar de invalidare punctuală a opcache s-a eliminat singur și absența lui a fost verificată. SHA-256 identice local/staging:
+
+```text
+assets/dist/zion.css          9d66eb73cbf396129b26610704c8465873242674fcbc0a7ac09272d8806255a7
+assets/blocks/continuum.js    adbcbf17b845d513b6cdf0c3c9511839d73c41412988477daf415c0ae103cf8e
+```
+
+Regresii staging: homepage șase scene, About două, catalog Software fără renderer și badge coș păstrat la trei. Raportul QA și capturile sunt în `build/staging-services-qa-1.1.22.json`, `build/staging-services-desktop-1.1.22.png`, `build/staging-services-print-desktop-1.1.22.png` și `build/staging-services-ai-mobile-1.1.22.png` (artefacte locale ignorate de Git). Verificarea în Chrome a folosit input virtual limitat la filele proprii; viewportul și preferința de mișcare emulată au fost resetate la final.
+
+[GitHub Actions 43208499969](https://github.com/matrixn/zion-2026-rebrand/actions/runs/43208499969) a trecut pentru sursa instalată: 78/78 teste Playwright (7,9 minute), 46 teste PHPUnit / 394 aserțiuni, build reproductibil, WPCS, integrare și migrare/rollback. Local: 78/78 teste Playwright în 14,8 minute la două browsere, 8/8 teste Servicii și încă 4/4 scenarii de mișcare Servicii/About trecute separat, cu aceleași rezultate PHP și de integrare. Un timeout inițial About la șase browsere a fost rezolvat prin limitarea paralelismului local, fără schimbarea aserțiunilor, timeouturilor sau politicii fără retry. Cele două ZIP-uri locale 1.1.22 au fost generate și verificate, inclusiv corespondența rendererului arhivat cu cel instalat pe staging.
+
+Revenirea acestei schimbări de prezentare înseamnă restaurarea componentelor arhivate și invalidarea punctuală a fișierelor PHP schimbate; nu este necesară restaurarea SQL pentru simpla dezactivare a decorațiilor. Producția nu a fost modificată.
