@@ -18,7 +18,7 @@ Pagina folosește `templates/page-contact.html`, patternul `zion-theme/contact` 
 
 Stilizarea rămâne în temă, conform [recomandării CF7](https://contactform7.com/styling-contact-form/). Configurarea e-mailului urmează [documentația oficială](https://contactform7.com/setting-up-mail/): expeditor din domeniul site-ului, destinatarul existent și `Reply-To` din câmpul de e-mail validat. Formularul nu configurează un serviciu SMTP și confirmarea CF7 nu dovedește primirea în inbox.
 
-Pe staging, formularul existent a fost identificat din interfața pluginului. Înaintea schimbării avea zero câmpuri și trei erori în configurația Mail. Presetul repară un formular gol; când există deja câmpuri, scriptul păstrează structura lor. Nu modifică formularul separat de abonare.
+Pe staging, formularul existent a fost identificat din interfața pluginului. La inventarul inițial avea zero câmpuri și trei erori în configurația Mail. Verificarea strictă dinaintea instalării a detectat însă un formular și setări actualizate între timp; instalarea s-a oprit și a fost creat un snapshot nou. Formularul actual, valid, a fost păstrat: nume/e-mail/mesaj obligatorii, companie/telefon opționale. Au fost adăugate etichete permanente și containere de prezentare, eliminat un `</label>` izolat și corectat placeholderul telefonului opțional. Tipurile și numele câmpurilor, configurațiile Mail/Mail 2, destinatarul și identitatea nativă rămân aceleași. Nu se modifică formularul separat de abonare.
 
 După backup privat și instalarea componentelor noi, scriptul staging se rulează în doi pași:
 
@@ -27,7 +27,7 @@ wp eval-file scripts/contact-page.php FORM_ID
 wp eval-file scripts/contact-page.php FORM_ID apply /cale/privata/backup-editorial.json
 ```
 
-Scriptul refuză producția, cere pagina Contact și formularul selectat și validează configurația CF7 propusă. Preview-ul nu scrie. Apply verifică exact pagina și metadatele formularului față de backupul privat din afara rădăcinii publice, păstrează o revizie și schimbă numai conținutul Contact și configurația formularului selectat. Titlul, slugul, destinatarul, identitatea CF7 și metadatele SEO rămân păstrate. O pagină Contact deja reconstruită nu este rescrisă la reaplicare.
+Scriptul refuză producția, cere pagina Contact și formularul selectat și validează configurația CF7 propusă. Preview-ul nu scrie. Apply verifică exact pagina și metadatele formularului față de backupul privat din afara rădăcinii publice, păstrează o revizie și schimbă numai conținutul Contact și configurația formularului selectat. Titlul, slugul, destinatarul, identitatea CF7 și metadatele SEO rămân păstrate. Adresa este extrasă recursiv din paragrafele native, inclusiv când acestea sunt în grupuri Gutenberg imbricate. O pagină Contact deja reconstruită nu este rescrisă la reaplicare.
 
 ## Dezvoltare și testare
 
@@ -49,7 +49,15 @@ bash scripts/ci-browser.sh stop
 
 `scripts/local-contact-mail.php` este instalat ca MU-plugin **numai de seederul local**. Interceptează exclusiv formularul sintetic cu destinatar `recipient@example.test`, salvează mesajele sintetice și raportează eșec dacă scrierea capturii nu reușește. Markerul sintetic `ZION-QA-FAIL` verifică starea nativă de transport eșuat. Nu este inclus în ZIP-uri și nu este un transport pentru site-uri reale.
 
-Cele zece teste Contact acoperă 390/768/1024/1440 px, patru referințe vizuale hero/formular, pauză, actualizarea consolei, spinner și mesaje native, POST AJAX și fără JavaScript, conținutul mesajului capturat, corectarea datelor invalide și validitatea blocurilor în editor. Integrarea verifică identitatea CF7, păstrarea datelor, încărcarea condițională și fallbackul când pluginul/formularul lipsește. Rezultatele complete de staging și CI se adaugă în README după executare.
+Cele zece teste Contact acoperă 390/768/1024/1440 px, patru referințe vizuale hero/formular, pauză, actualizarea consolei, spinner și mesaje native, POST AJAX și fără JavaScript, conținutul mesajului capturat, corectarea datelor invalide și validitatea blocurilor în editor. Integrarea verifică identitatea CF7, păstrarea datelor, încărcarea condițională, fallbackul când pluginul/formularul lipsește și extragerea adresei din grupuri imbricate. Suita completă locală are **88/88 teste trecute**, iar CI pentru `06c3abc` este verde. Rezultatele și verificarea corecției finale se urmăresc în README.
+
+## Verificarea stagingului
+
+Theme/Core 1.1.23 sunt instalate pe WordPress 7.1.4 / WooCommerce 11.2.2 / CF7 6.2.5. La 390/768/1024/1440 px: zero overflow, trei scene, un H1 și câmpuri de minimum 48 px. Pauza comună, reduced motion, progresul formularului, meniul mobil și lipsa erorilor JS au fost verificate. Asseturile CF7 lipsesc de pe homepage, About, Servicii și cele două cataloage; scenele Continuum existente rămân 6/2/10.
+
+Testul de trimitere folosește temporar un destinatar rezervat `.test`, un marker sintetic și un hook limitat la formularul selectat și hostname-ul staging. Captura se scrie în directorul privat din afara public; eșecul scrierii raportează eșec CF7. Au fost verificate validarea, spinnerul, succesul, conținutul capturii și un eșec de transport simulat. La final, Mail/Mail 2 sunt restaurate integral, iar hookul temporar și helperul de cache sunt eliminate. Acest test nu expediază e-mailuri externe.
+
+**Limitare verificată:** PHP-FPM nu are sendmail executabil și nici SMTP configurat. Pentru mesaje reale trebuie configurat un transport de e-mail separat, cu credențiale în afara repository-ului. Nu se declară livrare în inbox sau formular pregătit pentru producție pe baza capturii de test.
 
 Pagina Contact lipsea din vechile fixture-uri locale. Crearea ei activează automat legăturile native Contact din header și footer; cele nouă referințe generale au fost actualizate pentru această schimbare intenționată, fiecare având înălțimea mărită cu exact 32 px pentru rândul nou din footer. Pe staging destinația și aceste legături existau deja; nu sunt rescrise meniurile sau footerul.
 

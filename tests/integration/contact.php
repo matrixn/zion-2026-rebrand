@@ -5,6 +5,12 @@
  * @package Zion_Core
  */
 
+$zion_core_contact_address_fixture = '<!-- wp:paragraph --><p>Strada Independenței &amp; Atelier<br>Etaj 2</p><!-- /wp:paragraph -->';
+require_once WP_CONTENT_DIR . '/zion-scripts/contact-form-config.php';
+zion_core_test_assert( 'Strada Independenței & Atelier, Etaj 2' === zion_theme_contact_existing_address( $zion_core_contact_address_fixture ), 'Contact migration preserves the existing postal paragraph and line breaks' );
+zion_core_test_assert( 'Strada Independenței & Atelier, Etaj 2' === zion_theme_contact_existing_address( '<!-- wp:group --><div class="wp-block-group"><!-- wp:group --><div class="wp-block-group">' . $zion_core_contact_address_fixture . '</div><!-- /wp:group --></div><!-- /wp:group -->' ), 'Contact migration also finds postal paragraphs inside nested Site Editor groups' );
+zion_core_test_assert( '' === zion_theme_contact_existing_address( '<!-- wp:paragraph --><p>A different contact detail.</p><!-- /wp:paragraph -->' ), 'Contact migration does not invent an address when no postal paragraph exists' );
+
 $zion_core_contact_page     = get_page_by_path( 'contact' );
 $zion_core_contact_fixture  = get_page_by_path( 'zion-contact-demo', OBJECT, 'wpcf7_contact_form' );
 $zion_core_contact_form     = WPCF7_ContactForm::get_instance( $zion_core_contact_fixture->ID );

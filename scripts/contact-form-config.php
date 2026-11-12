@@ -6,6 +6,28 @@
  */
 
 /**
+ * Extract the existing postal paragraph, including nested native groups.
+ *
+ * @param string $content Existing Contact block content.
+ * @return string
+ */
+function zion_theme_contact_existing_address( string $content ): string {
+	$walk = static function ( array $blocks ) use ( &$walk ): string {
+		foreach ( $blocks as $block ) {
+			if ( 'core/paragraph' === $block['blockName'] && str_contains( $block['innerHTML'], 'Independen' ) ) {
+				return html_entity_decode( trim( wp_strip_all_tags( str_replace( array( '<br>', '<br/>', '<br />' ), ', ', $block['innerHTML'] ) ) ), ENT_QUOTES, 'UTF-8' );
+			}
+			$address = $walk( $block['innerBlocks'] ?? array() );
+			if ( '' !== $address ) {
+				return $address;
+			}
+		}
+		return '';
+	};
+	return $walk( parse_blocks( $content ) );
+}
+
+/**
  * Build native CF7 properties while the deployment supplies site-specific mail.
  *
  * @param WPCF7_ContactForm $form Selected native form.

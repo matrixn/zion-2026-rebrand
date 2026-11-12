@@ -40,12 +40,7 @@ if ( ! $zion_theme_contact_validator->is_valid() ) {
 	WP_CLI::error( 'The proposed CF7 configuration still contains errors: ' . $zion_theme_contact_validator->count_errors() );
 }
 // Preserve the existing public postal paragraph rather than inventing an address.
-$zion_theme_contact_address = '';
-foreach ( parse_blocks( $zion_theme_contact_page->post_content ) as $zion_theme_contact_block ) {
-	if ( 'core/paragraph' === $zion_theme_contact_block['blockName'] && str_contains( $zion_theme_contact_block['innerHTML'], 'Independen' ) ) {
-		$zion_theme_contact_address = html_entity_decode( trim( wp_strip_all_tags( str_replace( array( '<br>', '<br/>', '<br />' ), ', ', $zion_theme_contact_block['innerHTML'] ) ) ), ENT_QUOTES, 'UTF-8' );
-	}
-}
+$zion_theme_contact_address = zion_theme_contact_existing_address( $zion_theme_contact_page->post_content );
 if ( str_contains( $zion_theme_contact_page->post_content, 'zion-contact-channel-grid' ) ) {
 	// A repeated apply preserves already-authored Contact content.
 	$zion_theme_contact_content = $zion_theme_contact_page->post_content;
