@@ -63,7 +63,11 @@ Adresa din paragraful imbricat al paginii anterioare a fost restaurată punctual
 
 CI a expus și o tranziție reduced motion în motorul comun: preferința nativă era activă, dar starea statică nu fusese aplicată înaintea opririi animației. Ultimul cadru sincronizează acum starea și desenul static înainte să oprească schedulerul; nu există timer sau buclă suplimentară. Scenariul live a trecut apoi în 20/20 execuții. Testul suplimentar suprimă numai notificarea media, păstrează preferința reală a browserului și verifică starea statică a tuturor scenelor și oprirea desenului.
 
-După corecție au trecut buildul, WPCS, 46 teste PHPUnit / 394 aserțiuni, integrarea și migrarea/rollback, plus toate cele **35 de teste Contact/About/homepage/Servicii** în 2,7 minute. Referințele vizuale sunt păstrate; suita completă are acum 89 de scenarii.
+După corecție au trecut buildul, WPCS, 46 teste PHPUnit / 394 aserțiuni, integrarea și migrarea/rollback, plus toate cele **35 de teste Contact/About/homepage/Servicii** în 2,7 minute. Referințele vizuale sunt păstrate.
+
+Testele About folosesc contextul gestionat de Playwright, evitând închiderea manuală în timpul colectării trace-ului. Verificările hero/pointer/pauză și atelier/scroll/tastatură/viewport sunt scenarii independente; toate aserțiunile și limita de 30 s sunt păstrate. Au trecut 12/12 execuții ale scenariului gestionat și apoi **20/20 execuții** ale celor cinci scenarii separate în 56,5 s. Suita completă are acum 91 de scenarii. Această organizare a testelor nu schimbă componentele instalate.
+
+Corecția `206b357` este instalată pe staging, cu rendererul anterior păstrat privat. SHA-256 al JavaScriptului servit prin HTTP este identic cu sursa și ZIP-ul final. Toate cele 39 de înregistrări cu metadate, setările Zion și de citire sunt identice cu snapshotul final. Au fost reluate tranzițiile static/animat pe Contact la 390/768/1024/1440 px și homepage la 390/1440 px, plus pauza comună; zero overflow și fără erori JS în paginile verificate. Niciun test suplimentar de e-mail real pe staging.
 
 Pagina Contact lipsea din vechile fixture-uri locale. Crearea ei activează automat legăturile native Contact din header și footer; cele nouă referințe generale au fost actualizate pentru această schimbare intenționată, fiecare având înălțimea mărită cu exact 32 px pentru rândul nou din footer. Pe staging destinația și aceste legături existau deja; nu sunt rescrise meniurile sau footerul.
 

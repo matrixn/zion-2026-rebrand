@@ -4,10 +4,10 @@ import { createHash } from 'node:crypto';
 const fingerprint = async canvas => createHash('sha256').update(await canvas.evaluate(e => e.toDataURL())).digest('hex');
 
 for (const width of [390, 1440]) {
-  test(`Continuum transforms through scroll and explicit controls at ${width}px`, async ({ browser, baseURL }) => {
-    const context = await browser.newContext({ baseURL, viewport: { width, height: 844 }, reducedMotion: 'no-preference' });
-    try {
-      const page = await context.newPage(), errors = [];
+  test.describe(`About ${width}px`,()=>{
+    test.use({viewport:{width,height:844},reducedMotion:'no-preference'});
+    test(`Continuum hero animates, tilts and pauses at ${width}px`, async ({ page }) => {
+      const errors = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto('/despre-noi/');
       await expect(page.locator('.zion-about')).toHaveClass(/is-spatial/);
@@ -27,16 +27,28 @@ for (const width of [390, 1440]) {
         await hero.hover({ position: { x: 20, y: 100 } });
         await expect.poll(() => hero.evaluate(e => getComputedStyle(e).transform)).not.toBe(transform);
       }
-      await hero.getByRole('button', { name: 'Pauză animație', exact: true }).click();
+      await test.step('Pause the tilted hero with the pointer',async()=>{
+        await hero.getByRole('button', { name: 'Pauză animație', exact: true }).click();
+      });
       const paused = await image();
       await page.waitForTimeout(180);
       expect(await image()).toBe(paused);
-      await hero.getByRole('button', { name: 'Reia animația', exact: true }).click();
+      await test.step('Resume the tilted hero with the pointer',async()=>{
+        await hero.getByRole('button', { name: 'Reia animația', exact: true }).click();
+      });
       // Native focus scrolling may move the tilted canvas offscreen, where it sleeps.
       await canvas.scrollIntoViewIfNeeded();
       await expect(canvas).toBeInViewport();
       await expect.poll(image).not.toBe(paused);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+      expect(errors).toEqual([]);
+    });
 
+    test(`Continuum forge follows scroll, keyboard controls and visibility at ${width}px`, async ({ page }) => {
+      const errors=[];
+      page.on('pageerror',error=>errors.push(error.message));
+      await page.goto('/despre-noi/');
+      await expect(page.locator('.zion-about')).toHaveClass(/is-spatial/);
       const forge = page.locator('.zion-about-forge');
       const geometry = await forge.evaluate(e => ({ top: e.getBoundingClientRect().top + scrollY, height: e.offsetHeight }));
       await page.evaluate(top => scrollTo(0, top - 115), geometry.top);
@@ -47,7 +59,9 @@ for (const width of [390, 1440]) {
       const stageRect = await stage.boundingBox();
       expect(stageRect.y).toBeGreaterThanOrEqual(0);
       expect(stageRect.y + stageRect.height).toBeLessThanOrEqual(845);
-      await stage.getByRole('button', { name: 'Pauză animație', exact: true }).click();
+      await test.step('Pause the sticky forge',async()=>{
+        await stage.getByRole('button', { name: 'Pauză animație', exact: true }).click();
+      });
       for (const [index, name] of ['Schiță', 'Straturi', 'Obiect', 'Cod'].entries()) {
         const button = stage.getByRole('button', { name: `0${index + 1} / ${name}`, exact: true });
         await button.focus(); await button.press('Enter');
@@ -68,7 +82,7 @@ for (const width of [390, 1440]) {
       expect(await fingerprint(forge.locator('canvas'))).toBe(offscreen);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
       expect(errors).toEqual([]);
-    } finally { await context.close(); }
+    });
   });
 }
 
