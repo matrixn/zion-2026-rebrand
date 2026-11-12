@@ -133,4 +133,5 @@ require __DIR__ . '/about.php';
 require __DIR__ . '/home-continuum.php';
 require __DIR__ . '/services-continuum.php';
 require __DIR__ . '/contact.php';
+require __DIR__ . '/journal.php';
 WP_CLI::success( 'Catalog integration passed.' );

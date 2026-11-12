@@ -25,6 +25,7 @@ require_once __DIR__ . '/includes/services-overview.php';
 require_once __DIR__ . '/includes/continuum.php';
 require_once __DIR__ . '/includes/about.php';
 require_once __DIR__ . '/includes/contact.php';
+require_once __DIR__ . '/includes/journal.php';
 require_once __DIR__ . '/includes/navigation.php';
 require_once __DIR__ . '/includes/menu-design.php';
 require_once __DIR__ . '/includes/seo.php';

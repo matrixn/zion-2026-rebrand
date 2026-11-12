@@ -244,11 +244,8 @@ function zion_theme_related_posts( int $id ): string {
 			'ignore_sticky_posts' => true,
 		)
 	);
-	$links = '';
-	foreach ( $posts as $post ) {
-		$links .= '<li><a href="' . esc_url( get_permalink( $post ) ) . '">' . esc_html( get_the_title( $post ) ) . '</a></li>';
-	}
-	return $links ? '<section class="zion-article-related"><h2>' . esc_html__( 'Articole asociate', 'zion-theme' ) . '</h2><ul>' . $links . '</ul></section>' : '';
+	$cards = zion_theme_journal_cards( $posts );
+	return $cards ? '<section class="zion-article-related"><h2>' . esc_html__( 'Articole asociate', 'zion-theme' ) . '</h2><div class="zion-editorial-grid">' . $cards . '</div></section>' : '';
 }
 
 /**
@@ -277,7 +274,11 @@ function zion_theme_page_breadcrumb( int $id ): string {
  * @return string
  */
 function zion_theme_editorial( array $attributes, string $content, WP_Block $block ): string {
-	$part = $attributes['part'] ?? '';
+	$part    = $attributes['part'] ?? '';
+	$journal = zion_theme_journal_fragment( $part, $block );
+	if ( null !== $journal ) {
+		return $journal;
+	}
 	if ( 'back_top' === $part ) {
 		return zion_theme_setting( 'back_to_top' ) ? '<p class="zion-back-to-top"><a href="#zion-page-top">' . esc_html__( 'Înapoi sus', 'zion-theme' ) . ' ↑</a></p>' : '';
 	}

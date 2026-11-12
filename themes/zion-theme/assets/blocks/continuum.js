@@ -1,17 +1,19 @@
 /* Zion Continuum: one scheduler and projection system, contextual sculptures. */
 (() => {
   'use strict';
-  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum, .zion-contact');
+  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum, .zion-contact, .zion-editorial');
   if (!root || !window.IntersectionObserver || !window.ResizeObserver) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(pointer: fine)');
   const compact = matchMedia('(max-width: 600px)').matches;
   const rootStyle = getComputedStyle(document.documentElement);
   const color = name => rootStyle.getPropertyValue(`--wp--preset--color--${name}`).trim();
-  const palette = { accent: color('accent'), text: color('text'), muted: color('muted'), ink: color('ink') };
+  const palette = { accent: color('accent'), text: color('text'), muted: color('muted'), ink: color('ink'), deep: color('deep') };
   const home = root.classList.contains('zion-homepage');
   const services = root.classList.contains('zion-service-continuum');
   const contact = root.classList.contains('zion-contact');
+  const journal = root.classList.contains('zion-editorial');
+  const reading = { value: 0, active: 0, labels: [] };
   const contactModel = { filled: [], labels: [], phase: 'init' };
   const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
   const mix = (a, b, t) => a + (b - a) * t;
@@ -31,7 +33,7 @@
   const reduced = () => motion.matches || document.body.classList.contains('zion-motion-reduced');
   let phaseButtons = [];
   const pauseButtons = [];
-  const eligible = scene => scene.visible && (!scene.preview || scene.engaged) && (scene.type !== 'contact-console' || contactModel.filled.some(Boolean) || contactModel.phase === 'submitting');
+  const eligible = scene => scene.visible && scene.type !== 'article-flow' && (!scene.preview || scene.engaged) && (scene.type !== 'contact-console' || contactModel.filled.some(Boolean) || contactModel.phase === 'submitting');
 
   for (const canvas of root.querySelectorAll('[data-zion-spatial]')) {
     const context = canvas.getContext('2d', { alpha: true });
@@ -39,7 +41,7 @@
     const host = canvas.parentElement;
     const forge = canvas.dataset.zionSpatial === 'forge';
     const type = canvas.dataset.zionSpatial;
-    const section = home || services || contact ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
+    const section = journal ? (host.closest('.zion-editorial-band') || host) : home || services || contact ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
     const preview = type === 'service-preview';
     const card = preview ? host.closest('.zion-overview-card') : null;
     const scene = { canvas, context, host, section, forge, type, preview, engaged: false, concept: canvas.dataset.zionConcept || root.dataset.zionService, foreground: getComputedStyle(card || section).color, steps: section?.querySelectorAll('.zion-service-card').length || 3, active: 0, scroll: .25, visible: false, width: 0, height: 0, pointer: [0, 0], aim: [0, 0], progress: forge ? 0 : 2, selected: null, rect: null };
@@ -48,7 +50,7 @@
     if (type === 'home-hero') host.closest('.zion-home-lab')?.classList.add('is-continuum-lab');
     if (services && type === 'service-hero') host.parentElement.classList.add('is-continuum-service-art');
     if (preview) card?.classList.add('is-continuum-preview');
-    canvas.dataset.renderMode = reduced() ? 'static' : preview ? 'interactive' : 'animated';
+    canvas.dataset.renderMode = reduced() ? 'static' : type === 'article-flow' ? 'scroll' : preview ? 'interactive' : 'animated';
     if (card) {
       const engage = () => { scene.engaged = true; card.classList.add('is-continuum-engaged'); schedule(); };
       const disengage = event => {
@@ -72,6 +74,7 @@
   if (!scenes.length) return;
   const forge = scenes.find(scene => scene.forge);
   if (contact) bindContact();
+  if (journal) bindJournal();
   if (home) {
     const network = scenes.find(scene => scene.type === 'home-services');
     root.querySelectorAll('.zion-home-service').forEach((card, index) => {
@@ -158,7 +161,8 @@
 
   function onScroll() {
     for (const scene of scenes) if (!scene.forge) scene.rect = scene.host.getBoundingClientRect();
-    if ((home || services || contact) && !reduced() && !paused) {
+    if (journal) updateReading();
+    if ((home || services || contact || journal) && !reduced() && !paused) {
       for (const scene of scenes) {
         const rect = scene.section.getBoundingClientRect();
         scene.scroll = clamp((innerHeight - rect.top) / (innerHeight + rect.height));
@@ -180,6 +184,7 @@
   }
 
   function draw(scene) {
+    if (journal) { drawJournal(scene); return; }
     if (contact) { drawContact(scene); return; }
     if (services) { drawService(scene); return; }
     if (home) { drawHome(scene); return; }
@@ -296,6 +301,74 @@
     coords.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
     if (close) ctx.closePath();
     ctx.stroke();
+  }
+
+  function bindJournal() {
+    const links=[...root.querySelectorAll('.zion-journal-categories a')];
+    reading.labels=links.slice(1,9).map(link=>link.textContent.trim().toUpperCase());
+    for(const [index,link] of links.entries()) {
+      const select=()=>{reading.active=index;for(const scene of scenes)if(scene.type==='journal-pages')draw(scene);};
+      link.addEventListener('focus',select);link.addEventListener('pointerenter',select);
+    }
+    const progress=root.querySelector('.zion-reading-progress');
+    if(progress&&root.querySelector('.zion-article-copy'))progress.hidden=false;
+  }
+
+  function updateReading() {
+    const copy=root.querySelector('.zion-article-copy'),meter=root.querySelector('.zion-reading-progress progress');
+    if(!copy||!meter)return;
+    const rect=copy.getBoundingClientRect();
+    reading.value=clamp((topInset-rect.top)/Math.max(1,rect.height-(innerHeight-topInset)));
+    const percent=Math.round(reading.value*100);
+    if(meter.value!==percent) {
+      meter.value=percent;
+      root.querySelector('[data-zion-reading-label]').textContent=`${percent}% parcurs`;
+    }
+    if(!paused&&!reduced())for(const scene of scenes)if(scene.type==='article-flow'&&scene.visible)draw(scene);
+  }
+
+  function drawJournal(scene) {
+    const {context:ctx,width:w,height:h,type}=scene;
+    if(!w||!h)return;
+    const t=reduced()?0:clock,flow=type==='article-flow',ink=flow?palette.deep:palette.accent;
+    ctx.clearRect(0,0,w,h);ctx.strokeStyle=ink;ctx.fillStyle=ink;
+    const line=(p,a=.4,width=1,close=false)=>trace(ctx,p,a,width,close);
+    const dot=(p,r=2,a=.9)=>{ctx.fillStyle=ink;ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();};
+    const label=(s,x,y,align='left')=>{ctx.globalAlpha=.7;ctx.fillStyle=flow?palette.deep:palette.muted;ctx.font=`${compact?8:9}px monospace`;ctx.textAlign=align;ctx.fillText(s,x,y,w-24);ctx.textAlign='left';};
+    if(flow) {
+      const progress=reduced()?.45:reading.value,cy=h*.4;
+      const nodes=Array.from({length:5},(_,i)=>[w*.12+i*w*.19,cy+(i%2?-h*.12:h*.12)]);
+      line(nodes,.3);
+      for(const [i,p] of nodes.entries()) {
+        const active=progress>=i/4;
+        line([[p[0]-8,p[1]],[p[0],p[1]-8],[p[0]+8,p[1]],[p[0],p[1]+8]],active?.9:.25,1,true);
+        if(active)dot(p,2);
+      }
+      const segment=Math.min(3,Math.floor(progress*4)),a=nodes[segment],b=nodes[segment+1];
+      dot([mix(a[0],b[0],progress===1?1:progress*4-segment),mix(a[1],b[1],progress===1?1:progress*4-segment)],3);
+      label('TEXT / CONTEXT / IDEI',w*.12,h*.78);
+    } else {
+      const pointer=reduced()?[0,0]:scene.pointer;
+      const project=projector(w,Math.min(w*.29,h*.27),-.3+pointer[1]*.1,-.42+Math.sin(t*.15)*.1+pointer[0]*.18,h*.47);
+      const path=(p,a=.4,width=1,close=false)=>line(p.map(v=>project(...v)),a,width,close);
+      for(let sheet=0;sheet<4;sheet++) {
+        const z=(sheet-1.5)*.36,offset=reduced()?0:Math.sin(t*.35+sheet*.6)*.055;
+        path([[-.95,-1+offset,z],[.95,-1+offset,z],[.95,1+offset,z],[-.95,1+offset,z]],sheet===3?.8:.3,1,true);
+        path([[-.7,-.7+offset,z],[.55,-.7+offset,z]],.7,1.5);
+        for(let row=0;row<5;row++)path([[-.7,-.38+row*.23+offset,z],[row%2?.35:.7,-.38+row*.23+offset,z]],.25);
+        const phase=(t*.12+sheet*.24)%1;
+        dot(project(mix(-.95,.95,phase),-1+offset,z),1.8,.7);
+      }
+      const y=h*.78;
+      for(let i=0;i<7;i++) {
+        const x=w*.15+i*w*.115,dy=(i%2?1:-1)*h*.035;
+        line([[x,y],[x,y+dy],[x+w*.08,y+dy]],.25);
+        dot([x,y+dy],reading.active===i+1?3:1.5,reading.active===i+1?1:.4);
+      }
+      const selected=reading.labels[reading.active-1];
+      if(selected)label(selected.slice(0,25),w/2,h*.86,'center');
+    }
+    ctx.globalAlpha=1;
   }
 
   function bindContact() {
@@ -677,7 +750,7 @@
     root.classList.toggle('is-spatial-static', staticMode);
     pauseButtons.forEach(button => { button.hidden = staticMode; });
     scenes.forEach(scene => {
-      scene.canvas.dataset.renderMode = staticMode ? 'static' : scene.preview ? 'interactive' : 'animated';
+      scene.canvas.dataset.renderMode = staticMode ? 'static' : scene.type === 'article-flow' ? 'scroll' : scene.preview ? 'interactive' : 'animated';
       if (staticMode) { scene.pointer = [0, 0]; scene.progress = 2; }
       draw(scene);
     });
@@ -691,7 +764,10 @@
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       const scene = scenes.find(item => item.canvas === entry.target);
-      if (scene) scene.visible = entry.isIntersecting;
+      if (scene) {
+        scene.visible = entry.isIntersecting;
+        if (journal && scene.type === 'article-flow' && scene.visible && !paused) draw(scene);
+      }
     });
     schedule();
   });

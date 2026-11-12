@@ -4,7 +4,14 @@
 		breadcrumb: 'Fir de navigare',
 		reading_time: 'Timp estimat de citire',
 		related: 'Articole asociate',
-		share: 'Distribuire articol'
+		share: 'Distribuire articol',
+		journal_status: 'Număr de articole în interogarea WordPress',
+		journal_categories: 'Categorii native din jurnal',
+		journal_search_term: 'Termenul căutat în jurnal',
+		card_link: 'Legătură către articol',
+		article_breadcrumb: 'Fir de navigare al articolului',
+		article_return: 'Înapoi la jurnal',
+		reading_progress: 'Progresul lecturii'
 	};
 	blocks.registerBlockType('zion/editorial', {
 		apiVersion: 3,

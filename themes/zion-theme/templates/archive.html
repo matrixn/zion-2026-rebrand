@@ -1,9 +1,24 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-<!-- wp:group {"tagName":"main","className":"zion-content zion-journal","layout":{"type":"constrained"}} -->
-<main class="wp-block-group zion-content zion-journal">
-	<!-- wp:query-title {"type":"archive","level":1,"align":"wide","className":"zion-section-title"} /-->
-	<!-- wp:term-description {"align":"wide"} /-->
+<!-- wp:group {"tagName":"main","className":"zion-editorial zion-journal"} -->
+<main class="wp-block-group zion-editorial zion-journal">
+	<!-- wp:group {"className":"zion-editorial-band zion-editorial-hero"} -->
+	<div class="wp-block-group zion-editorial-band zion-editorial-hero">
+	<!-- wp:group {"className":"zion-editorial-shell zion-journal-hero-grid"} -->
+	<div class="wp-block-group zion-editorial-shell zion-journal-hero-grid">
+	<!-- wp:group {"className":"zion-journal-lead"} -->
+	<div class="wp-block-group zion-journal-lead">
+	<!-- wp:paragraph {"className":"zion-editorial-eyebrow"} --><p class="zion-editorial-eyebrow">O PERSPECTIVĂ / DIN JURNAL</p><!-- /wp:paragraph -->
+	<!-- wp:query-title {"type":"archive","showPrefix":false,"level":1} /-->
+	<!-- wp:term-description {"className":"zion-editorial-intro"} /-->
+	<!-- wp:paragraph {"className":"zion-editorial-intro"} --><p class="zion-editorial-intro">Explorează ideile, ghidurile și proiectele din această colecție.</p><!-- /wp:paragraph -->
+	</div><!-- /wp:group -->
+	<!-- wp:pattern {"slug":"zion-theme/journal-art"} /-->
+	</div><!-- /wp:group --></div><!-- /wp:group -->
+	<!-- wp:pattern {"slug":"zion-theme/journal-tools"} /-->
+	<!-- wp:group {"className":"zion-editorial-shell zion-journal-results"} -->
+	<div class="wp-block-group zion-editorial-shell zion-journal-results">
 	<!-- wp:pattern {"slug":"zion-theme/post-list"} /-->
+	</div><!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->

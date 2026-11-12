@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.23** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.24** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.23** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.24** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,20 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Continuum · Jurnal și articole 1.1.24
+
+- [x] Blog, arhive și căutare explicită de articole în stilul Zion Continuum: hero cu pagini proiectate în perspectivă, categorii native cu stare activă, căutare limitată la `post`, carduri editoriale și paginare numerică WordPress. Căutarea generală și cea WooCommerce își păstrează scopul.
+- [x] Articol cu titlu și metadate native, copertă, introducere explicită, legătură directă către lectură și coloană Paper lizibilă. Diagrama laterală și progresul răspund numai derulării; animația continuă este limitată la hero vizibil. Pauză comună, reduced motion, controale de tastatură și fallback fără JavaScript, în motorul comun.
+- [x] Un singur pattern de card pentru jurnal și articole asociate; metadatele și vizibilitatea folosesc setările existente și override-urile per articol. WordPress păstrează interogările, paginarea, stările public/private/protejate și formularul de comentarii. Formularul nativ are etichete în română; nu există editor sau motor de comentarii paralel.
+- [x] Conținutul, URL-urile, imaginile, categoriile, datele și metadatele SEO nu sunt rescrise. H1 din corp este afișat ca H2 prin tokenizare WordPress; textul, atributele, codul, SVG-urile și zonele raw-text rămân intacte. Coperta și fragmentele proprii nu expun articole protejate prin parolă.
+- [x] Backup privat staging SQL, Theme/Core și **43 de înregistrări editoriale cu metadate și termeni**, plus comentarii, taxonomii, setări Zion, citire și permalinkuri. Patru articole publicate; șabloanele provin din temă, fără override-uri în Site Editor. Auditul dedicat este numai pentru citire și refuză producția.
+- [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute; **14 aserțiuni noi de integrare** pentru șabloane, renderer, păstrarea datelor, restaurarea contextului WordPress și protecția prin parolă.
+- [x] **9/9 teste Playwright noi** trecute în 55 s, cu opt referințe vizuale la 390/1440 px și verificări de layout la 390/768/1024/1440 px. Acoperă categorie, căutare limitată la articole, paginare, back/forward, draft/private/parolă, animație/pauză/progres, setările existente, fără JavaScript și validitate în Site Editor. Scenariile care creează articole rulează izolat, între storefront și control, și restaurează datele/configurația.
+- [ ] Suita completă **100 de scenarii** și CI.
+- [ ] Instalare 1.1.24 și QA staging inclusiv 390/768/1024/1440 px, confirmarea snapshotului, README, arhive Theme/Core, commit și push finale pe `main`. Producția nu face parte din această livrare.
+
+Ghid: [Jurnal / Continuum](docs/journal-continuum.md).
 
 ## Zion Continuum · Contact 1.1.23
 

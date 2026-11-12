@@ -1,10 +1,12 @@
 <!-- wp:template-part {"slug":"header","tagName":"header"} /-->
-<!-- wp:group {"tagName":"main","className":"zion-content zion-journal","layout":{"type":"constrained"}} -->
-<main class="wp-block-group zion-content zion-journal">
-	<!-- wp:heading {"level":1,"align":"wide","className":"zion-section-title"} -->
-	<h1 class="wp-block-heading alignwide zion-section-title">Jurnal</h1>
-	<!-- /wp:heading -->
+<!-- wp:group {"tagName":"main","className":"zion-editorial zion-journal"} -->
+<main class="wp-block-group zion-editorial zion-journal">
+	<!-- wp:pattern {"slug":"zion-theme/journal-hero"} /-->
+	<!-- wp:pattern {"slug":"zion-theme/journal-tools"} /-->
+	<!-- wp:group {"className":"zion-editorial-shell zion-journal-results"} -->
+	<div class="wp-block-group zion-editorial-shell zion-journal-results">
 	<!-- wp:pattern {"slug":"zion-theme/post-list"} /-->
+	</div><!-- /wp:group -->
 </main>
 <!-- /wp:group -->
 <!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
