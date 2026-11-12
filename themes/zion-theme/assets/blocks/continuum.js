@@ -1,7 +1,7 @@
 /* Zion Continuum: one scheduler and projection system, contextual sculptures. */
 (() => {
   'use strict';
-  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum, .zion-contact, .zion-editorial');
+  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum, .zion-contact, .zion-editorial, .zion-faq');
   if (!root || !window.IntersectionObserver || !window.ResizeObserver) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(pointer: fine)');
@@ -13,6 +13,8 @@
   const services = root.classList.contains('zion-service-continuum');
   const contact = root.classList.contains('zion-contact');
   const journal = root.classList.contains('zion-editorial');
+  const faq = root.classList.contains('zion-faq');
+  const faqModel = { active: -1, items: [] };
   const reading = { value: 0, active: 0, labels: [] };
   const contactModel = { filled: [], labels: [], phase: 'init' };
   const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
@@ -41,7 +43,7 @@
     const host = canvas.parentElement;
     const forge = canvas.dataset.zionSpatial === 'forge';
     const type = canvas.dataset.zionSpatial;
-    const section = journal ? (host.closest('.zion-editorial-band') || host) : home || services || contact ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
+    const section = faq ? (host.closest('.zion-faq-band') || host) : journal ? (host.closest('.zion-editorial-band') || host) : home || services || contact ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
     const preview = type === 'service-preview';
     const card = preview ? host.closest('.zion-overview-card') : null;
     const scene = { canvas, context, host, section, forge, type, preview, engaged: false, concept: canvas.dataset.zionConcept || root.dataset.zionService, foreground: getComputedStyle(card || section).color, steps: section?.querySelectorAll('.zion-service-card').length || 3, active: 0, scroll: .25, visible: false, width: 0, height: 0, pointer: [0, 0], aim: [0, 0], progress: forge ? 0 : 2, selected: null, rect: null };
@@ -75,6 +77,16 @@
   const forge = scenes.find(scene => scene.forge);
   if (contact) bindContact();
   if (journal) bindJournal();
+  if (faq) {
+    faqModel.items = [...root.querySelectorAll('.zion-faq-content details.wp-block-details')];
+    const refresh = () => { for (const scene of scenes) draw(scene); };
+    root.addEventListener('zion:faq-change', refresh);
+    faqModel.items.forEach((item, index) => {
+      item.addEventListener('toggle', refresh);
+      const select = () => { faqModel.active = index; refresh(); };
+      item.addEventListener('focusin', select); item.addEventListener('pointerenter', select);
+    });
+  }
   if (home) {
     const network = scenes.find(scene => scene.type === 'home-services');
     root.querySelectorAll('.zion-home-service').forEach((card, index) => {
@@ -184,6 +196,7 @@
   }
 
   function draw(scene) {
+    if (faq) { drawFaq(scene); return; }
     if (journal) { drawJournal(scene); return; }
     if (contact) { drawContact(scene); return; }
     if (services) { drawService(scene); return; }
@@ -301,6 +314,30 @@
     coords.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
     if (close) ctx.closePath();
     ctx.stroke();
+  }
+
+  function drawFaq(scene) {
+    const {context:ctx,width:w,height:h,type}=scene;
+    if(!w||!h)return;
+    const t=reduced()?0:clock,relay=type==='faq-relay';
+    ctx.clearRect(0,0,w,h);ctx.strokeStyle=palette.accent;ctx.fillStyle=palette.accent;
+    const line=(p,a=.3,width=1,close=false)=>trace(ctx,p,a,width,close);
+    const dot=(p,r=2,a=.9)=>{ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();};
+    const label=(s,x,y)=>{ctx.globalAlpha=.65;ctx.fillStyle=palette.muted;ctx.font=`${compact?8:10}px monospace`;ctx.textAlign='center';ctx.fillText(s,x,y,w-32);ctx.fillStyle=palette.accent;};
+    const project=projector(w,Math.min(w*.25,h*.22),-.35+scene.pointer[1]*.08,-.32+scene.pointer[0]*.14,h*.44);
+    const centre=project(0,0,0),count=relay?3:Math.max(1,Math.min(24,faqModel.items.length));
+    for(let i=0;i<count;i++) {
+      const angle=i/count*Math.PI*2-Math.PI/2;
+      const p=relay?[w*(.2+i*.3),h*.46+(i===1?-12:12)]:project(Math.cos(angle)*1.25,Math.sin(angle)*.95,(i%3-1)*.55);
+      const item=faqModel.items[i],opened=!relay&&item?.open,active=opened||(!relay&&faqModel.active===i),visible=relay||!item?.hidden;
+      const mid=[mix(centre[0],p[0],.6),mix(centre[1],p[1],.6)+(i%2?14:-14)];
+      line([centre,mid,p],visible?(active?.8:.22):.07,active?1.5:1);
+      const r=opened?12:active?9:6;line([[p[0],p[1]-r],[p[0]+r,p[1]],[p[0],p[1]+r],[p[0]-r,p[1]]],visible?(active?1:.45):.1,opened?1.5:1,true);
+      if(visible){dot(p,active?3:1.5,active?1:.45);const phase=(t*.15+i*.137)%1;dot([mix(centre[0],mid[0],phase),mix(centre[1],mid[1],phase)],1.5,.6);}
+      label(relay?['IDEE','DIALOG','DIRECȚIE'][i]:String(i+1).padStart(2,'0'),p[0],p[1]+(relay?32:22));
+    }
+    if(!relay){line([[centre[0]-20,centre[1]-20],[centre[0]+20,centre[1]-20],[centre[0]+20,centre[1]+20],[centre[0]-20,centre[1]+20]],.8,1,true);label('?',centre[0],centre[1]+4);}
+    ctx.globalAlpha=1;
   }
 
   function bindJournal() {

@@ -16,6 +16,25 @@ if ( $zion_core_services['failed'] ) {
 $zion_core_reference = wc_get_product_id_by_sku( 'ZION-DEMO-SW-01' );
 require __DIR__ . '/seed-contact.php';
 
+if ( ! get_page_by_path( 'intrebari' ) ) {
+	$zion_core_faq_pattern = WP_Block_Patterns_Registry::get_instance()->get_registered( 'zion-theme/faq-questions' );
+	$zion_core_faq_id      = wp_insert_post(
+		wp_slash(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_name'    => 'intrebari',
+				'post_title'   => 'Întrebări frecvente',
+				'post_content' => $zion_core_faq_pattern['content'],
+			)
+		),
+		true
+	);
+	if ( is_wp_error( $zion_core_faq_id ) ) {
+		WP_CLI::error( 'Could not create the synthetic FAQ demonstration.' );
+	}
+}
+
 if ( ! get_page_by_path( 'despre-noi' ) ) {
 	$zion_core_about = wp_insert_post(
 		wp_slash(

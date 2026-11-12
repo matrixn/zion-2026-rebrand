@@ -132,6 +132,11 @@
   },
   "customTemplates": [
     {
+      "name": "faq",
+      "title": "Zion · Întrebări frecvente / Continuum",
+      "postTypes": ["page"]
+    },
+    {
       "name": "service-landing",
       "title": "Zion · Servicii",
       "postTypes": ["page"]

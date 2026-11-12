@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.24** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.25** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.24** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.25** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Continuum · Întrebări frecvente 1.1.25
+
+- [x] Șablon nativ pentru `/intrebari/` și șablon `faq` selectabil pentru alte pagini, cu aceeași compoziție editabilă în Site Editor. Hero cu rețea de întrebări, explicații laterale și CTA cu releu Idee → Dialog → Direcție. Header/footer native păstrate.
+- [x] Acordeoane `core/details`: mai multe răspunsuri deschise, Enter/Space și funcționare fără JavaScript. Căutare în întrebări/răspunsuri fără diacritice, contor accesibil, ștergere, stare fără rezultate și comenzi de deschidere/închidere numai pentru rezultatele vizibile. Controalele funcționează și fără Canvas.
+- [x] Două scene în motorul Continuum comun, cu reacție la focus și la răspunsurile deschise, pauză comună, reduced motion și încărcare condițională. Tokenuri `theme.json`, focus vizibil și controale de minimum 44 px; zero dependențe noi.
+- [x] Pagina reală are **zece întrebări native**; conținutul și metadatele nu sunt rescrise. Backup privat SQL, Theme/Core și snapshot editorial cu **43 de înregistrări**, taxonomii, comentarii, setări Zion, citire și permalinkuri. Local se folosesc numai zece exemple sintetice, create dacă pagina lipsește.
+- [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **Șapte aserțiuni noi de integrare** și **9/9 teste FAQ** trecute local, inclusiv patru referințe vizuale și verificări la 390/768/1024/1440 px.
+- [x] **18/18 verificări** locale pentru FAQ și cele nouă capturi complete existente, după verificarea diferențelor din footer: noua pagină demo adaugă legătura FAQ și 32 px în footer, fără schimbarea conținutului principal. Pe staging legătura exista deja. Numerotarea întrebărilor filtrate păstrează corespondența cu nodurile diagramei.
+- [ ] Suita completă **109 scenarii**, CI, instalare și QA staging inclusiv mobil.
+- [ ] README final, ZIP-uri **1.1.25** verificate, commit și push pe `main`. Producția nu este modificată.
+
+Ghid: [Întrebări frecvente / Continuum](docs/faq-continuum.md).
 
 ## Zion Continuum · Jurnal și articole 1.1.24
 
