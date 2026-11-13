@@ -44,14 +44,15 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 
 - [x] Designul se configurează în **Aspect → Zion Theme → Identitate și design**: colorpicker nativ, HEX, fonturi, dimensiuni, spațiere, containere și rotunjiri. Preview înainte de salvare pentru pagini, la 390/768/1024/1440 px, cu indicator de contrast.
 - [x] Logo, pictogramă și identitate prin biblioteca media. Resetare de tokenuri și import/export JSON; validare pe server și detectarea modificărilor concurente. Stilurile sunt salvate în același `wp_global_styles`, cu `theme.json` ca sursă a valorilor implicite.
-- [x] **Zion Studio** în același panou: pagini, articole, header, footer, șabloane și meniuri native. Gutenberg cu inspector și inserare de blocuri, publicare cu calendar dată/oră, imagine reprezentativă și șabloane. Editor de linkuri și submeniuri, cu ordonare accesibilă și conectarea meniului în header.
+- [x] **Zion Studio** în același panou: pagini, articole, header, footer, șabloane și meniuri native. Creare de pagini, articole și meniuri direct în panou, Gutenberg cu inspector și inserare de blocuri, publicare cu calendar dată/oră, imagine reprezentativă și șabloane. Editor de linkuri și submeniuri, cu ordonare accesibilă și conectarea meniului în header.
 - [x] Comutatoare, glisoare numerice, liste cu bife și ordonare prin drag-and-drop sau tastatură, căutare în setări și indicatoare de salvare. Selectoarele vizuale cu preview/lightbox rămân disponibile.
 - [x] Nu se dublează datele native sau opțiunile WooCommerce. Instalarea păstrează culorile și conținutul existente; modificările se aplică explicit din panou. Authoring-ul nu adaugă scripturi de frontend.
 - [x] **7/7 teste Playwright Studio** trecute local, inclusiv persistență, conflicte, permisiuni, media, meniuri/submeniuri și administrare fără overflow la 390/1440 px.
 - [x] Build, WPCS, **56 teste PHPUnit / 417 aserțiuni**, integrare și migrare/rollback trecute. **10 aserțiuni noi de integrare** verifică persistența nativă, validarea atomică, permisiunile și conflictele.
 - [x] Ambele ZIP-uri **1.1.27** generate și verificate față de sursă: **131 fișiere Theme / 9 fișiere Core**. Biblioteca Studio este inclusă explicit în pachetul temei.
 - [x] Cele **126 de scenarii Playwright** verificate local: suita generală, noul Studio, regresiile Control Center și clasificarea. Cele trei verificări ale legăturilor de editare urmăresc acum Zion Studio; rerularea lor a trecut **3/3**, iar clasificarea **1/1**. Studio a trecut din nou **7/7**, inclusiv resetarea în preview.
-- [ ] GitHub Actions și instalarea verificată pe staging.
+- [x] Preview-ul static păstrează headerul compact și conținutul vizibil pe mobil, cu verificare automată. Crearea unui meniu și a unei pagini programate din Zion Studio este verificată pe date sintetice; **7/7 Studio** și testul dedicat de creare/publicare au trecut.
+- [ ] GitHub Actions și verificarea finală pe staging.
 
 Ghid: [Zion Studio și controale native](docs/zion-studio.md).
 

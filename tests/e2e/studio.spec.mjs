@@ -44,8 +44,7 @@ test('design controls save native font, dimensions and component radii and valid
 });
 
 test('native page editing and date picker publish a scheduled synthetic page',async({page})=>{
-  const record=await native('pages',{title:'Synthetic Zion Studio schedule',status:'draft',content:'<!-- wp:paragraph --><p>Synthetic native page.</p><!-- /wp:paragraph -->'});fixtures.push('pages/'+record.id);
-  await login(page);await page.goto(base+'&section=studio&kind=pages&document='+record.id);await expect(page.getByLabel('Titlu document',{exact:true})).toHaveValue(record.title.raw);
+  await login(page);await page.goto(base+'&section=studio&kind=pages');await page.getByRole('button',{name:'Creează pagină',exact:true}).click();await expect(page.getByLabel('Titlu document',{exact:true})).toHaveValue('Pagină Zion');const record={id:Number(await page.getByRole('combobox',{name:'Document',exact:true}).inputValue())};fixtures.push('pages/'+record.id);
   const canvas=page.frameLocator('iframe[name="editor-canvas"]');await canvas.locator('[contenteditable=true]').first().fill('Updated in Zion native canvas.');
   await page.getByLabel('Titlu document',{exact:true}).fill('Synthetic Zion Studio edited');const date=page.locator('.zion-document input[type=datetime-local]');await date.fill('2030-06-15T14:30');await page.getByLabel('Stare document',{exact:true}).selectOption('future');
   await page.getByRole('button',{name:'Salvează documentul',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Document salvat.'})).toBeVisible();
@@ -59,6 +58,8 @@ test('native menu links and template parts are edited from Zion without duplicat
   const menu=await native('navigation',{title:'Synthetic Zion Studio menu',status:'publish',content:'<!-- wp:navigation-link {"label":"Synthetic link","url":"/contact/"} /-->'});fixtures.push('navigation/'+menu.id);
   const part=await native('template-parts',{slug:'zion-studio-owned-fixture-'+Date.now().toString(36),title:'Synthetic Studio footer',content:'<!-- wp:paragraph --><p>Synthetic footer text.</p><!-- /wp:paragraph -->',area:'footer'});fixtures.push('template-parts/'+part.id);
   await login(page);
+  await page.goto(base+'&section=studio&kind=navigation');await page.getByRole('button',{name:'Creează meniu',exact:true}).click();await expect(page.getByLabel('Titlu document',{exact:true})).toHaveValue('Meniu Zion');const createdId=await page.getByRole('combobox',{name:'Document',exact:true}).inputValue();fixtures.push('navigation/'+createdId);
+  await page.getByRole('button',{name:'Adaugă link',exact:true}).click();await page.getByLabel('Etichetă link',{exact:true}).fill('Synthetic newly created menu');await page.getByLabel('Adresă link',{exact:true}).fill('/contact/');await page.getByRole('button',{name:'Salvează documentul',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Document salvat.'})).toBeVisible();const createdMenu=await(await admin.request.get('/wp-json/wp/v2/navigation/'+createdId+'?context=edit',{headers})).json();expect(createdMenu.content.raw).toContain('Synthetic newly created menu');
   for(const [kind,record,text] of [['navigation',menu,'Edited menu link'],['parts',part,'Edited native footer']]){
     await page.goto(base+'&section=studio&kind='+kind+'&document='+encodeURIComponent(record.id));await expect(page.getByLabel('Titlu document',{exact:true})).toHaveValue(record.title.raw);
     if(kind==='navigation')await page.getByLabel('Etichetă link',{exact:true}).first().fill(text);
@@ -93,6 +94,7 @@ test('native media, switches and visual order persist through the existing contr
 for(const width of [390,1440])test(`Studio admin controls fit at ${width}px and keep native permissions`,async({page,browser,baseURL})=>{
   await login(page);await page.setViewportSize({width,height:1000});await page.goto(base+'&section=design');await expect(page.locator('#zion-token-color_ink')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
   await expect(page.getByText('Identitatea site-ului · logo, pictogramă și nume',{exact:true})).toBeVisible();await expect(page.frameLocator('iframe[title="Preview design Zion"]').locator('h1').first()).toBeVisible();
+  expect(await page.frameLocator('iframe[title="Preview design Zion"]').locator('.zion-header').evaluate(element=>element.getBoundingClientRect().height)).toBeLessThan(260);
   await page.screenshot({path:`build/studio-design-${width}-1.1.27.png`,fullPage:false});
   await page.goto(base+'&section=software');const number=page.locator('#zion-field-catalog_columns_desktop');const original=await number.inputValue();const slider=page.getByRole('slider',{name:'Coloane desktop · glisor'});await slider.focus();await slider.press('Home');await slider.press('ArrowRight');await slider.press('ArrowRight');await expect(number).toHaveValue('4');await number.fill(original);
   await page.locator('[data-zion-setting-search]').fill('coloane desktop');await expect(page.locator('[data-zion-field=catalog_columns_desktop]')).toBeVisible();await expect(page.locator('[data-zion-field=catalog_layout]')).toBeHidden();

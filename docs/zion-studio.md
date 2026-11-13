@@ -19,7 +19,7 @@ Fonturile sunt locale, de sistem; panoul nu descarcă fonturi externe. Dimensiun
 
 ## Conținut, header, footer și meniuri
 
-În **Zion Studio**, alege tipul documentului, caută și selectează documentul. Lista este paginată, cu maximum 50 de rezultate pe pagină.
+În **Zion Studio**, alege tipul documentului, caută și selectează documentul. Lista este paginată, cu maximum 50 de rezultate pe pagină. Butoanele „Creează pagină”, „Creează articol” și „Creează meniu” folosesc crearea nativă WordPress. Paginile și articolele noi pornesc ca ciorne; un meniu nou este un document nativ publicat, fără legături până când le adaugi.
 
 - **Pagini și articole:** canvas Gutenberg, inserare de blocuri, inspector nativ, titlu, stare, calendar dată/oră în fusul site-ului, imagine reprezentativă, rezumat unde există și șablonul paginii. Data nu este rescrisă dacă nu o modifici. Programarea folosește publicarea nativă WordPress.
 - **Header, footer și componente:** aceleași `wp_template_part`, editate cu blocuri native. Pattern-urile temei sunt rezolvate pentru canvas; salvarea creează suprascrierea nativă, păstrată la actualizarea temei.
