@@ -42,6 +42,8 @@ Preflightul validează și șabloanele moștenite, înainte de prima scriere. Wo
 
 La articolele din plan, singura excepție operațională este markerul core `_encloseme=['1']`, pe care WordPress îl creează/consumă pentru scanarea linkurilor media. El nu este eliminat din WordPress și nu modifică rezultatul comparației datelor autorului. Alte valori ale markerului, articolele neplanificate și toate metadatele comerciale rămân comparate strict. `verify` poate finaliza jurnalul unei aplicări în care toate înregistrările sunt deja încheiate, numai după validarea aceluiași hash de plan și a tuturor datelor; nu reaplică modificările.
 
+WooCommerce poate sincroniza numele variației la citirea ei, dacă titlul părintelui s-a schimbat (`WC_Product_Variation_Data_Store_CPT::read()`). Pe această clonă au apărut astfel 30 de diferențe de titlu după corectarea diacriticelor la cinci produse. Un checkpoint derivat separat acceptă exclusiv înlocuirea exactă a prefixului părinte prevăzut în plan, păstrând sufixul și toate celelalte câmpuri. Cele cinci corecții ulterioare de nume de categorii au propriul jurnal și un al doilea baseline derivat numai prin acele substituții. Snapshotul original nu este înlocuit, iar verificatorul general nu ignoră titlurile variațiilor sau datele comerciale.
+
 ## WordPress.org și server
 
 Directorul oficial era blocat de `WP_HTTP_BLOCK_EXTERNAL=true`, fără allowlist. Stagingul păstrează blocarea generală, cu excepții pentru `api.wordpress.org`, `downloads.wordpress.org`, `s.w.org`, `wordpress.org`. Nu se autorizează automat API-uri comerciale de producție. Pachetele românești WordPress/WooCommerce/CF7 folosesc sistemul nativ de traduceri.
