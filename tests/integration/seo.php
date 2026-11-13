@@ -123,6 +123,17 @@
 			true
 		);
 		zion_core_test_assert( ! is_wp_error( $zion_theme_template_result ) && 'default' === get_post_meta( $zion_theme_template_id, '_wp_page_template', true ) && '<p>Synthetic preserved body.</p>' === get_post_field( 'post_content', $zion_theme_template_id ) && 'zion-template-preflight-fixture' === get_post_field( 'post_name', $zion_theme_template_id ), 'A valid native replacement completes the WordPress update while preserving the body and URL' );
+		zion_core_test_assert(
+			array( '_price' => array( '100' ) ) === zion_theme_launch_authored_meta(
+				array(
+					'_price'     => array( '100' ),
+					'_encloseme' => array( '1' ),
+				),
+				true
+			),
+			'A planned blog update separates only the native pending enclosure marker from authored metadata'
+		);
+		zion_core_test_assert( array( '_encloseme' => array( '1' ) ) === zion_theme_launch_authored_meta( array( '_encloseme' => array( '1' ) ), false ) && array( '_encloseme' => array( 'unexpected' ) ) === zion_theme_launch_authored_meta( array( '_encloseme' => array( 'unexpected' ) ), true ), 'Unplanned records and unknown marker values retain strict metadata verification' );
 	} finally {
 		update_option( 'woocommerce_shop_page_id', $zion_theme_shop );
 		remove_filter( 'woocommerce_is_cart', '__return_true' );

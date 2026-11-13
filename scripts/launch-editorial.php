@@ -91,6 +91,9 @@ function zion_theme_launch_verify_records( array $expected, array $modified = ar
 				$current['post'][ $key ] = $saved['post'][ $key ];
 			}
 		}
+		$planned_post    = 'post' === $post['post_type'] && in_array( (int) $id, $modified, true );
+		$current['meta'] = zion_theme_launch_authored_meta( $current['meta'], $planned_post );
+		$saved['meta']   = zion_theme_launch_authored_meta( $saved['meta'], $planned_post );
 		// JSON comparison ignores PHP object-vs-array representation, not field values.
 		if ( zion_theme_launch_normalize( json_decode( wp_json_encode( $current ), true ) ) !== zion_theme_launch_normalize( $saved ) ) {
 			WP_CLI::error( 'Unexpected content, metadata or taxonomy difference: ' . $id );
@@ -157,10 +160,14 @@ if ( 'apply' === $zion_theme_mode ) {
 	file_put_contents( $zion_theme_journal, wp_json_encode( $zion_theme_state ) );
 } elseif ( 'verify' === $zion_theme_mode ) {
 	$zion_theme_state = file_exists( $zion_theme_journal ) ? json_decode( file_get_contents( $zion_theme_journal ), true ) : array();
-	if ( empty( $zion_theme_state['finished'] ) || hash_file( 'sha256', $zion_theme_paths[1] ) !== ( $zion_theme_state['plan_sha256'] ?? '' ) ) {
-		WP_CLI::error( 'A completed journal for this exact plan is required.' );
+	if ( hash_file( 'sha256', $zion_theme_paths[1] ) !== ( $zion_theme_state['plan_sha256'] ?? '' ) || array_map( 'intval', array_keys( $zion_theme_plan['posts'] ) ) !== ( $zion_theme_state['completed'] ?? array() ) ) {
+		WP_CLI::error( 'A journal with every completed record for this exact plan is required.' );
 	}
 	zion_theme_launch_verify_records( $zion_theme_expected, array_map( 'intval', array_keys( $zion_theme_plan['posts'] ) ) );
+	if ( empty( $zion_theme_state['finished'] ) ) {
+		$zion_theme_state['finished'] = true;
+		file_put_contents( $zion_theme_journal, wp_json_encode( $zion_theme_state ) );
+	}
 }
 WP_CLI::line(
 	wp_json_encode(

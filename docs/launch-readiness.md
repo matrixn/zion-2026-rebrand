@@ -40,6 +40,8 @@ Scriptul refuză producția/alte hosturi, fișiere publice, modificări concuren
 
 Preflightul validează și șabloanele moștenite, înainte de prima scriere. WordPress poate valida `page_template` după actualizarea rândului SQL: o editare de titlu poate întoarce eroare pentru un pointer Elementor invalid, deși titlul s-a schimbat deja. Recuperarea păstrează backupul și jurnalul originale, verifică exact câmpurile afectate și creează un checkpoint separat înainte de reluarea planului amendat. Nu sunt acceptate diferențe arbitrare sau schimbări de URL/autor/date comerciale. Testele sintetice verifică refuzul fără scriere și înlocuirea explicită cu un șablon nativ.
 
+La articolele din plan, singura excepție operațională este markerul core `_encloseme=['1']`, pe care WordPress îl creează/consumă pentru scanarea linkurilor media. El nu este eliminat din WordPress și nu modifică rezultatul comparației datelor autorului. Alte valori ale markerului, articolele neplanificate și toate metadatele comerciale rămân comparate strict. `verify` poate finaliza jurnalul unei aplicări în care toate înregistrările sunt deja încheiate, numai după validarea aceluiași hash de plan și a tuturor datelor; nu reaplică modificările.
+
 ## WordPress.org și server
 
 Directorul oficial era blocat de `WP_HTTP_BLOCK_EXTERNAL=true`, fără allowlist. Stagingul păstrează blocarea generală, cu excepții pentru `api.wordpress.org`, `downloads.wordpress.org`, `s.w.org`, `wordpress.org`. Nu se autorizează automat API-uri comerciale de producție. Pachetele românești WordPress/WooCommerce/CF7 folosesc sistemul nativ de traduceri.

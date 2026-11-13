@@ -30,3 +30,18 @@ function zion_theme_launch_template_preflight( int $id, array $fields ): ?WP_Err
 	}
 	return null;
 }
+
+/**
+ * Native post edits enqueue/consume an enclosure scan independently of authored data.
+ * Only the exact core pending marker is operational, never arbitrary metadata.
+ *
+ * @param array $meta Post metadata.
+ * @param bool  $planned_post Whether this is a planned native blog-post update.
+ * @return array
+ */
+function zion_theme_launch_authored_meta( array $meta, bool $planned_post ): array {
+	if ( $planned_post && array( '1' ) === ( $meta['_encloseme'] ?? null ) ) {
+		unset( $meta['_encloseme'] );
+	}
+	return $meta;
+}
