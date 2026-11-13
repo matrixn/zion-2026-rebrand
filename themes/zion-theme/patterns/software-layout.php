@@ -14,7 +14,7 @@
 <!-- wp:zion/editorial {"part":"software_breadcrumb"} /-->
 <!-- wp:group {"className":"zion-software-hero-grid"} --><div class="wp-block-group zion-software-hero-grid">
 <!-- wp:group {"className":"zion-software-lead"} --><div class="wp-block-group zion-software-lead">
-<!-- wp:post-title {"level":1,"className":"zion-software-title"} /-->
+<!-- wp:post-title {"level":1,"className":"zion-software-title zion-page-title"} /-->
 <!-- wp:zion/editorial {"part":"software_intro"} /-->
 <!-- wp:zion/editorial {"part":"software_actions"} /-->
 </div><!-- /wp:group -->

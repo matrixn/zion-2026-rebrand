@@ -89,19 +89,33 @@ function zion_theme_software_outline( string $content ): array {
 	$body = '';
 	$toc  = array();
 	foreach ( $sections as $index => $section ) {
-		$intro = '';
-		$cards = array();
-		$card  = '';
-		$id    = 'zion-software-section-' . ( $index + 1 );
-		foreach ( $section as $block ) {
+		$intro      = '';
+		$cards      = array();
+		$card       = '';
+		$id         = 'zion-software-section-' . ( $index + 1 );
+		$card_class = 'zion-software-card';
+		$leading    = false;
+		foreach ( $section as $position => $block ) {
 			if ( 'core/heading' === $block['blockName'] && ( $block['attrs']['level'] ?? 2 ) <= 2 ) {
 				$toc[ $id ] = html_entity_decode( wp_strip_all_tags( $block['innerHTML'] ), ENT_QUOTES, 'UTF-8' );
 			}
-			if ( 'core/heading' === $block['blockName'] && 3 === ( $block['attrs']['level'] ?? 2 ) ) {
+			$next  = $section[ $position + 1 ] ?? array();
+			$title = trim( wp_strip_all_tags( $next['innerHTML'] ?? '' ) );
+			$plan  = 'core/paragraph' === $block['blockName'] && 'core/heading' === ( $next['blockName'] ?? '' ) && 3 === ( $next['attrs']['level'] ?? 2 ) && $title && str_contains( wp_strip_all_tags( $block['innerHTML'] ), $title ) && preg_match( '~^\s*<p\b[^>]*>\s*<a\b[^>]*>[^<]+</a>\s*</p>\s*$~s', $block['innerHTML'] );
+			if ( $plan ) {
 				if ( $card ) {
-					$cards[] = zion_theme_service_group( 'zion-software-card', $card );
+					$cards[] = zion_theme_service_group( $card_class, $card );
 				}
-				$card = serialize_block( $block );
+				$card       = serialize_block( $block );
+				$card_class = 'zion-software-card zion-software-plan';
+				$leading    = true;
+			} elseif ( 'core/heading' === $block['blockName'] && 3 === ( $block['attrs']['level'] ?? 2 ) ) {
+				if ( $card && ! $leading ) {
+					$cards[] = zion_theme_service_group( $card_class, $card );
+				}
+				$card       = ( $leading ? $card : '' ) . serialize_block( $block );
+				$card_class = $leading ? $card_class : 'zion-software-card';
+				$leading    = false;
 			} elseif ( $card ) {
 				$card .= serialize_block( $block );
 			} else {
@@ -109,7 +123,7 @@ function zion_theme_software_outline( string $content ): array {
 			}
 		}
 		if ( $card ) {
-			$cards[] = zion_theme_service_group( 'zion-software-card', $card );
+			$cards[] = zion_theme_service_group( $card_class, $card );
 		}
 		$body .= zion_theme_service_group( 'zion-software-section', $intro . ( $cards ? zion_theme_service_group( 'zion-software-cards', implode( '', $cards ) ) : '' ), $id );
 	}
@@ -119,6 +133,32 @@ function zion_theme_software_outline( string $content ): array {
 	);
 	return $cache[ $key ];
 }
+
+/**
+ * Present a migrated plan's repeated summary link as its own clear action.
+ * Saved leaf blocks and their sequence remain unchanged.
+ *
+ * @param string $html Native group output.
+ * @param array  $block Parsed group.
+ * @return string
+ */
+function zion_theme_software_plan( string $html, array $block ): string {
+	if ( is_admin() || wp_is_serving_rest_request() || ! in_array( 'zion-software-plan', explode( ' ', $block['attrs']['className'] ?? '' ), true ) ) {
+		return $html;
+	}
+	$english = 'en' === ( zion_theme_software_context()[4] ?? 'ro' );
+	$label   = $english ? 'View product' : 'Vezi produsul';
+	preg_match( '~<h3\b[^>]*>(.*?)</h3>~s', $html, $title );
+	$tag = new WP_HTML_Tag_Processor( $html );
+	if ( $tag->next_tag( 'P' ) ) {
+		$tag->add_class( 'zion-software-plan-action' );
+	}
+	if ( $tag->next_tag( 'A' ) ) {
+		$tag->set_attribute( 'aria-label', $label . ': ' . wp_strip_all_tags( $title[1] ?? '' ) );
+	}
+	return preg_replace( '~(<p\b[^>]*>\s*<a\b[^>]*>)[^<]+(</a>\s*</p>)~s', '$1' . esc_html( $label . ' ↗' ) . '$2', $tag->get_updated_html(), 1 );
+}
+add_filter( 'render_block_core/group', 'zion_theme_software_plan', 32, 2 );
 
 /**
  * Decorate the existing hub links as native cards, without replacing their URLs.

@@ -50,6 +50,10 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] **14 aserțiuni noi de integrare**, inclusiv aliasul legacy și prioritatea unui alt șablon ales de autor. Verificarea finală locală Software a trecut **10/10** în 1,4 minute, fără actualizarea referințelor; textele și șabloanele salvate ale fixture-urilor rămân identice.
 - [ ] Suita completă **119 scenarii** în CI, instalare și QA staging inclusiv mobil.
 - [x] Testele vechi de încărcare condițională folosesc acum Magazin 3D, care nu conține scene Continuum. Magazin Software are intenționat noul hero animat; cele patru aserțiuni vechi nu mai cer absența rendererului pe această pagină.
+- [x] Planurile migrate cu link-rezumat înainte de H3 sunt grupate lângă propriul titlu; acțiunea afișată devine „Vezi produsul”, cu numele planului pentru cititoarele de ecran. Blocurile și ordinea salvate rămân intacte. Două aserțiuni suplimentare de integrare acoperă asocierea și prezentarea.
+- [x] Noul titlu Software păstrează integrarea cu opțiunea existentă „Legătură Acasă” și override-ul per pagină, verificată de scenariul Control Center.
+- [x] Verificare locală finală după aceste ajustări: **10/10 Software** în 1,7 minute, **1/1 Control Center** în 51,2 s și **4/4 verificări de încărcare condițională**. Build, WPCS, PHPUnit, **16 aserțiuni Software de integrare** și migrare/rollback trecute.
+- [x] Clona avea indexul WooCommerce de produse gol: refăcute nativ **82 de rânduri derivate**, cu backup și verificarea identității tuturor produselor/variațiilor și metadatelor. Sortarea celor opt produse reale funcționează acum după preț în ambele sensuri; prețurile și stocurile sursă sunt păstrate.
 - [ ] README final, ZIP-uri **1.1.26** verificate, commit și push pe `main`. Producția nu este modificată.
 
 Ghid: [Software / Continuum](docs/software-continuum.md).

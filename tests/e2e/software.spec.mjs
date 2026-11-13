@@ -36,6 +36,7 @@ test.beforeAll(async({browser,baseURL})=>{
     content+=heading(english?'Access and next steps':'Acces și pașii următori')+paragraph(`<a href="${key==='currency'?'void(0);':baseURL+'/contact/'}">${key==='currency'?'Vezi produsul':english?'Request access':'Discută cu noi'}</a>`);
     if(key==='currency')content+=paragraph('<a href="void(0);">Cumpără pluginul →</a>')+paragraph('<a href="void(0);">Vezi produsul →</a>');
     if(key==='release')content+=paragraph(`<a href="${baseURL}/${contexts[5][0]}/">Română</a> · <a href="${baseURL}/${contexts[6][0]}/">English</a>`);
+    if(key==='sms')for(const plan of ['Alpha','Beta'])content+=paragraph(`<a href="/product/synthetic-${plan.toLowerCase()}/">Choose Plan ${plan}. Synthetic plan description. View product.</a>`)+heading(`Plan ${plan}`,3)+paragraph('Synthetic plan description.');
     const page=await create({slug:path.split('/').pop(),parent:key==='privacy'?hub.id:0,title,content,featured_media:key==='release'?image.id:0});records.push(page);
   }
   protectedPage=await create({slug:'zion-software-protected-fixture',title:'Protected Software',template:'software',password:'local-demo-only',content:paragraph('SOFTWARE SECRET FIXTURE')});
@@ -50,7 +51,8 @@ for(const width of [390,768,1024,1440]) {
       await page.goto(`/${path}/`);const root=page.locator('.zion-software');await expect(root).toHaveAttribute('data-zion-software',key);await expect(root).toHaveClass(/is-spatial-static/);
       await expect(root.getByRole('heading',{level:1})).toHaveText(title);await expect(root.locator('h1')).toHaveCount(1);await expect(root.locator('canvas')).toHaveCount(key==='catalog'?1:2);
       await expect(root.locator('h1')).toHaveCSS('font-weight','680');
-      if(!['hub','catalog'].includes(key)){await expect(root.locator('.zion-software-section')).toHaveCount(5);await expect(root.locator('.zion-software-card')).toHaveCount(8);}
+      if(!['hub','catalog'].includes(key)){await expect(root.locator('.zion-software-section')).toHaveCount(5);await expect(root.locator('.zion-software-card')).toHaveCount(key==='sms'?10:8);}
+      if(key==='sms')for(const plan of ['Alpha','Beta']){const card=root.locator('.zion-software-plan').filter({has:page.getByRole('heading',{name:`Plan ${plan}`,exact:true})});await expect(card).toHaveCount(1);const action=card.getByRole('link',{name:`Vezi produsul: Plan ${plan}`,exact:true});await expect(action).toHaveText('Vezi produsul ↗');await expect(action).toHaveAttribute('href',`/product/synthetic-${plan.toLowerCase()}/`);expect((await action.boundingBox()).height).toBeGreaterThanOrEqual(48);}
       if(key==='hub')await expect(root.locator('.zion-software-link-card')).toHaveCount(6);
       for(const canvas of await root.locator('canvas').all()){await expect(canvas).toHaveAttribute('data-render-mode','static');expect(await canvas.evaluate(e=>e.getContext('2d').getImageData(0,0,e.width,e.height).data.some((v,i)=>i%4===3&&v>0))).toBe(true);}
       for(const frame of await root.locator('.zion-software-hero-art,.zion-software-copy').all()){const b=await frame.boundingBox();expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(width+.5);}
@@ -82,7 +84,9 @@ test('Software hub, native section links, languages and repaired inquiry actions
 
 test('Software catalog keeps native AJAX sorting, visibility and empty-state recovery',async({page})=>{
   await page.setViewportSize({width:390,height:950});await page.goto('/magazin-software/?orderby=price');const catalog=page.locator('.zion-catalog-native');await expect(catalog.locator('.wc-block-product')).toHaveCount(2);
+  const prices=async()=>catalog.locator('.wc-block-product').evaluateAll(cards=>cards.map(card=>Number([...card.querySelectorAll('.woocommerce-Price-amount')].at(-1).textContent.replace(/[^\d.,]/g,'').replace(',','.'))));const ascending=await prices();expect(ascending).toEqual([...ascending].sort((a,b)=>a-b));
   await expect(catalog).not.toContainText('Suport modular 3D');const started=await page.evaluate(()=>performance.timeOrigin);await page.getByLabel('Sortează',{exact:true}).selectOption('price-desc');await expect(page.getByRole('status').filter({hasText:'Sortarea a fost actualizată.'})).toBeVisible();expect(await page.evaluate(()=>performance.timeOrigin)).toBe(started);await expect(page.locator('.zion-software-hero canvas')).toHaveCount(1);
+  expect(await prices()).toEqual([...ascending].sort((a,b)=>b-a));
   await page.goto('/magazin-software/?min_price=9999');await expect(catalog).toContainText('Nu există produse pentru selecția curentă.');await expect(catalog.locator('.wc-block-product')).toHaveCount(0);await catalog.getByRole('button',{name:'Filtrează produsele',exact:true}).click();await catalog.getByRole('link',{name:'Resetează filtrele',exact:true}).click();await expect(catalog.locator('.wc-block-product')).toHaveCount(2);expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
 });
 

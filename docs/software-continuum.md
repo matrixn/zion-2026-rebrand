@@ -22,6 +22,8 @@ Linkul separat ZionFood și aplicațiile externe rămân destinații de navigare
 
 Filtrul frontend `the_content`, înainte de randarea blocurilor, organizează H2 în secțiuni și H3 în carduri. Sunt păstrate ordinea și fiecare bloc original: texte, linkuri, liste și cod. Se desface numai wrapperul nativ cunoscut `zion-editorial-panel`; grupurile create ulterior de autor rămân ale sale. O singură funcție produce corpul și ancorele cuprinsului. Rezultatul este memorat numai în cererea curentă, fără opțiuni sau tabele suplimentare. În REST/editor conținutul rămâne în forma salvată.
 
+Pentru planurile migrate care repetă titlul și descrierea într-un link aflat imediat înainte de H3, acel link intră în cardul propriului plan. Ordinea blocurilor originale rămâne identică. Numai la afișare, rezumatul duplicat devine „Vezi produsul”, cu un nume accesibil care include planul; CSS poziționează acțiunea după titlu și descriere. Nu este asociată acțiunea planului următor cu planul curent.
+
 Pagina principală transformă legăturile locale existente în carduri cu descrieri de prezentare. Catalogul păstrează exact shortcode-ul și rendererul Zion Core/WooCommerce: clasificarea `zion_shop`, filtrele, sortarea, paginarea, spinnerul și Add to Cart. Catalogul are un hero animat și lățime completă, fără o a doua bară laterală sau un al doilea motor de filtrare.
 
 Pe pagina Multi-Currency au fost identificate trei CTA-uri cu `href="void(0);"`. La randarea blocului de conținut sunt înlocuite cu **Solicită detalii**, către Contact, cu contextul `software=multi-currency`. Pagina și metadatele originale sunt păstrate. Acest flux oferă un contact funcțional și nu introduce un produs, un preț sau o licență fictivă.
@@ -48,7 +50,7 @@ npm run package
 bash scripts/ci-browser.sh stop
 ```
 
-Cele **10 teste Software** verifică șapte contexte la 390/768/1024/1440 px, **14 referințe vizuale**, animații/pauză/reduced motion, diagrama laterală inactivă între interacțiuni, legăturile native, limbile, cele trei CTA-uri reparate, sortarea AJAX și resetarea filtrelor mobile, lipsa JavaScript, protecția prin parolă și validitatea în Site Editor. Cele **14 aserțiuni noi de integrare** verifică, între altele, identitatea tuturor blocurilor originale și izolarea aliasului legacy.
+Cele **10 teste Software** verifică șapte contexte la 390/768/1024/1440 px, **14 referințe vizuale**, animații/pauză/reduced motion, diagrama laterală inactivă între interacțiuni, legăturile native, limbile, cele trei CTA-uri reparate, planurile cu link-rezumat duplicat, ordinea efectivă a prețurilor după sortarea AJAX și resetarea filtrelor mobile, lipsa JavaScript, protecția prin parolă și validitatea în Site Editor. Cele **16 aserțiuni noi de integrare** verifică, între altele, identitatea tuturor blocurilor originale și izolarea aliasului legacy.
 
 Proiectul Playwright `software` rulează **după storefront, înainte de editorial și control**. Creează numai fixture-uri sintetice proprii în instanța de teste `localhost:8917`, refuză suprascrierea căilor existente și elimină exact paginile create. Astfel, pagina Software și linkurile sale nu schimbă footerul în comparațiile vizuale ale celorlalte pagini. Nu se importă datele reale de staging în teste sau în Git. Pentru iterații: `npx playwright test --project=software --no-deps --workers=1`.
 
@@ -61,3 +63,11 @@ wp eval-file scripts/journal-audit.php /cale/privata/software-continuum-before-1
 ```
 
 Cache-ul PHP se invalidează punctual printr-un helper temporar autentificat, restricționat la staging și eliminat după utilizare. Pentru rollback, componentele anterioare se extrag privat, se împachetează și se reinstalează prin WordPress cu `--force`, eliminând și fișierele noi. Snapshotul se verifică din nou; SQL-ul nu se restaurează peste editări independente. Rezultatele finale și CI sunt consemnate în README. Producția nu face parte din această livrare.
+
+## QA pe clona reală
+
+Cele șapte pagini au fost verificate la **390/768/1024/1440 px**: un H1, zero overflow, fără erori PHP vizibile. Hubul are șase carduri; paginile SMS/Privacy/Multi-Currency/ReleaseStation au **9/10/7/13 secțiuni**, respectiv **25/17/17/13 carduri**. ReleaseStation RO/EN păstrează coperta și exemplul de cod; cuprinsul folosește ancore native și actualizează diagrama. Pe mobil este inițial închis și funcționează cu Enter. Pauza și reduced motion au fost verificate pe staging; testele locale verifică inclusiv schimbarea efectivă a cadrelor.
+
+Clona avea tabela nativă WooCommerce `wc_product_meta_lookup` goală. După backup privat, `wc_update_product_lookup_tables()` din WP-CLI a refăcut **82 de rânduri derivate**. Comparatorul înainte/după confirmă identitatea tuturor înregistrărilor `product`/`product_variation` și a metadatelor lor: nu au fost modificate prețurile sau stocurile sursă. S-au invalidat numai cache-urile derivate. Sortarea reală a celor opt produse Software este acum crescătoare/descrescătoare, inclusiv după navigarea AJAX și Back. Backupul SQL și copia privată a indexului anterior sunt păstrate în `.zion-migration` de pe staging.
+
+Homepage/About/Servicii/Contact/blog/FAQ/Magazin 3D păstrează **6/2/10/3/1/2/0 scene**, fără clase Software sau overflow la 390/1440 px. Auditul strict confirmă cele **43 de înregistrări editoriale**, metadatele, termenii, comentariile și setările neschimbate. Șablonul Software provine din temă și nu are copie salvată în Site Editor. Producția nu a fost modificată.

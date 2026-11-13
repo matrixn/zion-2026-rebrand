@@ -3448,6 +3448,10 @@ body:has(.zion-product-page--sticky) {
 .zion-software-card > h3 { margin: 0 0 1rem; color: var(--wp--preset--color--text); font-size: clamp(1.1rem, 1.45vw, 1.35rem); line-height: 1.4; letter-spacing: -.02em; }
 .zion-software-card :is(p,ul,ol) { margin-block: .8rem 0; color: var(--wp--preset--color--muted); font-size: .95rem; line-height: 1.85; }
 .zion-software-card > :last-child { margin-block-end: 0; }
+.zion-software-plan { display: flex; flex-direction: column; gap: .8rem; }
+.zion-software-plan > .zion-software-plan-action { order: 1; padding-block-start: 1rem; margin-block-start: auto; }
+.zion-software-plan-action a { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; min-height: 48px; padding: .7rem 1rem; border: 1px solid var(--wp--preset--color--accent); border-radius: .35rem; color: var(--wp--preset--color--accent); font-weight: 600; text-decoration: none; }
+.zion-software-plan-action a:hover { background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); }
 .zion-software-content :is(img,video,iframe) { max-width: 100%; }
 .zion-software-content img { height: auto; border-radius: .5rem; }
 .zion-software-content p > svg { display: inline-block; width: 1.4em; height: 1.4em; vertical-align: middle; color: var(--wp--preset--color--accent); fill: currentColor; }
