@@ -8,6 +8,7 @@
 // phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.Security.NonceVerification.Recommended -- Synthetic CLI query isolation restores all WordPress globals and GET state in finally.
 
 ( static function (): void {
+	require_once WP_CONTENT_DIR . '/zion-scripts/launch-editorial-helpers.php';
 	global $wp_query, $wp_the_query, $post;
 	$zion_theme_before = array( $wp_query, $wp_the_query, $post, $_GET );
 	$zion_theme_ids    = array();
@@ -98,6 +99,30 @@
 		zion_core_test_assert( str_contains( zion_theme_seo_url(), 'query-73-page=2' ) && str_contains( wp_get_document_title(), 'Pagina 2' ), 'Native Product Collection pagination has a distinct canonical and title' );
 		$zion_theme_short_service = get_page_by_path( 'printare-3d' );
 		zion_core_test_assert( 0 === strcmp( get_permalink( $zion_theme_short_service ), wp_get_canonical_url( $zion_theme_short_service ) ), 'A fresh-install individual printing page never becomes a Services alias without an explicit editorial canonical' );
+		$zion_theme_template_id = wp_insert_post(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => 'Template preflight fixture',
+				'post_name'    => 'zion-template-preflight-fixture',
+				'post_content' => '<p>Synthetic preserved body.</p>',
+			)
+		);
+		$zion_theme_ids[]       = $zion_theme_template_id;
+		update_post_meta( $zion_theme_template_id, '_wp_page_template', 'elementor_canvas' );
+		$zion_theme_template_before = wp_json_encode( array( get_post( $zion_theme_template_id, ARRAY_A ), get_post_meta( $zion_theme_template_id ) ) );
+		$zion_theme_template_error  = zion_theme_launch_template_preflight( $zion_theme_template_id, array( 'post_title' => 'Edited fixture' ) );
+		zion_core_test_assert( is_wp_error( $zion_theme_template_error ) && 'zion_launch_invalid_template' === $zion_theme_template_error->get_error_code() && 0 === strcmp( $zion_theme_template_before, wp_json_encode( array( get_post( $zion_theme_template_id, ARRAY_A ), get_post_meta( $zion_theme_template_id ) ) ) ), 'Legacy template preflight rejects the title update before any native partial write' );
+		zion_core_test_assert( is_wp_error( zion_theme_launch_template_preflight( $zion_theme_template_id, array( 'page_template' => 'missing-template' ) ) ) && null === zion_theme_launch_template_preflight( $zion_theme_template_id, array( 'page_template' => 'default' ) ), 'Only an explicit registered or default native template can repair the legacy pointer' );
+		$zion_theme_template_result = wp_update_post(
+			array(
+				'ID'            => $zion_theme_template_id,
+				'post_title'    => 'Edited fixture',
+				'page_template' => 'default',
+			),
+			true
+		);
+		zion_core_test_assert( ! is_wp_error( $zion_theme_template_result ) && 'default' === get_post_meta( $zion_theme_template_id, '_wp_page_template', true ) && '<p>Synthetic preserved body.</p>' === get_post_field( 'post_content', $zion_theme_template_id ) && 'zion-template-preflight-fixture' === get_post_field( 'post_name', $zion_theme_template_id ), 'A valid native replacement completes the WordPress update while preserving the body and URL' );
 	} finally {
 		update_option( 'woocommerce_shop_page_id', $zion_theme_shop );
 		remove_filter( 'woocommerce_is_cart', '__return_true' );

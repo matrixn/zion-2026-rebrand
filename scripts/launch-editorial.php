@@ -10,6 +10,7 @@
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI || 'staging' !== wp_get_environment_type() || 'zion-stage.on-forge.com' !== wp_parse_url( home_url(), PHP_URL_HOST ) ) {
 	exit( 1 );
 }
+require_once __DIR__ . '/launch-editorial-helpers.php';
 
 $zion_theme_mode = $args[0] ?? '';
 if ( ! in_array( $zion_theme_mode, array( 'dry-run', 'apply', 'verify' ), true ) ) {
@@ -38,10 +39,20 @@ foreach ( $zion_theme_plan['posts'] as $zion_theme_id => $zion_theme_change ) {
 		WP_CLI::error( 'Every planned record must be present in the snapshot.' );
 	}
 	foreach ( $zion_theme_change['fields'] ?? array() as $zion_theme_field => $zion_theme_value ) {
-		if ( ! in_array( $zion_theme_field, array( 'post_title', 'post_content', 'post_excerpt', 'post_status' ), true ) || ! is_string( $zion_theme_value ) || strlen( $zion_theme_value ) > 5000000 || ( 'post_status' === $zion_theme_field && ! in_array( $zion_theme_value, array( 'publish', 'draft' ), true ) ) ) {
+		if ( ! in_array( $zion_theme_field, array( 'post_title', 'post_content', 'post_excerpt', 'post_status', 'page_template' ), true ) || ! is_string( $zion_theme_value ) || strlen( $zion_theme_value ) > 5000000 || ( 'post_status' === $zion_theme_field && ! in_array( $zion_theme_value, array( 'publish', 'draft' ), true ) ) ) {
 			WP_CLI::error( 'Only explicit editorial fields and publish/draft statuses are allowed.' );
 		}
 		$zion_theme_expected[ $zion_theme_id ]['post'][ $zion_theme_field ] = $zion_theme_value;
+		if ( 'page_template' === $zion_theme_field ) {
+			$zion_theme_template_rows = count( $zion_theme_expected[ $zion_theme_id ]['meta']['_wp_page_template'] ?? array() );
+			$zion_theme_expected[ $zion_theme_id ]['meta']['_wp_page_template'] = array_fill( 0, max( 1, $zion_theme_template_rows ), $zion_theme_value );
+		}
+	}
+	if ( ! empty( $zion_theme_change['fields'] ) ) {
+		$zion_theme_template_error = zion_theme_launch_template_preflight( (int) $zion_theme_id, $zion_theme_change['fields'] );
+		if ( is_wp_error( $zion_theme_template_error ) ) {
+			WP_CLI::error( 'Template preflight failed for ' . $zion_theme_id . ': ' . $zion_theme_template_error->get_error_code() );
+		}
 	}
 	foreach ( $zion_theme_change['meta'] ?? array() as $zion_theme_key => $zion_theme_value ) {
 		if ( ! in_array( $zion_theme_key, array( '_yoast_wpseo_title', '_yoast_wpseo_metadesc', '_yoast_wpseo_canonical' ), true ) || ! is_string( $zion_theme_value ) || strlen( $zion_theme_value ) > 4000 ) {
@@ -113,17 +124,25 @@ if ( 'apply' === $zion_theme_mode ) {
 	$zion_theme_state = array(
 		'plan_sha256' => hash_file( 'sha256', $zion_theme_paths[1] ),
 		'completed'   => array(),
+		'attempted'   => array(),
 		'finished'    => false,
 	);
 	file_put_contents( $zion_theme_journal, wp_json_encode( $zion_theme_state ) );
 	chmod( $zion_theme_journal, 0600 );
 	foreach ( $zion_theme_plan['posts'] as $zion_theme_id => $zion_theme_change ) {
+		$zion_theme_state['attempted'][] = (int) $zion_theme_id;
+		file_put_contents( $zion_theme_journal, wp_json_encode( $zion_theme_state ) );
 		$zion_theme_fields       = $zion_theme_change['fields'] ?? array();
 		$zion_theme_fields['ID'] = (int) $zion_theme_id;
 		if ( count( $zion_theme_fields ) > 1 ) {
 			$zion_theme_result = wp_update_post( wp_slash( $zion_theme_fields ), true );
 			if ( is_wp_error( $zion_theme_result ) ) {
-				WP_CLI::error( 'Native editorial update failed: ' . $zion_theme_id );
+				$zion_theme_state['last_error'] = array(
+					'id'   => (int) $zion_theme_id,
+					'code' => $zion_theme_result->get_error_code(),
+				);
+				file_put_contents( $zion_theme_journal, wp_json_encode( $zion_theme_state ) );
+				WP_CLI::error( 'Native editorial update failed: ' . $zion_theme_id . ' [' . $zion_theme_result->get_error_code() . ']' );
 			}
 		}
 		foreach ( $zion_theme_change['meta'] ?? array() as $zion_theme_key => $zion_theme_value ) {

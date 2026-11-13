@@ -36,7 +36,9 @@ wp eval-file scripts/launch-editorial.php apply /private/launch-before.json /pri
 wp eval-file scripts/launch-editorial.php verify /private/launch-before.json /private/launch-plan.json
 ```
 
-Scriptul refuză producția/alte hosturi, fișiere publice, modificări concurente, reaplicarea unui jurnal și câmpuri comerciale arbitrare. Permite numai titlu, conținut, excerpt, publish/draft și trei metadate SEO nominalizate. Verifică toate înregistrările din snapshot, păstrează ordinea listelor și ignoră doar ordinea cheilor asociative și timestampurile native ale înregistrărilor planificate. Jurnalul privat înregistrează progresul. La un eșec se inspectează jurnalul și backupul; nu se reaplică orbește și nu se restaurează peste schimbări concurente.
+Scriptul refuză producția/alte hosturi, fișiere publice, modificări concurente, reaplicarea unui jurnal și câmpuri comerciale arbitrare. Permite numai titlu, conținut, excerpt, publish/draft, alegerea unui șablon nativ valid și trei metadate SEO nominalizate. Verifică toate înregistrările din snapshot, păstrează ordinea listelor și ignoră doar ordinea cheilor asociative și timestampurile native ale înregistrărilor planificate. Jurnalul privat înregistrează încercările, operațiile încheiate și codul erorii. La un eșec se inspectează jurnalul și backupul; nu se reaplică orbește și nu se restaurează peste schimbări concurente.
+
+Preflightul validează și șabloanele moștenite, înainte de prima scriere. WordPress poate valida `page_template` după actualizarea rândului SQL: o editare de titlu poate întoarce eroare pentru un pointer Elementor invalid, deși titlul s-a schimbat deja. Recuperarea păstrează backupul și jurnalul originale, verifică exact câmpurile afectate și creează un checkpoint separat înainte de reluarea planului amendat. Nu sunt acceptate diferențe arbitrare sau schimbări de URL/autor/date comerciale. Testele sintetice verifică refuzul fără scriere și înlocuirea explicită cu un șablon nativ.
 
 ## WordPress.org și server
 
