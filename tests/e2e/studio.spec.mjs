@@ -13,6 +13,7 @@ test.beforeAll(async({browser,baseURL})=>{
   session=await browser.newContext({baseURL});admin=await session.newPage();await login(admin);headers={'X-WP-Nonce':await(await admin.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text()};
   designOriginal=await readDesign();const theme=await(await admin.request.get('/wp-json/wp/v2/global-styles/themes/zion-theme',{headers})).json();styleId=theme.id;
   if(!styleId){await admin.goto('/wp-admin/site-editor.php');await admin.waitForFunction(()=>wp.data.select('core').__experimentalGetCurrentGlobalStylesId());styleId=await admin.evaluate(()=>wp.data.select('core').__experimentalGetCurrentGlobalStylesId());}
+  const longPage=await native('pages',{title:'Synthetic long page title for responsive design previews and navigation '.repeat(3),status:'publish',content:'<!-- wp:paragraph --><p>Synthetic preview fixture.</p><!-- /wp:paragraph -->'});fixtures.push('pages/'+longPage.id);
 });
 test.afterAll(async()=>{try{await restoreDesign();for(const path of fixtures.reverse())expect((await admin.request.delete('/wp-json/wp/v2/'+path+'?force=true',{headers})).ok()).toBe(true);}finally{await session.close();}});
 
@@ -95,6 +96,7 @@ for(const width of [390,1440])test(`Studio admin controls fit at ${width}px and 
   await login(page);await page.setViewportSize({width,height:1000});await page.goto(base+'&section=design');await expect(page.locator('#zion-token-color_ink')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
   await expect(page.getByText('Identitatea site-ului · logo, pictogramă și nume',{exact:true})).toBeVisible();await expect(page.frameLocator('iframe[title="Preview design Zion"]').locator('h1').first()).toBeVisible();
   expect(await page.frameLocator('iframe[title="Preview design Zion"]').locator('.zion-header').evaluate(element=>element.getBoundingClientRect().height)).toBeLessThan(260);
+  await page.getByRole('button',{name:'Alege culoarea Ink',exact:true}).click();await expect(page.locator('.components-color-picker')).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);await page.keyboard.press('Escape');
   await page.screenshot({path:`build/studio-design-${width}-1.1.27.png`,fullPage:false});
   await page.goto(base+'&section=software');const number=page.locator('#zion-field-catalog_columns_desktop');const original=await number.inputValue();const slider=page.getByRole('slider',{name:'Coloane desktop · glisor'});await slider.focus();await slider.press('Home');await slider.press('ArrowRight');await slider.press('ArrowRight');await expect(number).toHaveValue('4');await number.fill(original);
   await page.locator('[data-zion-setting-search]').fill('coloane desktop');await expect(page.locator('[data-zion-field=catalog_columns_desktop]')).toBeVisible();await expect(page.locator('[data-zion-field=catalog_layout]')).toBeHidden();

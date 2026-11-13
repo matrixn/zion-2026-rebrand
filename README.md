@@ -52,6 +52,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Ambele ZIP-uri **1.1.27** generate și verificate față de sursă: **131 fișiere Theme / 9 fișiere Core**. Biblioteca Studio este inclusă explicit în pachetul temei.
 - [x] Cele **126 de scenarii Playwright** verificate local: suita generală, noul Studio, regresiile Control Center și clasificarea. Cele trei verificări ale legăturilor de editare urmăresc acum Zion Studio; rerularea lor a trecut **3/3**, iar clasificarea **1/1**. Studio a trecut din nou **7/7**, inclusiv resetarea în preview.
 - [x] Preview-ul static păstrează headerul compact și conținutul vizibil pe mobil, cu verificare automată. Crearea unui meniu și a unei pagini programate din Zion Studio este verificată pe date sintetice; **7/7 Studio** și testul dedicat de creare/publicare au trecut.
+- [x] Selectoarele cu titluri lungi, câmpurile editoriale și legăturile de administrare se încadrează pe mobil. Testele includ o pagină sintetică cu titlu lung și verifică zero overflow inclusiv cu colorpickerul deschis: **7/7 Studio** trecute în 1,3 minute.
 - [ ] GitHub Actions și verificarea finală pe staging.
 
 Ghid: [Zion Studio și controale native](docs/zion-studio.md).

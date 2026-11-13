@@ -8,6 +8,7 @@
 .zion-control .nav-tab-active, .zion-control .nav-tab-active:hover { color: var(--wp--preset--color--ink); background: var(--wp--preset--color--accent); font-weight: 650; }
 .zion-control-panel { min-width: 0; padding: clamp(16px, 3vw, 32px); background: #fff; border: 1px solid #dcdcde; border-radius: 12px; }
 .zion-control-panel > h2 { font-size: 23px; margin-top: 0; letter-spacing: -.025em; }
+.zion-control .button { max-width:100%; box-sizing:border-box; height:auto; white-space:normal; overflow-wrap:anywhere; }
 .zion-control .form-table { margin-top: 20px; }
 .zion-control .form-table tr { border-top: 1px solid #eef0f1; }
 .zion-control .form-table th { width: 180px; font-weight: 600; padding-block: 22px; }
@@ -87,6 +88,7 @@
 .zion-studio-card > summary { font-size: 15px; font-weight: 650; cursor: pointer; min-height: 36px; }
 .zion-studio-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-block: 16px; }
 .zion-studio-fields > * { min-width: 0; }
+.zion-studio-fields :is(select,textarea) { width:100%; min-width:0; max-width:100%; }
 .zion-studio-fields label, .zion-document-meta > label, .zion-preview-tools label, .zion-token-panel > label { display: grid; gap: 8px; font-weight: 600; }
 .zion-studio-fields input, .zion-document-meta input { width: 100%; min-height: 40px; }
 .zion-studio-fields label:has(> input[type="checkbox"]) { display:flex; align-items:center; align-self:center; }
@@ -114,7 +116,8 @@
 .zion-color-swatch { display: inline-block; width: 24px; height: 24px; border: 1px solid #708274; border-radius: 4px; margin-inline-end: 8px; }
 .zion-studio-preview { min-width: 0; position: sticky; top: 44px; padding: 14px; border: 1px solid #dce3dc; border-radius: 12px; background: #f5f8f5; }
 .zion-preview-tools > div { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
-.zion-preview-tools select { max-width: 100%; }
+.zion-preview-tools label { min-width:0; }
+.zion-preview-tools select { width:100%; min-width:0; max-width:100%; }
 .zion-preview-holder { position: relative; width: 100%; overflow: hidden; border-radius: 8px; background: #fff; }
 .zion-preview-holder iframe { position: absolute; top: 0; left: 0; max-width: none; border: 0; }
 .zion-contrast { padding: 10px; border-radius: 6px; background: #eef3ef; font-size: 11px; line-height: 1.8; }
