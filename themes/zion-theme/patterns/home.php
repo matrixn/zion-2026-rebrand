@@ -53,7 +53,7 @@ $zion_theme_hero    = zion_theme_service_group(
 						<text x="192" y="395">IDEA → REALITY</text>
 					</g>
 				</svg>
-				<div class="zion-blueprint-label"><span>FIZIC + DIGITAL</span><span>CONSTRUIT ÎN VALCEA, RO</span></div>
+				<div class="zion-blueprint-label"><span>FIZIC + DIGITAL</span><span>CONSTRUIT ÎN VÂLCEA, RO</span></div>
 			</div>'
 		)
 	) .

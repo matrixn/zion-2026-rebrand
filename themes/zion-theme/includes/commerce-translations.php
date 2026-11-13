@@ -256,6 +256,10 @@ function zion_theme_commerce_strings(): array {
  * @return string
  */
 function zion_theme_translate_commerce( string $translated, string $text, string $domain ): string {
+	// Some installed Romanian catalogs contain this invalid entity in cart labels.
+	if ( zion_theme_romanian_commerce( $domain ) ) {
+		$translated = str_replace( '&lbquo;', '„', $translated );
+	}
 	return $translated === $text && zion_theme_romanian_commerce( $domain )
 		? ( zion_theme_commerce_strings()[ $text ] ?? $translated )
 		: $translated;

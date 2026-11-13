@@ -134,6 +134,8 @@
 			'A planned blog update separates only the native pending enclosure marker from authored metadata'
 		);
 		zion_core_test_assert( array( '_encloseme' => array( '1' ) ) === zion_theme_launch_authored_meta( array( '_encloseme' => array( '1' ) ), false ) && array( '_encloseme' => array( 'unexpected' ) ) === zion_theme_launch_authored_meta( array( '_encloseme' => array( 'unexpected' ) ), true ), 'Unplanned records and unknown marker values retain strict metadata verification' );
+		zion_core_test_assert( 'Adaugă în coș: „Produs”' === zion_theme_translate_commerce( 'Adaugă în coș: &lbquo;Produs”', 'Add to cart: “%s”', 'woocommerce' ), 'The broken Romanian quote entity is repaired in native cart accessibility labels' );
+		zion_core_test_assert( 'Traducere editorială validă' === zion_theme_translate_commerce( 'Traducere editorială validă', 'Add to cart', 'woocommerce' ) && '&lbquo;' === zion_theme_translate_commerce( '&lbquo;', 'Source', 'unrelated-domain' ), 'Valid installed translations and unrelated gettext domains remain untouched' );
 	} finally {
 		update_option( 'woocommerce_shop_page_id', $zion_theme_shop );
 		remove_filter( 'woocommerce_is_cart', '__return_true' );
