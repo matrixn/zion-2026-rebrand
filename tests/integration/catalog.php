@@ -138,4 +138,5 @@ require __DIR__ . '/faq.php';
 require __DIR__ . '/software.php';
 require __DIR__ . '/studio.php';
 require __DIR__ . '/customer-location.php';
+require __DIR__ . '/seo.php';
 WP_CLI::success( 'Catalog integration passed.' );

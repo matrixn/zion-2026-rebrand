@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.29** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.30** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.29** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.30** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,18 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Audit de lansare și sharing · 1.1.30
+
+- [x] Crawl anonim pe staging: **506 URL-uri / 143 pagini HTML** înainte de corecții, cu inventar de pagini publicate, linkuri interne/externe, surse, statusuri, redirecturi, H1, metadate, imagini și duplicate. Raport JSON și HTML căutabil; fără formulare, cumpărări sau extinderea crawlului în ZionFood/producție.
+- [x] Copertă de share nouă pentru homepage, negru/lime, CAD → printare 3D → software; **1734 × 907 px**, distinctă de logo. Open Graph și Twitter Card în HTML pentru pagini, produse și arhive; media nativă cu fallback Zion, fără metadate duplicate dacă este activat un provider SEO.
+- [x] Descrieri și titluri editoriale păstrate, canonical-uri native, paginare Product Collection, alternates RO/EN și sitemap WordPress cu excluderi utilitare. Stagingul rămâne intenționat **noindex**, conform alegerii utilizatorului; indexarea se activează după mutarea pe live.
+- [x] Backup privat SQL/Theme/Core/wp-config/Nginx și **125 de înregistrări**; plan editorial cu dry-run, jurnal și verificarea tuturor câmpurilor/metadatelor/taxonomiilor neplanificate. Directorul oficial WordPress deblocat prin allowlist restrâns; API-urile Plugin/Theme răspund 200 și traducerile românești sunt instalate.
+- [ ] Corecțiile editoriale, instalarea finală 1.1.30 pe staging, al doilea crawl și verificările desktop/mobil.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și migrare/rollback/HPOS trecute; **17 aserțiuni noi SEO**, **7 teste Python** pentru limitele crawlerului și JSON-LD și **2/2 scenarii browser SEO**. Suita completă locală: **132/132 Playwright în 18,5 minute**; CI final în curs de verificare.
+- [ ] README și raport final, ambele ZIP-uri 1.1.30 verificate, commit și push pe main.
+
+Ghid și checklist de mutare: [Pregătire lansare cu Duplicator](docs/launch-readiness.md). Configurarea SMTP, sandboxul plăților, reconcilierea comenzilor recente și verificările efective pe domeniul live sunt porți separate de lansare; producția nu este modificată în această fază.
 
 ## Checkout, localizare și vizitatori · 1.1.29
 

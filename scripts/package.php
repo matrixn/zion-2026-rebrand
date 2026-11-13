@@ -100,6 +100,7 @@ try {
 				'assets/blocks' => array( 'js' ),
 				'assets/admin'  => array( 'css', 'png' ),
 				'assets/brand'  => array( 'webp' ),
+				'assets/images' => array( 'png', 'webp', 'jpg' ),
 				'assets/dist'   => array( 'css' ),
 				'includes'      => array( 'php' ),
 				'parts'         => array( 'html' ),
