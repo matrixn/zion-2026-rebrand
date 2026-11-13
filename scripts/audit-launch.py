@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only, bounded staging link/SEO crawl. Standard library only; no forms or cart actions."""
+"""Bounded read-only release crawl; staging by default, live by explicit opt-in."""
 import argparse
 import collections
 import concurrent.futures
@@ -142,7 +142,7 @@ def request(url):
     for _ in range(7):
         if not public_host(urllib.parse.urlsplit(current).hostname):
             return {"url": url, "error": "host not public/reachable", "redirects": chain}
-        req = urllib.request.Request(current, headers={"User-Agent": "ZionLaunchAudit/1.0 (authorized staging audit)", "Accept": "text/html,application/xml,image/*;q=0.8,*/*;q=0.5"})
+        req = urllib.request.Request(current, headers={"User-Agent": "ZionLaunchAudit/1.1 (authorized read-only release audit)", "Accept": "text/html,application/xml,image/*;q=0.8,*/*;q=0.5"})
         try:
             response = opener.open(req, timeout=18)
         except urllib.error.HTTPError as error:
@@ -201,11 +201,18 @@ def inspect(row):
     return page
 
 
-def crawl(base, output, limit=600, seeds=()):
+def crawl_origin(base, live=False):
+    """Require one exact HTTPS origin; live authorization never permits another host."""
     origin = urllib.parse.urlsplit(base)
-    if origin.scheme != "https" or origin.hostname != "zion-stage.on-forge.com" or origin.username or origin.password:
-        raise ValueError("Only the explicitly authorized HTTPS staging origin is accepted")
+    expected = "zion3d.ro" if live else "zion-stage.on-forge.com"
+    if origin.scheme != "https" or origin.netloc != expected or origin.path not in ("", "/") or origin.query or origin.fragment:
+        raise ValueError(f"Only the explicitly selected HTTPS origin https://{expected}/ is accepted")
     root = f"https://{origin.hostname}/"
+    return origin, root
+
+
+def crawl(base, output, limit=600, seeds=(), live=False):
+    origin, root = crawl_origin(base, live)
     pending = collections.deque([root, root + "robots.txt", root + "wp-sitemap.xml", root + "sitemap_index.xml", *seeds])
     known, results, pages, sources, exclusions, fragments = set(), {}, {}, collections.defaultdict(set), {}, []
     while pending and len(known) < limit:
@@ -279,6 +286,7 @@ if __name__ == "__main__":
     parser.add_argument("base")
     parser.add_argument("output")
     parser.add_argument("--limit", type=int, default=600)
-    parser.add_argument("--seeds", help="Private JSON array of additional public staging URLs")
+    parser.add_argument("--seeds", help="Private JSON array of additional public URLs on the selected origin")
+    parser.add_argument("--live", action="store_true", help="Explicitly authorize only https://zion3d.ro/ for a read-only release audit")
     args = parser.parse_args()
-    crawl(args.base, args.output, min(max(args.limit, 1), 5000), json.loads(Path(args.seeds).read_text(encoding="utf-8")) if args.seeds else ())
+    crawl(args.base, args.output, min(max(args.limit, 1), 5000), json.loads(Path(args.seeds).read_text(encoding="utf-8")) if args.seeds else (), live=args.live)

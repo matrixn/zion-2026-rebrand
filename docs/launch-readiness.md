@@ -1,6 +1,6 @@
 # Pregătire lansare cu Duplicator · 1.1.30
 
-Lucrul se face exclusiv pe `https://zion-stage.on-forge.com`. Producția și ZionFood nu se modifică. Utilizatorul a ales explicit: **staging noindex; indexare după mutarea pe live**. Acest raport pregătește mutarea; nu declară proiectul production-ready fără validarea integrărilor și a destinației reale.
+Acest document descrie pregătirea istorică pe `https://zion-stage.on-forge.com`, când producția și ZionFood erau excluse. Migrarea integrală în producție a fost autorizată ulterior și executată pe 14 noiembrie 2026: vezi [raportul de deploy, verificările și punctele comerciale rămase](production-deploy-2026-11-14.md). Alegerea utilizatorului rămâne **staging noindex; indexare pe live**. Pregătirea și restaurarea nu declară proiectul production-ready fără validarea integrărilor reale.
 
 ## Audit repetabil
 

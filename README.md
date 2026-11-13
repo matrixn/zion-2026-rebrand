@@ -40,6 +40,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Migrare pe zion3d.ro · 14 noiembrie 2026
+
+- [x] Restaurare integrală autorizată din backupul Duplicator al stagingului: **Theme/Core 1.1.30**, 28 pagini și 32 produse publicate; datele vechi înlocuite conform confirmării utilizatorului.
+- [x] Backup privat SQL + fișiere înainte de migrare, hashuri și integritate verificate; instalator finalizat fără probleme, artefacte sensibile scoase din document root.
+- [x] Indexare activată pe live, robots și sitemap **200**, mediu production și debug oprit; cache separat după deploy, bypass pentru coș/checkout/cont.
+- [x] Crawl complet **493 URL-uri / 138 pagini HTML**; **44 verificări responsive** fără overflow. Coș anonim persistent după refresh, checkout românesc, sortare Ajax și selecție variație verificate fără plasarea unei comenzi.
+- [x] Crawler cu opt-in explicit `--live`, origine exactă și aceleași limite; **9 teste Python**, build/package, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și migrare/HPOS trecute.
+- [x] ZIP-urile sursă **1.1.31** regenerate; versiunea din backupul instalat pe live rămâne **1.1.30**. Nu s-a făcut upgrade implicit.
+- [ ] Configurează **metodele de plată**: backupul nu are niciuna activă și checkoutul nu poate finaliza comenzi. Configurează/verifică și livrarea (zero zone), taxele și integrările reale.
+- [ ] Configurează SMTP ulterior, conform cererii utilizatorului, și reconfigurează storage/programări Duplicator după resetarea setărilor criptate.
+
+Detalii, dovezi, limite și rollback: [raportul migrării în producție](docs/production-deploy-2026-11-14.md). Secțiunile de mai jos descriu livrările istorice și limitele lor de autorizare de la acel moment.
+
 ## Under Construction Zion Continuum · 1.1.31
 
 - [x] Pagină originală **Continuum 1.0.0** pentru pluginul existent **Zion · Under Construction**: nucleu 3D din straturi CAD, lumini lime pe contur, grilă tehnică și tipografie responsive. Logo-ul și contactul public Zion sunt păstrate; CTA WhatsApp și telefon, fără dată de lansare sau progres fictiv.

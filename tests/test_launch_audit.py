@@ -40,6 +40,18 @@ class LaunchAuditTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 audit.crawl(site, "unused.json")
 
+    def test_live_release_requires_the_explicit_exact_origin(self):
+        self.assertEqual("https://zion3d.ro/", audit.crawl_origin("https://zion3d.ro", live=True)[1])
+        self.assertEqual("https://zion-stage.on-forge.com/", audit.crawl_origin("https://zion-stage.on-forge.com/")[1])
+        for site in ("http://zion3d.ro/", "https://www.zion3d.ro/", "https://food.zion3d.ro/", "https://zion-stage.on-forge.com/", "https://zion3d.ro.example.com/", "https://user:secret@zion3d.ro/", "https://zion3d.ro:8443/", "https://zion3d.ro/wp-admin/", "https://zion3d.ro/?action=delete", "https://zion3d.ro/#fragment"):
+            with self.subTest(site=site), self.assertRaises(ValueError):
+                audit.crawl_origin(site, live=True)
+
+    def test_staging_root_rejects_credentials_ports_paths_and_queries(self):
+        for suffix in (":443/", "/wp-admin/", "/?action=delete", "/#fragment"):
+            with self.assertRaises(ValueError):
+                audit.crawl_origin("https://zion-stage.on-forge.com" + suffix)
+
     def test_native_structured_data_is_validated_without_execution(self):
         page = audit.Page()
         page.feed('<script type="application/ld+json">{"@graph":[{"@type":"Product","offers":{"@type":"Offer"}}]}</script><script type="application/ld+json">{invalid}</script>')
