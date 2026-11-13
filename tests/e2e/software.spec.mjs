@@ -100,3 +100,19 @@ test('Software canonical template and all saved blocks stay native and unchanged
   expect(await page.evaluate(()=>{const walk=bs=>bs.flatMap(b=>[b,...walk(b.innerBlocks||[])]);return walk(wp.data.select('core/block-editor').getBlocks()).filter(b=>b.isValid===false).map(b=>b.name);})).toEqual([]);
   for(const record of records){const actual=await(await admin.request.get(`/wp-json/wp/v2/pages/${record.id}?context=edit`,{headers})).json();expect(actual.content.raw).toBe(record.content.raw);expect(actual.template).toBe(record.template);expect(actual.link).toBe(record.link);}
 });
+
+test('Software long section navigation keeps native scrolling with Zion scrollbar colors',async({page})=>{
+  const fixture=records.find(record=>record.slug==='zion-sms-confirmation-woocommerce'),original=fixture.content.raw;
+  const changed=await admin.request.post(`/wp-json/wp/v2/pages/${fixture.id}`,{headers,data:{content:Array.from({length:20},(_,i)=>heading('Secțiunea demonstrativă '+(i+1))+paragraph('Conținut sintetic pentru navigarea cu tastatura.')).join('')}});expect(changed.ok()).toBe(true);
+  try {
+    for(const width of [390,1440]){
+      await page.setViewportSize({width,height:950});await page.goto(fixture.link);
+      const nav=page.locator('.zion-software-toc'),list=nav.locator('ol');if(await nav.locator('details').getAttribute('open')===null)await nav.locator('summary').click();
+      expect(await list.evaluate(e=>getComputedStyle(e).scrollbarColor)).not.toBe('auto');expect(await list.evaluate(e=>e.scrollHeight>e.clientHeight)).toBe(true);
+      await nav.getByRole('link').last().focus();await expect(nav.getByRole('link').last()).toBeInViewport();expect(await list.evaluate(e=>e.scrollTop)).toBeGreaterThan(0);
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+      await page.screenshot({path:`build/software-scrollbar-${width}-1.1.29.png`,fullPage:false});
+    }
+    await page.emulateMedia({forcedColors:'active'});await expect(page.locator('.zion-software-toc ol')).toHaveCSS('scrollbar-color','auto');
+  } finally {expect((await admin.request.post(`/wp-json/wp/v2/pages/${fixture.id}`,{headers,data:{content:original}})).ok()).toBe(true);}
+});

@@ -4,6 +4,27 @@ import { test, expect } from '@playwright/test';
 const base = '/wp-admin/themes.php?page=zion-theme';
 const endpoint = '/wp-admin/admin-post.php';
 
+function contrastRatio(ink, background, opacity = 1) {
+  const rgba = value => value.match(/[\d.]+/g).map(Number);
+  const bg = rgba(background), fg = rgba(ink), alpha = (fg[3] ?? 1) * opacity;
+  const luminance = rgb => rgb.slice(0, 3).map(v => v / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
+  const a = luminance(fg.map((v, i) => v * alpha + bg[i] * (1 - alpha))), b = luminance(bg);
+  return (Math.max(a, b) + .05) / (Math.min(a, b) + .05);
+}
+
+async function expectCouponContrast(input) {
+  const colors = await input.evaluate(e => {const style = getComputedStyle(e), hint = getComputedStyle(e, '::placeholder'), label = e.closest('.wc-block-components-text-input').querySelector('label'); return {ink:style.color, bg:style.backgroundColor, placeholder:hint.color, opacity:Number(hint.opacity), label:label ? getComputedStyle(label).color : null};});
+  expect(contrastRatio(colors.ink, colors.bg)).toBeGreaterThanOrEqual(4.5);
+  expect(contrastRatio(colors.placeholder, colors.bg, colors.opacity)).toBeGreaterThanOrEqual(4.5);
+  if(colors.label) expect(contrastRatio(colors.label, colors.bg)).toBeGreaterThanOrEqual(4.5);
+}
+
+async function openCoupon(page) {
+  const input=page.locator('.wc-block-components-totals-coupon input');
+  if(!await input.isVisible())await page.getByRole('button',{name:'Adaugă cupoane',exact:true}).click();
+  await expect(input).toBeVisible();return input;
+}
+
 test.beforeEach(({ baseURL }) => {
   test.skip(!['localhost', '127.0.0.1', '[::1]'].includes(new URL(baseURL).hostname), 'Settings tests mutate the isolated local wp-env database.');
 });
@@ -918,6 +939,7 @@ test('cart visual designs preserve native totals, quantities, coupons and checko
         await expect(cart.locator('.wc-block-cart__submit-button')).toHaveCount(1);
         await expect(cart.locator('.wc-block-cart__submit-button')).toBeVisible();
         await expect(cart.getByLabel('Cantitatea pentru Suport modular 3D din coș.')).toBeVisible();
+        await expectCouponContrast(await openCoupon(customer));
         expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
         expect((await readCart()).totals).toEqual(before.totals);
         for (const row of await cart.locator('.wc-block-cart-items__row').all()) {
@@ -949,7 +971,8 @@ test('cart visual designs preserve native totals, quantities, coupons and checko
       await expect.poll(async () => (await readCart()).items.find(item => item.name === 'Suport modular 3D').quantity).toBe(quantity);
       expect(await customer.evaluate(() => performance.timeOrigin)).toBe(documentStart);
       const withoutCoupon = (await readCart()).totals;
-      await customer.getByRole('button', { name: 'Adaugă cupoane', exact: true }).click();
+      await openCoupon(customer);
+      await expectCouponContrast(customer.locator('.wc-block-components-totals-coupon input'));
       await customer.locator('.wc-block-components-totals-coupon input').fill(code);
       await customer.getByRole('button', { name: 'Aplică', exact: true }).click();
       await expect.poll(async () => (await readCart()).coupons.map(item => item.code)).toContain(code);
@@ -1056,6 +1079,9 @@ test('checkout design selector preserves native form, validation and totals at f
         await expect(customer.locator('.zion-checkout-page')).toBeVisible();
         await expect(checkout.getByRole('form', { name: 'Finalizare comandă', exact: true })).toHaveCount(1);
         await expect(checkout.locator('.wc-block-checkout__sidebar .wc-block-components-order-summary-item')).toHaveCount(2);
+        const badge = checkout.locator('.wc-block-components-order-summary-item__quantity').first();
+        const badgeColors = await badge.evaluate(e=>({ink:getComputedStyle(e.querySelector('span')).color,bg:getComputedStyle(e).backgroundColor}));
+        expect(contrastRatio(badgeColors.ink,badgeColors.bg)).toBeGreaterThanOrEqual(4.5);
         await expect(checkout.locator('.wc-block-components-checkout-place-order-button')).toHaveCount(1);
         await expect(customer.locator('#email')).toBeVisible();
         // Physical carts may default to using the shipping address for billing.
@@ -1064,6 +1090,7 @@ test('checkout design selector preserves native form, validation and totals at f
         await expect(customer.locator('#billing-first_name').or(sameAddress).first()).toBeVisible();
         if (await sameAddress.count()) await sameAddress.uncheck();
         await expect(customer.locator('#billing-first_name')).toBeVisible();
+        await expectCouponContrast(await openCoupon(customer));
         expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
         expect((await readCart()).totals).toEqual(totals);
         await expect(checkout.locator('img[src*="admin/previews"]')).toHaveCount(0);
@@ -1072,6 +1099,12 @@ test('checkout design selector preserves native form, validation and totals at f
         if (width === 1440 || width === 390) await checkout.screenshot({ path: `build/checkout-${designs[index]}-${width}-1.1.12.png` });
       }
       const formStart = await customer.evaluate(() => performance.timeOrigin);
+      await openCoupon(customer);
+      const couponInput=customer.locator('.wc-block-components-totals-coupon input');
+      await expectCouponContrast(couponInput);
+      await couponInput.fill('contrast-demo');
+      await expectCouponContrast(couponInput);
+      await couponInput.clear();
       await customer.locator('#email').fill('invalid');
       await customer.locator('#email').press('Tab');
       await expect(customer.locator('#email')).toHaveAttribute('aria-invalid', 'true');
@@ -1092,6 +1125,37 @@ test('checkout design selector preserves native form, validation and totals at f
   } finally {
     await importSettings(page, original);
     await guest.close();
+  }
+});
+
+test('anonymous carts stay isolated after refresh and native country changes persist', async ({page,browser,baseURL})=>{
+  test.setTimeout(90000);
+  test.skip(new URL(baseURL).port!=='8917','Guest fixtures require the isolated tests instance.');
+  await login(page);
+  const headers={'X-WP-Nonce':await(await page.request.get('/wp-admin/admin-ajax.php?action=rest-nonce')).text()};
+  const route='/wp-json/wc/v3/settings/general/woocommerce_default_customer_address';
+  const original=(await(await page.request.get(route,{headers})).json()).value;
+  const first=await browser.newContext({baseURL}),second=await browser.newContext({baseURL});
+  try {
+    expect((await page.request.put(route,{headers,data:{value:'geolocation'}})).ok()).toBe(true);
+    const visitor=await first.newPage(),other=await second.newPage();
+    const products=await(await first.request.get('/wp-json/wc/store/v1/products?slug=suport-modular-3d')).json();
+    const product=products[0];await visitor.goto('/magazin-3d/');
+    const card=visitor.locator(`.zion-product-card[data-zion-product="${product.id}"]`);
+    await card.getByRole('button',{name:/Adaugă în coș/}).click();
+    await expect(card.locator('.zion-card-cart-hop')).toBeVisible();await card.locator('.zion-card-cart-hop').click();
+    await expect(visitor.locator('.wc-block-cart-items')).toContainText(product.name);
+    await visitor.reload();await expect(visitor.locator('.wc-block-cart-items')).toContainText(product.name);
+    await other.goto('/cart/');expect((await(await second.request.get('/wp-json/wc/store/v1/cart')).json()).items).toEqual([]);
+    await visitor.goto('/checkout/');const country=visitor.locator('#billing-country');
+    const same=visitor.getByRole('checkbox',{name:'Folosește aceeași adresă pentru facturare',exact:true});if(await same.count())await same.uncheck();
+    await expect(country).toHaveValue('RO');expect(await country.locator('option:not([disabled])').first().getAttribute('value')).toBe('RO');
+    await visitor.locator('#email').fill('guest@example.test');await visitor.locator('#billing-first_name').fill('Zion');await visitor.locator('#billing-last_name').fill('Demo');await country.selectOption('DE');await visitor.locator('#billing-address_1').fill('Teststrasse 1');await visitor.locator('#billing-city').fill('Berlin');await visitor.locator('#billing-postcode').fill('10115');await visitor.locator('#billing-postcode').press('Tab');await expect.poll(async()=>(await(await first.request.get('/wp-json/wc/store/v1/cart')).json()).billing_address.country).toBe('DE');
+    await visitor.reload();if(await same.count())await same.uncheck();await expect(country).toHaveValue('DE');
+    await visitor.goto('/cart/');await expect(visitor.locator('.wc-block-cart-items')).toContainText(product.name);
+  } finally {
+    expect((await page.request.put(route,{headers,data:{value:original}})).ok()).toBe(true);
+    await first.close();await second.close();
   }
 });
 

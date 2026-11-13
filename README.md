@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.28** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.29** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.28** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.29** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Checkout, localizare și vizitatori · 1.1.29
+
+- [x] Țară inițială prin geolocalizarea nativă WooCommerce, cu fallback România și județ necompletat. Adresele salvate/introduse de client au prioritate. România prima în listele clasice și în blocuri; restricțiile native de vânzare/livrare sunt respectate.
+- [x] Setarea geolocalizării rămâne în opțiunea WooCommerce canonică; mediul demo o configurează reproductibil. Modurile native pentru sediu/fără adresă rămân respectate dacă sunt selectate explicit.
+- [x] Contrast pentru cifra cantității din rezumatul comenzii și pentru textul, placeholderul și eticheta cuponului în coș și checkout; aceleași tokenuri native, inclusiv presetul Contrast.
+- [x] Scrollbar Software integrat în paletă, cu derulare nativă, focus și suport pentru culori forțate ale sistemului.
+- [x] Cauza coșului anonim reprodusă pe staging: WooCommerce Coming soon ascundea pagina Coș. Backup privat SQL/Theme/Core și 43 de înregistrări editoriale; vizibilitatea corectată exclusiv pe staging. Coșul separat de vizitator afișează produsul și după refresh.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și migrare/rollback trecute. **13 aserțiuni noi** pentru localizare și restricții; **11/11 teste Software** și **3/3 scenarii coș/checkout** trecute. Contrastul cupoanelor verificat în **40 combinații** de preset/lățime, cifrele cantităților în **20 combinații**; coșuri private izolate, refresh și adresă completă salvată cu țara DE păstrată.
+- [ ] CI complet pentru versiunea finală.
+- [ ] Instalarea finală 1.1.29 pe staging, verificări desktop/mobil, audit, ZIP-uri, commit și push.
+
+Ghid: [Țară, contrast și sesiuni de vizitator](docs/customer-location-and-checkout.md).
 
 ## Design pe pagini și feedback coș · 1.1.28
 

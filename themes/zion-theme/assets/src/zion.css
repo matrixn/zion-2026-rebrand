@@ -2601,6 +2601,8 @@ body:has(.zion-product-page--sticky) {
 .zion-checkout .wc-block-components-order-summary-item__description { min-inline-size: 0; }
 .zion-checkout .wc-block-components-product-name { font-size: .95rem; line-height: 1.5; font-weight: 500; text-decoration: none; overflow-wrap: anywhere; }
 .zion-checkout .wc-block-components-order-summary-item__image img { border-radius: .5rem; object-fit: contain; }
+.zion-checkout .wc-block-components-order-summary .wc-block-components-order-summary-item__quantity { background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); border: 1px solid var(--wp--preset--color--deep); font-weight: 700; }
+.zion-checkout .wc-block-components-order-summary .wc-block-components-order-summary-item__quantity span { color: var(--wp--preset--color--ink); }
 .zion-checkout .wc-block-components-checkout-place-order-button {
   min-block-size: 52px; padding: .9rem 1.4rem; border-radius: .5rem;
   background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); font-weight: 650;
@@ -2839,6 +2841,12 @@ body:has(.zion-product-page--sticky) {
 .zion-cart .wc-block-cart .wc-block-cart__submit-container { padding: 0; background: var(--cart-surface); }
 .zion-cart .wc-block-cart .wc-block-cart__submit-button { min-block-size: 54px; padding: .9rem 1rem; border-radius: .4rem; font-size: 1rem; font-weight: 650; text-align: center; box-sizing: border-box; }
 .zion-cart .wc-block-components-panel__button { min-block-size: 44px; color: var(--cart-ink); }
+.zion-cart .wc-block-components-totals-coupon .wc-block-components-text-input input[type="text"] { background: var(--cart-surface); color: var(--cart-ink); border-color: var(--cart-rule); }
+.zion-cart .wc-block-components-totals-coupon .wc-block-components-text-input label { color: var(--cart-muted); }
+.zion-cart .wc-block-components-totals-coupon .wc-block-components-text-input input::placeholder { color: var(--cart-muted); opacity: 1; }
+.zion-checkout .wc-block-components-totals-coupon .wc-block-components-text-input input[type="text"] { background: var(--checkout-surface); color: var(--checkout-ink); border-color: var(--checkout-rule); }
+.zion-checkout .wc-block-components-totals-coupon .wc-block-components-text-input label { color: var(--checkout-muted); }
+.zion-checkout .wc-block-components-totals-coupon .wc-block-components-text-input input::placeholder { color: var(--checkout-muted); opacity: 1; }
 .zion-cart :is(a, button, input):focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
 .zion-cart .wc-block-cart-items .wc-block-cart-item__wrap > * { max-inline-size: 100%; }
 /* Editorial retains the table's native controls in visual cards. */
@@ -3435,6 +3443,13 @@ body:has(.zion-product-page--sticky) {
 .zion-software-map { position: relative; min-height: 10rem; border-block: 1px solid var(--wp--preset--color--deep); margin-block-end: 1rem; }
 .zion-software-toc summary { min-height: 44px; box-sizing: border-box; padding: .75rem 0; font: .7rem/1.7 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--accent); cursor: pointer; }
 .zion-software-toc ol { max-height: clamp(10rem, calc(100dvh - var(--zion-forge-top, 8rem) - 15rem), 30rem); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; list-style: none; padding: 0 .5rem 0 0; margin: 0; }
+.zion-software-toc ol { scrollbar-color: var(--wp--preset--color--muted) var(--wp--preset--color--surface); scrollbar-gutter: stable; }
+.zion-software-toc ol::-webkit-scrollbar { width: 8px; height: 8px; }
+.zion-software-toc ol::-webkit-scrollbar-track { background: var(--wp--preset--color--surface); border-radius: 999px; }
+.zion-software-toc ol::-webkit-scrollbar-thumb { background: var(--wp--preset--color--muted); border: 2px solid var(--wp--preset--color--surface); border-radius: 999px; }
+.zion-software-toc ol:hover { scrollbar-color: var(--wp--preset--color--accent) var(--wp--preset--color--surface); }
+.zion-software-toc ol::-webkit-scrollbar-thumb:hover { background: var(--wp--preset--color--accent); }
+@media (forced-colors: active) { .zion-software-toc ol { scrollbar-color: auto; } }
 .zion-software-toc a { display: flex; align-items: center; box-sizing: border-box; min-height: 44px; padding: .5rem .6rem; border-inline-start: 1px solid var(--wp--preset--color--deep); color: var(--wp--preset--color--muted); font-size: .75rem; line-height: 1.6; text-decoration: none; }
 .zion-software-toc a[aria-current] { border-color: var(--wp--preset--color--accent); color: var(--wp--preset--color--accent); background: var(--wp--preset--color--surface); }
 .zion-software-content { min-width: 0; overflow-wrap: anywhere; }

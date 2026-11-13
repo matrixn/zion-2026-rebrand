@@ -47,6 +47,8 @@ $zion_core_fixture = json_decode(
 );
 
 switch_theme( 'zion-theme' );
+// Use the canonical WooCommerce setting, not a parallel Zion country option.
+update_option( 'woocommerce_default_customer_address', 'geolocation' );
 if ( ! get_theme_mod( 'custom_logo' ) ) {
 	$zion_core_logo = (int) trim( WP_CLI::runcommand( 'media import ' . escapeshellarg( get_theme_file_path( 'assets/brand/zion-logo.webp' ) ) . ' --title="Zion 3D" --porcelain', array( 'return' => true ) ) );
 	if ( $zion_core_logo ) {
