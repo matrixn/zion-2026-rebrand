@@ -49,6 +49,7 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **10/10 teste Software** și **7/7 regresii de catalog/cumpărare** trecute local, cu 14 referințe vizuale și verificări la 390/768/1024/1440 px.
 - [x] **14 aserțiuni noi de integrare**, inclusiv aliasul legacy și prioritatea unui alt șablon ales de autor. Verificarea finală locală Software a trecut **10/10** în 1,4 minute, fără actualizarea referințelor; textele și șabloanele salvate ale fixture-urilor rămân identice.
 - [ ] Suita completă **119 scenarii** în CI, instalare și QA staging inclusiv mobil.
+- [x] Testele vechi de încărcare condițională folosesc acum Magazin 3D, care nu conține scene Continuum. Magazin Software are intenționat noul hero animat; cele patru aserțiuni vechi nu mai cer absența rendererului pe această pagină.
 - [ ] README final, ZIP-uri **1.1.26** verificate, commit și push pe `main`. Producția nu este modificată.
 
 Ghid: [Software / Continuum](docs/software-continuum.md).

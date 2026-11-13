@@ -94,7 +94,7 @@ test('homepage Continuum follows live motion preferences and remains conditional
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.evaluate(()=>document.body.classList.add('zion-motion-reduced'));
   await expect(canvas).toHaveAttribute('data-render-mode','static');
-  await page.goto('/magazin-software/');
+  await page.goto('/magazin-3d/');
   await expect(page.locator('script#zion-continuum-js')).toHaveCount(0);
 });
 

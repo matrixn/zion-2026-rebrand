@@ -66,7 +66,7 @@ for(const width of [390,1440]) {
       await fill(page);await expect(root.locator('.zion-contact-progress')).toHaveText('4 / 4 CÂMPURI COMPLETATE');
       await page.emulateMedia({reducedMotion:'reduce'});await expect(root).toHaveClass(/is-spatial-static/);
       for(const canvas of await root.locator('canvas').all())await expect(canvas).toHaveAttribute('data-render-mode','static');
-      await page.goto('/magazin-software/');await expect(page.locator('#contact-form-7-js,#contact-form-7-css,#zion-continuum-js')).toHaveCount(0);
+      await page.goto('/magazin-3d/');await expect(page.locator('#contact-form-7-js,#contact-form-7-css,#zion-continuum-js')).toHaveCount(0);
     } finally {await context.close();}
   });
 

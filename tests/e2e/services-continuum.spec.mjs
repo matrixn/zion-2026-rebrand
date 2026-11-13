@@ -110,7 +110,7 @@ test('service Continuum follows live reduced motion and remains conditional',asy
   await page.emulateMedia({reducedMotion:'reduce'});await expect(page.locator('.zion-service-continuum')).toHaveClass(/is-spatial-static/);
   await page.emulateMedia({reducedMotion:'no-preference'});await page.evaluate(()=>document.body.classList.add('zion-motion-reduced'));
   await expect(canvas).toHaveAttribute('data-render-mode','static');
-  await page.goto('/magazin-software/');await expect(page.locator('#zion-continuum-js')).toHaveCount(0);
+  await page.goto('/magazin-3d/');await expect(page.locator('#zion-continuum-js')).toHaveCount(0);
   await page.goto('/');await expect(page.locator('.zion-homepage canvas')).toHaveCount(6);
   await page.goto('/despre-noi/');await expect(page.locator('.zion-about canvas')).toHaveCount(2);
 });
