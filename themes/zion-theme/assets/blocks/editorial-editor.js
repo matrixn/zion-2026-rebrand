@@ -11,7 +11,12 @@
 		card_link: 'Legătură către articol',
 		article_breadcrumb: 'Fir de navigare al articolului',
 		article_return: 'Înapoi la jurnal',
-		reading_progress: 'Progresul lecturii'
+		reading_progress: 'Progresul lecturii',
+		software_intro: 'Context și introducere Software',
+		software_actions: 'Legături Software',
+		software_breadcrumb: 'Fir de navigare Software',
+		software_toc: 'Secțiunile paginii Software',
+		software_handoff: 'CTA Software'
 	};
 	blocks.registerBlockType('zion/editorial', {
 		apiVersion: 3,

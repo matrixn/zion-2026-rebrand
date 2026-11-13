@@ -3399,6 +3399,91 @@ body:has(.zion-product-page--sticky) {
 	.zion-about.is-spatial:not(.is-spatial-static) .zion-forge-footnote { text-align: left; max-width: 55%; font-size: .55rem; }
 }
 
+/* Software / Continuum: one native layout and contextual, decorative signals. */
+.zion-software { margin-block-start: 0; color: var(--wp--preset--color--text); }
+.zion-software > * { margin-block: 0; }
+.zion-software-shell { box-sizing: border-box; width: min(var(--wp--style--global--wide-size, 1320px), calc(100% - 2 * var(--wp--preset--spacing--gutter))); margin-inline: auto; }
+.zion-software-band { padding-block: clamp(2.75rem, 6vw, 5.5rem); }
+.zion-software-hero { --software-grid: color-mix(in srgb, var(--wp--preset--color--accent) 8%, transparent); background: radial-gradient(ellipse at 85% 20%, var(--wp--preset--color--surface), transparent 70%), linear-gradient(90deg, var(--software-grid) 1px, transparent 1px), linear-gradient(var(--software-grid) 1px, transparent 1px); background-size: auto, 3rem 3rem, 3rem 3rem; border-block-end: 1px solid var(--wp--preset--color--deep); }
+.zion-software-breadcrumb { display: flex; flex-wrap: wrap; gap: .6rem; margin-block-end: 2.5rem; color: var(--wp--preset--color--muted); font-size: .75rem; }
+.zion-software-breadcrumb a { color: inherit; text-decoration: none; }
+.zion-software-hero-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+.zion-software-hero-grid > *, .zion-software-body-grid > * { min-width: 0; margin-block: 0; }
+.zion-software .zion-software-title { margin-block: 0 1.5rem; font-size: clamp(2.2rem, 3.9vw, 4.1rem); line-height: 1.12; letter-spacing: -.045em; font-weight: 680; overflow-wrap: anywhere; }
+.zion-software-lead { display: flex; flex-direction: column; }
+.zion-software-lead > .zion-software-eyebrow { order: -1; margin: 0 0 1rem; }
+.zion-software-lead > .zion-software-intro { margin: 0; }
+.zion-software-eyebrow, .zion-software-card-label { color: var(--wp--preset--color--accent); font: .6rem/1.8 var(--wp--preset--font-family--mono); letter-spacing: .07em; }
+.zion-software-intro { max-width: 55ch; color: var(--wp--preset--color--muted); font-size: clamp(1rem, 1.3vw, 1.15rem); line-height: 1.85; }
+.zion-software-actions { display: flex; flex-wrap: wrap; gap: .8rem 1.75rem; margin-block-start: 1.75rem; }
+.zion-software-actions a { display: inline-flex; align-items: center; min-height: 48px; color: var(--wp--preset--color--text); text-decoration: none; border-block-end: 1px solid var(--wp--preset--color--deep); font-size: .9rem; }
+.zion-software-actions a:first-child { border-color: var(--wp--preset--color--accent); }
+.zion-software-hero-art { position: relative; min-height: 26rem; overflow: hidden; border: 1px solid var(--wp--preset--color--deep); border-radius: 1rem; background: color-mix(in srgb, var(--wp--preset--color--surface) 60%, transparent); }
+.zion-software-art-label { position: absolute; inset: 1.25rem 1.25rem auto; margin: 0; color: var(--wp--preset--color--muted); font: .55rem/1.6 var(--wp--preset--font-family--mono); }
+.zion-software-art-fallback { padding: 4rem 1rem; color: var(--wp--preset--color--accent); font: .75rem/1.8 var(--wp--preset--font-family--mono); text-align: center; }
+.zion-software .is-spatial-ready .zion-software-art-fallback { display: none; }
+.zion-software .zion-spatial-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.zion-software-hero-art .zion-spatial-canvas { top: 2rem; height: calc(100% - 5rem); }
+.zion-software .zion-spatial-pause { position: absolute; inset: auto 1rem .5rem auto; min-height: 44px; padding: .5rem; background: transparent; border: 0; color: var(--wp--preset--color--muted); font: .6rem/1.5 var(--wp--preset--font-family--mono); cursor: pointer; }
+.zion-software .zion-spatial-pause[hidden] { display: none; }
+.zion-software-body { scroll-margin-top: var(--zion-forge-top, 8rem); }
+.zion-software-body-grid { display: grid; grid-template-columns: minmax(0, 12rem) minmax(0, 1fr); align-items: start; gap: clamp(2rem, 5vw, 5rem); }
+.zion-software[data-zion-software="catalog"] .zion-software-body-grid { grid-template-columns: minmax(0, 1fr); }
+.zion-software-rail { position: sticky; top: var(--zion-forge-top, 8rem); }
+.zion-software-map { position: relative; min-height: 10rem; border-block: 1px solid var(--wp--preset--color--deep); margin-block-end: 1rem; }
+.zion-software-toc summary { min-height: 44px; box-sizing: border-box; padding: .75rem 0; font: .7rem/1.7 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--accent); cursor: pointer; }
+.zion-software-toc ol { max-height: clamp(10rem, calc(100dvh - var(--zion-forge-top, 8rem) - 15rem), 30rem); overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; list-style: none; padding: 0 .5rem 0 0; margin: 0; }
+.zion-software-toc a { display: flex; align-items: center; box-sizing: border-box; min-height: 44px; padding: .5rem .6rem; border-inline-start: 1px solid var(--wp--preset--color--deep); color: var(--wp--preset--color--muted); font-size: .75rem; line-height: 1.6; text-decoration: none; }
+.zion-software-toc a[aria-current] { border-color: var(--wp--preset--color--accent); color: var(--wp--preset--color--accent); background: var(--wp--preset--color--surface); }
+.zion-software-content { min-width: 0; overflow-wrap: anywhere; }
+.zion-software-content > p { max-width: 65ch; color: var(--wp--preset--color--muted); line-height: 1.85; }
+.zion-software-section { margin: 0; padding-block: 0 clamp(2.75rem, 5vw, 5rem); scroll-margin-top: var(--zion-forge-top, 8rem); }
+.zion-software-section + .zion-software-section { padding-block-start: clamp(2rem, 4vw, 3.5rem); border-block-start: 1px solid var(--wp--preset--color--deep); }
+.zion-software-section > h2 { max-width: 30ch; margin-block: 0 1.4rem; color: var(--wp--preset--color--text); font-size: clamp(1.7rem, 2.7vw, 2.7rem); line-height: 1.2; letter-spacing: -.035em; }
+.zion-software-section > p { max-width: 70ch; color: var(--wp--preset--color--muted); line-height: 1.9; }
+.zion-software-section :is(p,ul,ol) a { color: var(--wp--preset--color--accent); text-underline-offset: .2em; }
+.zion-software-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block-start: 2rem; }
+.zion-software-cards:has(> :only-child) { grid-template-columns: minmax(0, 1fr); }
+.zion-software-card, .zion-software-link-card { min-width: 0; box-sizing: border-box; margin: 0; padding: clamp(1.2rem, 2vw, 1.75rem); border: 1px solid var(--wp--preset--color--deep); border-radius: .7rem; background: var(--wp--preset--color--surface); }
+.zion-software-card > h3 { margin: 0 0 1rem; color: var(--wp--preset--color--text); font-size: clamp(1.1rem, 1.45vw, 1.35rem); line-height: 1.4; letter-spacing: -.02em; }
+.zion-software-card :is(p,ul,ol) { margin-block: .8rem 0; color: var(--wp--preset--color--muted); font-size: .95rem; line-height: 1.85; }
+.zion-software-card > :last-child { margin-block-end: 0; }
+.zion-software-content :is(img,video,iframe) { max-width: 100%; }
+.zion-software-content img { height: auto; border-radius: .5rem; }
+.zion-software-content p > svg { display: inline-block; width: 1.4em; height: 1.4em; vertical-align: middle; color: var(--wp--preset--color--accent); fill: currentColor; }
+.zion-software-content :is(pre,.wp-block-table) { box-sizing: border-box; max-width: 100%; overflow: auto; padding: 1.25rem; border: 1px solid var(--wp--preset--color--deep); border-radius: .6rem; background: var(--wp--preset--color--surface); color: var(--wp--preset--color--text); font-size: .8rem; line-height: 1.8; }
+.zion-software-cover { margin: 0 0 3rem; padding: 1rem; border: 1px solid var(--wp--preset--color--deep); border-radius: .75rem; background: var(--wp--preset--color--surface); }
+.zion-software-cover img { display: block; width: 100%; max-height: 24rem; object-fit: contain; }
+.zion-software-hub-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block-start: 2rem; }
+.zion-software-link-card { display: flex; flex-direction: column; gap: 1rem; transition: border-color .2s; }
+.zion-software-link-card > * { margin: 0; }
+.zion-software-link-card:is(:hover,:focus-within) { border-color: var(--wp--preset--color--accent); }
+.zion-software-link-card > p:nth-child(2) a { display: block; min-height: 44px; color: var(--wp--preset--color--text); font-size: clamp(1.15rem, 1.6vw, 1.45rem); font-weight: 600; line-height: 1.4; letter-spacing: -.02em; text-decoration: none; }
+.zion-software-card-intro { color: var(--wp--preset--color--muted); font-size: .9rem; line-height: 1.85; }
+.zion-software-handoff { background: var(--wp--preset--color--surface); border-block-start: 1px solid var(--wp--preset--color--deep); }
+.zion-software-handoff h2 { max-width: 26ch; font-size: clamp(2rem, 4vw, 4rem); line-height: 1.1; letter-spacing: -.04em; }
+.zion-software-handoff-copy > p:not(.zion-software-eyebrow) { max-width: 60ch; color: var(--wp--preset--color--muted); line-height: 1.85; }
+.zion-software-handoff a.wp-element-button { display: inline-flex; align-items: center; min-height: 48px; margin-block-start: 1.25rem; text-decoration: none; }
+.zion-software :focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
+@media (max-width: 1000px) {
+  .zion-software-hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 2rem; }
+  .zion-software-body-grid { grid-template-columns: minmax(0, 10rem) minmax(0, 1fr); gap: 2rem; }
+}
+@media (max-width: 800px) {
+  .zion-software-hero-grid, .zion-software-body-grid { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+  .zion-software-hero-art { min-height: 20rem; }
+  .zion-software-rail { position: relative; top: auto; }
+  .zion-software-map { min-height: 8rem; }
+  .zion-software-toc ol { max-height: 20rem; }
+}
+@media (max-width: 600px) {
+  .zion-software .zion-software-title { font-size: clamp(2rem, 8.5vw, 2.8rem); }
+  .zion-software-cards, .zion-software-hub-grid { grid-template-columns: minmax(0, 1fr); }
+  .zion-software-breadcrumb { margin-block-end: 1.75rem; }
+}
+@media (prefers-reduced-motion: reduce) { .zion-software-link-card { transition: none; } }
+.zion-motion-reduced .zion-software-link-card { transition: none; }
+
 /* FAQ / Continuum: native Details disclosures, progressive controls and signal paths. */
 .zion-faq { margin-block-start: 0; color: var(--wp--preset--color--text); }
 .zion-faq > * { margin-block: 0; }

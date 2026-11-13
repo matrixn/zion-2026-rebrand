@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.25** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.26** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.25** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.26** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Continuum · Software 1.1.26
+
+- [x] Un singur șablon nativ, editabil în Site Editor, pentru **șapte pagini**: hub Software, Magazin Software, SMS Confirmation, Privacy, Multi-Currency și ReleaseStation RO/EN. Hero și diagrame adaptate fiecărui concept, culori native `theme.json`, pauză, reduced motion și fallback fără JS.
+- [x] Secțiuni H2, carduri H3 și cuprins nativ construite numai la afișare, cu păstrarea fiecărui bloc original și a ordinii sale. Carduri pentru legăturile hubului, cod accesibil cu derulare locală și marcaj de limbă pentru pagina engleză. Șablonul legacy al hubului este tratat ca alias nativ fără modificarea metadatelor.
+- [x] Catalog WooCommerce păstrat: clasificare, filtre, sortare AJAX, paginare, prețuri și cumpărare native. Cele trei CTA-uri Multi-Currency fără destinație validă devin solicitări clare de detalii către Contact; nu se inventează produse sau licențe.
+- [x] Backup privat staging SQL, Theme/Core și **43 de înregistrări editoriale**, cu metadate, termeni, comentarii și setări. Conținutul real rămâne în afara repository-ului; testele creează fixture-uri sintetice temporare într-un proiect Playwright separat.
+- [x] Build, WPCS, **46 teste PHPUnit / 394 aserțiuni**, integrare și migrare/rollback trecute. **10/10 teste Software** și **7/7 regresii de catalog/cumpărare** trecute local, cu 14 referințe vizuale și verificări la 390/768/1024/1440 px.
+- [x] **14 aserțiuni noi de integrare**, inclusiv aliasul legacy și prioritatea unui alt șablon ales de autor. Verificarea finală locală Software a trecut **10/10** în 1,4 minute, fără actualizarea referințelor; textele și șabloanele salvate ale fixture-urilor rămân identice.
+- [ ] Suita completă **119 scenarii** în CI, instalare și QA staging inclusiv mobil.
+- [ ] README final, ZIP-uri **1.1.26** verificate, commit și push pe `main`. Producția nu este modificată.
+
+Ghid: [Software / Continuum](docs/software-continuum.md).
 
 ## Zion Continuum · Întrebări frecvente 1.1.25
 

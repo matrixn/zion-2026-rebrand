@@ -132,6 +132,11 @@
   },
   "customTemplates": [
     {
+      "name": "software",
+      "title": "Zion · Software / Continuum",
+      "postTypes": ["page"]
+    },
+    {
       "name": "faq",
       "title": "Zion · Întrebări frecvente / Continuum",
       "postTypes": ["page"]

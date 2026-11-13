@@ -1,7 +1,7 @@
 /* Zion Continuum: one scheduler and projection system, contextual sculptures. */
 (() => {
   'use strict';
-  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum, .zion-contact, .zion-editorial, .zion-faq');
+  const root = document.querySelector('.zion-about, .zion-homepage, .zion-service-continuum, .zion-contact, .zion-editorial, .zion-faq, .zion-software');
   if (!root || !window.IntersectionObserver || !window.ResizeObserver) return;
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(pointer: fine)');
@@ -14,6 +14,10 @@
   const contact = root.classList.contains('zion-contact');
   const journal = root.classList.contains('zion-editorial');
   const faq = root.classList.contains('zion-faq');
+  const software = root.classList.contains('zion-software');
+  const softwareModel = { active: 0, sections: [], links: [], concept: root.dataset.zionSoftware || 'hub', english: root.lang === 'en' };
+  const pauseLabel = software && softwareModel.english ? 'Pause animation' : 'Pauză animație';
+  const resumeLabel = software && softwareModel.english ? 'Resume animation' : 'Reia animația';
   const faqModel = { active: -1, items: [] };
   const reading = { value: 0, active: 0, labels: [] };
   const contactModel = { filled: [], labels: [], phase: 'init' };
@@ -35,7 +39,7 @@
   const reduced = () => motion.matches || document.body.classList.contains('zion-motion-reduced');
   let phaseButtons = [];
   const pauseButtons = [];
-  const eligible = scene => scene.visible && scene.type !== 'article-flow' && (!scene.preview || scene.engaged) && (scene.type !== 'contact-console' || contactModel.filled.some(Boolean) || contactModel.phase === 'submitting');
+  const eligible = scene => scene.visible && !['article-flow','software-map'].includes(scene.type) && (!scene.preview || scene.engaged) && (scene.type !== 'contact-console' || contactModel.filled.some(Boolean) || contactModel.phase === 'submitting');
 
   for (const canvas of root.querySelectorAll('[data-zion-spatial]')) {
     const context = canvas.getContext('2d', { alpha: true });
@@ -43,7 +47,7 @@
     const host = canvas.parentElement;
     const forge = canvas.dataset.zionSpatial === 'forge';
     const type = canvas.dataset.zionSpatial;
-    const section = faq ? (host.closest('.zion-faq-band') || host) : journal ? (host.closest('.zion-editorial-band') || host) : home || services || contact ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
+    const section = software ? (host.closest('.zion-software-band') || host) : faq ? (host.closest('.zion-faq-band') || host) : journal ? (host.closest('.zion-editorial-band') || host) : home || services || contact ? (host.closest('.zion-overview-band') || host) : (forge ? host.closest('.zion-about-forge') : host);
     const preview = type === 'service-preview';
     const card = preview ? host.closest('.zion-overview-card') : null;
     const scene = { canvas, context, host, section, forge, type, preview, engaged: false, concept: canvas.dataset.zionConcept || root.dataset.zionService, foreground: getComputedStyle(card || section).color, steps: section?.querySelectorAll('.zion-service-card').length || 3, active: 0, scroll: .25, visible: false, width: 0, height: 0, pointer: [0, 0], aim: [0, 0], progress: forge ? 0 : 2, selected: null, rect: null };
@@ -52,7 +56,7 @@
     if (type === 'home-hero') host.closest('.zion-home-lab')?.classList.add('is-continuum-lab');
     if (services && type === 'service-hero') host.parentElement.classList.add('is-continuum-service-art');
     if (preview) card?.classList.add('is-continuum-preview');
-    canvas.dataset.renderMode = reduced() ? 'static' : type === 'article-flow' ? 'scroll' : preview ? 'interactive' : 'animated';
+    canvas.dataset.renderMode = reduced() ? 'static' : ['article-flow','software-map'].includes(type) ? 'scroll' : preview ? 'interactive' : 'animated';
     if (card) {
       const engage = () => { scene.engaged = true; card.classList.add('is-continuum-engaged'); schedule(); };
       const disengage = event => {
@@ -77,6 +81,20 @@
   const forge = scenes.find(scene => scene.forge);
   if (contact) bindContact();
   if (journal) bindJournal();
+  if (software) {
+    softwareModel.sections = [...root.querySelectorAll('.zion-software-section')];
+    softwareModel.links = [...root.querySelectorAll('.zion-software-toc a')];
+    const disclosure=root.querySelector('.zion-software-toc details');
+    if(disclosure&&matchMedia('(min-width: 801px)').matches)disclosure.open=true;
+    softwareModel.links.forEach((link, index) => {
+      const select = () => { softwareModel.active = Math.max(0,softwareModel.sections.findIndex(section=>`#${section.id}`===link.hash)); for (const scene of scenes) draw(scene); };
+      link.addEventListener('focus', select); link.addEventListener('pointerenter', select);
+    });
+    root.querySelectorAll('.zion-software-link-card').forEach((card, index) => {
+      const select = () => { softwareModel.active = index; for (const scene of scenes) if(scene.type==='software-hero') draw(scene); };
+      card.addEventListener('focusin', select); card.addEventListener('pointerenter', select);
+    });
+  }
   if (faq) {
     faqModel.items = [...root.querySelectorAll('.zion-faq-content details.wp-block-details')];
     const refresh = () => { for (const scene of scenes) draw(scene); };
@@ -123,17 +141,17 @@
   }
   // This control also pauses the inherited CAD background, including the hero.
   for (const scene of scenes) {
-    if (scene.preview) continue;
+    if (scene.preview || scene.type==='software-map') continue;
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'zion-spatial-pause';
-    button.textContent = 'Pauză animație';
+    button.textContent = pauseLabel;
     button.setAttribute('aria-pressed', 'false');
     button.addEventListener('click', () => {
       paused = !paused;
       pauseButtons.forEach(control => {
         control.setAttribute('aria-pressed', String(paused));
-        control.textContent = paused ? 'Reia animația' : 'Pauză animație';
+        control.textContent = paused ? resumeLabel : pauseLabel;
       });
       root.classList.toggle('is-spatial-paused', paused);
       if (!paused) { if (forge) forge.selected = null; schedule(); }
@@ -174,6 +192,7 @@
   function onScroll() {
     for (const scene of scenes) if (!scene.forge) scene.rect = scene.host.getBoundingClientRect();
     if (journal) updateReading();
+    if (software) updateSoftware();
     if ((home || services || contact || journal) && !reduced() && !paused) {
       for (const scene of scenes) {
         const rect = scene.section.getBoundingClientRect();
@@ -196,6 +215,7 @@
   }
 
   function draw(scene) {
+    if (software) { drawSoftware(scene); return; }
     if (faq) { drawFaq(scene); return; }
     if (journal) { drawJournal(scene); return; }
     if (contact) { drawContact(scene); return; }
@@ -314,6 +334,68 @@
     coords.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y));
     if (close) ctx.closePath();
     ctx.stroke();
+  }
+
+  function updateSoftware() {
+    if(!softwareModel.sections.length)return;
+    let current=0;
+    for(const [i,section] of softwareModel.sections.entries()) {
+      if(section.getBoundingClientRect().top<=topInset+110)current=i;else break;
+    }
+    softwareModel.active=current;
+    const id=softwareModel.sections[current]?.id;
+    for(const link of softwareModel.links) {
+      if(link.hash===`#${id}`)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current');
+    }
+    if(!paused)for(const scene of scenes)if(scene.type==='software-map'&&scene.visible)draw(scene);
+  }
+
+  function drawSoftware(scene) {
+    const {context:ctx,width:w,height:h,type}=scene;
+    if(!w||!h)return;
+    const t=reduced()?0:clock,concept=softwareModel.concept,english=softwareModel.english,map=type==='software-map';
+    ctx.clearRect(0,0,w,h);ctx.strokeStyle=palette.accent;ctx.fillStyle=palette.accent;
+    const line=(p,a=.35,width=1,close=false)=>trace(ctx,p,a,width,close);
+    const dot=(p,r=2,a=.85)=>{ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();};
+    const label=(s,x,y,align='center')=>{ctx.globalAlpha=.75;ctx.fillStyle=palette.muted;ctx.font=`${compact?8:10}px monospace`;ctx.textAlign=align;ctx.fillText(s,x,y,w-24);ctx.fillStyle=palette.accent;};
+    const packet=(a,b,phase)=>{const p=(t*.21+phase)%1;dot([mix(a[0],b[0],p),mix(a[1],b[1],p)],2,.8);};
+    const box=(x,y,bw,bh,active=false)=>line([[x,y],[x+bw,y],[x+bw,y+bh],[x,y+bh]],active?.95:.4,active?1.5:1,true);
+    if(map) {
+      const nodes=Array.from({length:5},(_,i)=>[w*(.12+i*.19),h*(i%2?.32:.48)]),active=softwareModel.active%5;
+      line(nodes,.3);
+      nodes.forEach((p,i)=>{box(p[0]-5,p[1]-5,10,10,i===active);dot(p,i===active?3:1.5);});
+      label(softwareModel.sections.length?`${english?'SECTION':'SECȚIUNEA'} ${String(softwareModel.active+1).padStart(2,'0')}`:'INPUT / LOGIC / OUTPUT',w/2,h*.76);
+    } else if(concept==='privacy') {
+      const left=w*.16,top=h*.19,bw=w*.68,bh=h*.51;
+      box(left,top,bw,bh);line([[left,top+22],[left+bw,top+22]],.4);
+      for(let i=0;i<3;i++)dot([left+12+i*10,top+11],2,.5);
+      for(let row=0;row<3;row++)for(let col=0;col<5;col++){const x=left+22+col*(bw-44)/4,y=top+45+row*(bh-67)/2;box(x-4,y-4,8,8,(row+col)%4===0);}
+      const scan=top+27+((t*.13)%1)*(bh-32);line([[left+8,scan],[left+bw-8,scan]],.85,1.5);
+      label('SCAN / CONTEXT / CONTROL',w/2,h*.84);
+    } else if(concept==='sms'||concept==='release') {
+      const labels=concept==='sms'?(english?['ORDER','SMS','REPLY','DECISION']:['COMANDĂ','SMS','RĂSPUNS','DECIZIE']):(english?['GIT','BUILD','VERIFY','RELEASE']:['GIT','BUILD','VERIFICĂ','RELEASE']);
+      const nodes=labels.map((s,i)=>[w*(.14+i*.24),h*(.34+(i%2?.13:0))]);
+      line(nodes,.45);
+      nodes.forEach((p,i)=>{box(p[0]-14,p[1]-17,28,34,i===Math.floor(t*.5)%4);label(labels[i],p[0],p[1]+42);if(i<3)packet(p,nodes[i+1],i*.23);});
+      if(concept==='sms'){line([[w*.35,h*.67],[w*.35,h*.74],[w*.42,h*.67],[w*.66,h*.67],[w*.66,h*.57]],.45);label('ACK',w*.5,h*.62);}
+      else{line([[nodes[3][0],h*.63],[nodes[3][0],h*.73],[nodes[1][0],h*.73],[nodes[1][0],h*.62]],.3);label('CHECK / RELEASE / ROLLBACK',w/2,h*.86);}
+    } else if(concept==='currency') {
+      const centre=[w*.5,h*.45];box(centre[0]-22,centre[1]-26,44,52,true);
+      ['RON','EUR','USD'].forEach((s,i)=>{const y=h*(.22+i*.22),a=[w*.15,y],b=[w*.85,y];line([a,[w*.32,y],centre,[w*.68,y],b],.35);packet(a,centre,i*.3);packet(centre,b,i*.3+.2);label(s,w*.12,y-12);box(b[0]-6,b[1]-6,12,12);});
+      label('CONTEXT / ROUTING / AUDIT',w/2,h*.86);
+    } else {
+      const project=projector(w,Math.min(w*.38,h*.4),-.35+scene.pointer[1]*.1,-.38+scene.pointer[0]*.15,h*.43);
+      for(let i=0;i<4;i++) {
+        const x=i%2? .58:-.58,y=i<2?-.52:.52,z=concept==='catalog'?(i-1.5)*.2:(i%2)*.25;
+        const corners=[[-.35,-.3],[.35,-.3],[.35,.3],[-.35,.3]].map(([a,b])=>project(x+a,y+b,z));
+        line(corners,i===softwareModel.active%4?.85:.35,1,true);
+        line(corners.map(p=>[p[0]+7,p[1]-7]),.2,1,true);
+        const c=project(x,y,z),centre=project(0,0,0);line([c,centre],.35);packet(c,centre,i*.23);
+        label(concept==='catalog'?['PLUGIN','LICENSE','DETAILS','DOWNLOAD'][i]:['WORDPRESS','COMMERCE','WORKFLOW','SYNOLOGY'][i],c[0],Math.max(...corners.map(p=>p[1]))+16);
+      }
+      label(concept==='catalog'?'SOFTWARE / LICENSE / ACCESS':'ZION / CONNECTED SYSTEMS',w/2,h*.96);
+    }
+    ctx.globalAlpha=1;
   }
 
   function drawFaq(scene) {
@@ -787,7 +869,7 @@
     root.classList.toggle('is-spatial-static', staticMode);
     pauseButtons.forEach(button => { button.hidden = staticMode; });
     scenes.forEach(scene => {
-      scene.canvas.dataset.renderMode = staticMode ? 'static' : scene.type === 'article-flow' ? 'scroll' : scene.preview ? 'interactive' : 'animated';
+      scene.canvas.dataset.renderMode = staticMode ? 'static' : ['article-flow','software-map'].includes(scene.type) ? 'scroll' : scene.preview ? 'interactive' : 'animated';
       if (staticMode) { scene.pointer = [0, 0]; scene.progress = 2; }
       draw(scene);
     });
@@ -803,7 +885,7 @@
       const scene = scenes.find(item => item.canvas === entry.target);
       if (scene) {
         scene.visible = entry.isIntersecting;
-        if (journal && scene.type === 'article-flow' && scene.visible && !paused) draw(scene);
+        if (((journal && scene.type === 'article-flow') || (software && scene.type === 'software-map')) && scene.visible && !paused) draw(scene);
       }
     });
     schedule();
