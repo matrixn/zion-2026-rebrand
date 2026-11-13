@@ -3102,8 +3102,8 @@ body:has(.zion-product-page--sticky) {
 @media (max-width: 1100px) {
 	.zion-header { grid-template-columns:minmax(0,1fr) auto 44px; }
 	.zion-header:has(.zion-header-logo img):has(.zion-wordmark) { grid-template-columns:auto minmax(0,1fr) auto 44px; }
-	.zion-header > .zion-navigation { grid-area:auto; grid-column:-2/-1; justify-self:end; align-self:center; }
-	.zion-header > .zion-header-tools { grid-column:-3/-2; justify-self:end; align-self:center; }
+	.zion-header > .zion-navigation { grid-area:auto; grid-row:1; grid-column:-2/-1; justify-self:end; align-self:center; }
+	.zion-header > .zion-header-tools { grid-row:1; grid-column:-3/-2; justify-self:end; align-self:center; }
 	.zion-header .zion-navigation .wp-block-navigation__responsive-container:not(.is-menu-open) { display: none; }
 	.zion-header .zion-navigation .wp-block-navigation__responsive-container-open { display: flex; }
 	.zion-header .zion-navigation .wp-block-navigation__responsive-container.is-menu-open { position:fixed; inset:0; height:100dvh; max-height:none; box-sizing:border-box; background: color-mix(in srgb, var(--wp--preset--color--ink) 72%, transparent); padding:0; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }

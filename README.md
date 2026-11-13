@@ -48,7 +48,10 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Hamburger după coș și în ordinea DOM pe mobil. Panoul meniului are fundal continuu și derulare completă, inclusiv cu submeniuri lungi; păstrează acordeoanele și Escape native.
 - [x] Teste noi pentru cele trei profiluri, moștenire, resetare, import/export, revizii între destinații și validare atomică. Regresii pentru carduri pe cele trei pagini și cele cinci meniuri, la patru lățimi, inclusiv 25 de sublinkuri.
 - [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și migrare/rollback trecute. Suita completă locală: **128/128 Playwright** în 17,7 minute; matrice pentru carduri și cele cinci meniuri, inclusiv persistență după refresh și submeniuri lungi. Verificarea finală Studio: **9/9**, inclusiv culoarea pixelilor Canvas pentru profilurile Homepage/Software.
-- [ ] CI, instalarea și QA pe staging, auditul final și arhivele finale 1.1.28.
+- [x] Theme/Core **1.1.28** instalate pe staging: **12/12 combinații** pentru homepage/3D/Software la patru lățimi, un H1 și zero overflow. Culori/fonturi/spațiere în preview testate fără salvări pe datele reale, plus colorpicker mobil. Adăugare în coș de test, fără plasarea unei comenzi, card cu înălțime stabilă și link flotant păstrat după refresh; selecția inițială din coș restaurată. Meniul mobil complet extins se derulează până la Contact, cu fundal continuu și Escape funcțional.
+- [x] Audit staging: **43 de înregistrări editoriale**, metadate, termeni, comentarii, configurație Zion, citire, permalinkuri și identitate păstrate. Produsele/variațiile și metadatele au același hash. Zero documente native noi; helperul temporar eliminat. Cele **132 / 9 fișiere** instalate corespund pachetelor din sursa publicată. Producția nu a fost modificată.
+- [x] Preview-ul static păstrează și alinierea coș/hamburger pe un singur rând; verificare Studio finală **9/9**, plus WPCS și **61 teste PHPUnit / 436 aserțiuni**.
+- [ ] Verificarea ultimei ajustări de preview pe staging și CI final; arhivele finale 1.1.28.
 
 Ghiduri: [personalizarea Zion Studio](docs/zion-studio.md), [feedback coș și navigație mobilă](docs/cart-feedback.md).
 
