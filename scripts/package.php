@@ -1,6 +1,6 @@
 <?php
 /**
- * Package Zion Theme and Zion Core as separate installable WordPress ZIPs.
+ * Package both WordPress components and standalone maintenance content.
  *
  * @package Zion_Theme
  */
@@ -106,6 +106,7 @@ try {
 				'parts'         => array( 'html' ),
 				'patterns'      => array( 'php' ),
 				'templates'     => array( 'html' ),
+				'maintenance'   => array( 'html', 'css', 'js', 'md' ),
 			),
 		)
 	);
@@ -119,6 +120,15 @@ try {
 				'includes' => array( 'php' ),
 				'assets'   => array( 'js' ),
 			),
+		)
+	);
+	zion_theme_package_component(
+		$zion_theme_root,
+		'zion-continuum-maintenance',
+		array(
+			'source'      => 'themes/zion-theme/maintenance',
+			'files'       => array( 'README.md', 'continuum.html', 'continuum.css', 'continuum.js' ),
+			'directories' => array(),
 		)
 	);
 } catch ( Throwable $zion_theme_error ) {

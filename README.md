@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.30** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.31** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.30** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.31** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Under Construction Zion Continuum · 1.1.31
+
+- [x] Pagină originală **Continuum 1.0.0** pentru pluginul existent **Zion · Under Construction**: nucleu 3D din straturi CAD, lumini lime pe contur, grilă tehnică și tipografie responsive. Logo-ul și contactul public Zion sunt păstrate; CTA WhatsApp și telefon, fără dată de lansare sau progres fictiv.
+- [x] HTML/CSS/JS autonome în `themes/zion-theme/maintenance`, fără biblioteci noi. Paleta este verificată la build față de `theme.json`; preview HTML generat și ZIP de conținut separat prin `npm run package`.
+- [x] Pauză accesibilă, preferință de mișcare redusă inclusiv dinamic, SVG fără JavaScript/Canvas, un singur scheduler, limitare FPS/DPR și oprire în tab ascuns sau în afara ecranului.
+- [x] **Aplicată pe zion3d.ro la cererea explicită a utilizatorului**, exclusiv în cele cinci câmpuri titlu/descriere/HTML/CSS/JS ale pluginului. Backup privat înainte și după; codul publicat verificat față de sursă. Tema și pluginul Core de producție nu sunt înlocuite.
+- [x] Verificare anonimă live la **390/768/1024/1440 px**, fără overflow, cu logo încărcat și pauză/reluare funcționale. Homepage și o rută internă răspund **503**, `Retry-After: 3600`, `noindex,nofollow,noarchive` și no-cache; login **200**, administratorul vede în continuare site-ul normal.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, **7 teste Python**, integrare și migrare/rollback/HPOS trecute. **138/138 Playwright în 21,4 minute**, inclusiv cele șase teste noi; **8/8 repetări** suplimentare pentru schimbarea dinamică a mișcării reduse. Detalii în [raportul de livrare](docs/under-construction-continuum.md).
+- [x] Arhive **Theme/Core 1.1.31** și **Continuum Maintenance 1.0.0**, verificate intrare cu intrare; ghid de aplicare și rollback inclus.
+- [ ] Rezolvă separat eroarea `elementorFrontendConfig is not defined` din assetul Elementor de producție, încărcat de hook-urile pluginului de mentenanță. Noua scenă nu depinde de Elementor; nu au fost dezactivate pluginuri globale pentru a masca eroarea.
+
+Ghid, verificări și limite: [Under Construction Continuum](docs/under-construction-continuum.md). În această livrare autorizarea de producție privește numai pagina de mentenanță; migrarea temei rămâne un flux separat.
 
 ## Audit de lansare și sharing · 1.1.30
 
