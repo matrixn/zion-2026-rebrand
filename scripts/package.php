@@ -95,7 +95,7 @@ try {
 		'zion-theme',
 		array(
 			'source'      => 'themes/zion-theme',
-			'files'       => array( 'style.css', 'functions.php', 'theme.json', 'assets/admin/control-center.js', 'assets/nexus-cube.svg' ),
+			'files'       => array( 'style.css', 'functions.php', 'theme.json', 'assets/admin/control-center.js', 'assets/admin/studio.js', 'assets/nexus-cube.svg' ),
 			'directories' => array(
 				'assets/blocks' => array( 'js' ),
 				'assets/admin'  => array( 'css', 'png' ),

@@ -26,6 +26,14 @@ function field(page, key) {
   return page.locator(`#zion-field-${key}`);
 }
 
+async function expectStudioLink(page, name, kind, document) {
+  const target = new URL(await page.getByRole('link', { name }).getAttribute('href'));
+  expect(target.searchParams.get('page')).toBe('zion-theme');
+  expect(target.searchParams.get('section')).toBe('studio');
+  expect(target.searchParams.get('kind')).toBe(kind);
+  expect(target.searchParams.get('document')).toBe(document);
+}
+
 async function save(page) {
   await page.getByRole('button', { name: 'Salvează setările' }).click();
   await expect(page.getByText('Setările au fost salvate.', { exact: true })).toBeVisible();
@@ -62,7 +70,7 @@ test('Control Center persists validated settings and applies inheritance on publ
   try {
     await importSettings(page, empty);
     await openSection(page, 'general');
-    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(16);
+    await expect(page.getByRole('navigation', { name: 'Secțiuni Zion Control Center' }).getByRole('link')).toHaveCount(17);
 
     await openSection(page, 'cards');
     await expect(field(page, 'catalog_density')).toHaveValue('');
@@ -480,10 +488,14 @@ test('site chrome, journal pagination and page overrides use the native editor a
 
     await openSection(page, 'header');
     const editor = await page.getByRole('link', { name: /Editează Header/ }).getAttribute('href');
-    expect(new URL(editor).searchParams.get('p')).toBe('/wp_template_part/zion-theme//header');
+    expect(new URL(editor).searchParams.get('section')).toBe('studio');
+    expect(new URL(editor).searchParams.get('kind')).toBe('parts');
+    expect(new URL(editor).searchParams.get('document')).toBe('zion-theme//header');
     await openSection(page, 'pages');
     const sidebarEditor = await page.getByRole('link', { name: /Editează bara laterală/ }).getAttribute('href');
-    expect(new URL(sidebarEditor).searchParams.get('p')).toBe('/wp_template_part/zion-theme//page-sidebar');
+    expect(new URL(sidebarEditor).searchParams.get('section')).toBe('studio');
+    expect(new URL(sidebarEditor).searchParams.get('kind')).toBe('parts');
+    expect(new URL(sidebarEditor).searchParams.get('document')).toBe('zion-theme//page-sidebar');
 
     await page.setViewportSize({ width: 1440, height: 850 });
     await page.goto('/');
@@ -886,7 +898,7 @@ test('cart visual designs preserve native totals, quantities, coupons and checko
     for (let index = 0; index < designs.length; index++) {
       await page.goto(`${base}&section=cart`);
       await expect(page.getByRole('heading', { name: 'Coș de cumpărături', exact: true })).toBeVisible();
-      await expect(page.getByRole('link', { name: 'Editează șablonul coșului în Site Editor' })).toBeVisible();
+      await expectStudioLink(page, 'Editează șablonul coșului în Zion Studio', 'templates', 'zion-theme//page-cart');
       await page.getByRole('button', { name: labels[index], exact: true }).click();
       await expect(field(page, 'cart_design')).toHaveValue(designs[index]);
       await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
@@ -1025,7 +1037,7 @@ test('checkout design selector preserves native form, validation and totals at f
     const labels = ['Atelier', 'Studio Editorial', 'Technical', 'Contrast Premium', 'Focus Checkout'];
     for (let index = 0; index < designs.length; index++) {
       await openSection(page, 'checkout');
-      await expect(page.getByRole('link', { name: 'Editează șablonul checkoutului în Site Editor' })).toBeVisible();
+      await expectStudioLink(page, 'Editează șablonul checkoutului în Zion Studio', 'templates', 'zion-theme//page-checkout');
       await page.getByRole('button', { name: labels[index], exact: true }).click();
       await expect(field(page, 'checkout_design')).toHaveValue(designs[index]);
       await expect.poll(() => page.locator('.zion-design-preview img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);

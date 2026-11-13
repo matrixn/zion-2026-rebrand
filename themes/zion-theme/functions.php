@@ -8,6 +8,8 @@
 defined( 'ABSPATH' ) || exit;
 
 require_once __DIR__ . '/includes/class-zion-theme-settings.php';
+require_once __DIR__ . '/includes/class-zion-theme-design.php';
+require_once __DIR__ . '/includes/studio.php';
 require_once __DIR__ . '/includes/settings-runtime.php';
 require_once __DIR__ . '/includes/site-layout.php';
 require_once __DIR__ . '/includes/product-card.php';

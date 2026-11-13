@@ -1,9 +1,11 @@
 function initZionForm(form) {
+  enhanceZionControls(form);
   for (const row of form.querySelectorAll('[data-zion-requires]:not([data-zion-requires=""])')) {
     const controller = form.elements.namedItem(`values[${row.dataset.zionRequires}]`);
     if (!controller) continue;
     const update = () => {
-      row.hidden = (controller.value || controller.dataset.zionInherited) !== '1';
+      row.dataset.zionRequiresHidden = String((controller.value || controller.dataset.zionInherited) !== '1');
+      row.hidden = row.dataset.zionRequiresHidden === 'true' || row.dataset.zionSearchHidden === 'true';
       for (const field of row.querySelectorAll('input, select')) field.disabled = row.hidden;
     };
     controller.addEventListener('change', update);
@@ -95,3 +97,60 @@ function initZionForm(form) {
 }
 
 document.querySelectorAll('[data-zion-section]').forEach(initZionForm);
+
+function enhanceZionControls(form) {
+  for (const row of form.querySelectorAll('[data-zion-field]')) {
+    const field = form.elements.namedItem(`values[${row.dataset.zionField}]`);
+    if (!field) continue;
+    const holder = row.querySelector('td');
+    if (row.dataset.zionType === 'bool') {
+      const toggle = document.createElement('button');
+      toggle.type = 'button'; toggle.className = 'zion-toggle'; toggle.setAttribute('role', 'switch');
+      toggle.setAttribute('aria-label', `Comută ${row.dataset.zionTitle}`);
+      const update = () => { const enabled = (field.value || field.dataset.zionInherited) === '1'; toggle.setAttribute('aria-checked', String(enabled)); toggle.textContent = enabled ? 'Activat' : 'Dezactivat'; };
+      toggle.addEventListener('click', () => { field.value = (field.value || field.dataset.zionInherited) === '1' ? '0' : '1'; field.dispatchEvent(new Event('change', { bubbles: true })); });
+      field.addEventListener('change', update); holder.insertBefore(toggle, field); update();
+    }
+    if (row.dataset.zionType === 'int') {
+      const range = document.createElement('input'); range.type = 'range'; range.min = field.min; range.max = field.max; range.step = '1'; range.className = 'zion-range'; range.setAttribute('aria-label', `${row.dataset.zionTitle} · glisor`);
+      const update = () => { range.value = field.value || row.dataset.zionValue; };
+      range.addEventListener('input', () => { field.value = range.value; field.dispatchEvent(new Event('input', { bubbles: true })); });
+      field.addEventListener('input', update); holder.insertBefore(range, field); update();
+    }
+    if (row.dataset.zionType === 'ordered_keys') {
+      const labels = JSON.parse(row.dataset.zionChoices),list = document.createElement('ol'); list.className = 'zion-order-list'; list.setAttribute('aria-label', `Ordine ${row.dataset.zionTitle}`);
+      let dragged;
+      const write = keys => { field.value = keys.join(','); field.dispatchEvent(new Event('input', { bubbles: true })); render(); };
+      const keys = () => (field.value || row.dataset.zionValue).split(',').map(k => k.trim()).filter(k => Object.hasOwn(labels, k));
+      const move = (key,delta) => { const order = keys(),from = order.indexOf(key),to = from + delta; if(from < 0 || to < 0 || to >= order.length) return; [order[from],order[to]] = [order[to],order[from]]; write(order); list.querySelector(`[data-zion-key="${key}"] button:not(:disabled),[data-zion-key="${key}"] input`).focus(); };
+      const render = () => {
+        list.replaceChildren(); const order = keys();
+        for (const key of [...order,...Object.keys(labels).filter(k => !order.includes(k))]) {
+          const li = document.createElement('li'); li.dataset.zionKey = key;
+          const label = document.createElement('label'),check = document.createElement('input'); check.type = 'checkbox'; check.checked = order.includes(key); check.setAttribute('aria-label', `Include ${labels[key]}`); label.append(check,document.createTextNode(labels[key])); li.append(label);
+          check.addEventListener('change', () => { const next = check.checked ? [...order,key] : order.filter(k => k !== key); if(next.length) write(next); else check.checked = true; });
+          for(const [delta,text] of [[-1,'↑'],[1,'↓']]) {
+            const button = document.createElement('button'); button.type = 'button'; button.textContent = text; button.className = 'button'; button.setAttribute('aria-label', `Mută ${labels[key]} mai ${delta < 0 ? 'sus' : 'jos'}`); button.disabled = !order.includes(key) || (delta < 0 ? order.indexOf(key) === 0 : order.indexOf(key) === order.length-1); button.addEventListener('click', () => move(key,delta)); li.append(button);
+          }
+          li.draggable = order.includes(key);
+          li.addEventListener('dragstart', e => { dragged = key; e.dataTransfer.setData('text/plain',key); });
+          li.addEventListener('dragover', e => { if(dragged && order.includes(key)) e.preventDefault(); });
+          li.addEventListener('drop', e => { e.preventDefault(); if(!dragged || dragged === key || !order.includes(key)) return; const next = order.filter(k => k !== dragged); next.splice(next.indexOf(key),0,dragged); dragged = undefined; write(next); });
+          li.addEventListener('dragend', () => { dragged = undefined; }); list.append(li);
+        }
+      };
+      holder.insertBefore(list,field); field.addEventListener('change',render); render();
+    }
+  }
+  const changed = () => { const feedback = form.querySelector('.zion-control-feedback'); if(form.getAttribute('aria-busy') !== 'true') feedback.textContent = 'Modificări nesalvate.'; };
+  form.addEventListener('input',changed); form.addEventListener('change',changed);
+}
+
+document.querySelector('[data-zion-setting-search]')?.addEventListener('input', event => {
+  const normalize = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const term = normalize(event.target.value);
+  for(const row of document.querySelectorAll('[data-zion-field]')) {
+    row.dataset.zionSearchHidden = String(!normalize(row.dataset.zionTitle + ' ' + row.querySelector('.description').textContent).includes(term));
+    row.hidden = row.dataset.zionSearchHidden === 'true' || row.dataset.zionRequiresHidden === 'true';
+  }
+});

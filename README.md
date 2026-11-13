@@ -1,18 +1,18 @@
 # Zion Theme
 
-Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine care folosesc același WooCommerce. Obiectivul este înlocuirea XStore și Elementor prin Site Editor, componente native și un panou de configurare dedicat.
+Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine care folosesc același WooCommerce. Obiectivul este înlocuirea XStore și Elementor prin blocuri native, Zion Studio și un panou de configurare dedicat.
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.26** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.27** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.26** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.27** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
-- [x] **Navigație și șabloane generale** cu logo și CTA în Site Editor, căutare de produse, cont și mini-coș nativ, footer Zion Nexus, jurnal configurabil și sidebar editabil.
+- [x] **Navigație și șabloane generale** cu logo și CTA în Zion Studio, căutare de produse, cont și mini-coș nativ, footer Zion Nexus, jurnal configurabil și sidebar editabil.
 - [x] **Homepage și componente Zion** cu 11 pattern-uri, 7 pagini de servicii, 9 blocuri dinamice și shortcode-uri echivalente. Asseturile bibliotecii se încarcă la randare, iar produsele folosesc schema WooCommerce.
 - [x] **Catalog demonstrativ** cu două vitrine, patru produse fictive ilustrate și fluxul WooCommerce nativ pentru produs, coș și checkout.
 - [x] **Mediu local și de test** cu WordPress, WooCommerce, Docker, wp-env, WP-CLI și date demo încărcate printr-o comandă repetabilă.
@@ -39,6 +39,21 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Studio · administrare 1.1.27
+
+- [x] Designul se configurează în **Aspect → Zion Theme → Identitate și design**: colorpicker nativ, HEX, fonturi, dimensiuni, spațiere, containere și rotunjiri. Preview înainte de salvare pentru pagini, la 390/768/1024/1440 px, cu indicator de contrast.
+- [x] Logo, pictogramă și identitate prin biblioteca media. Resetare de tokenuri și import/export JSON; validare pe server și detectarea modificărilor concurente. Stilurile sunt salvate în același `wp_global_styles`, cu `theme.json` ca sursă a valorilor implicite.
+- [x] **Zion Studio** în același panou: pagini, articole, header, footer, șabloane și meniuri native. Gutenberg cu inspector și inserare de blocuri, publicare cu calendar dată/oră, imagine reprezentativă și șabloane. Editor de linkuri și submeniuri, cu ordonare accesibilă și conectarea meniului în header.
+- [x] Comutatoare, glisoare numerice, liste cu bife și ordonare prin drag-and-drop sau tastatură, căutare în setări și indicatoare de salvare. Selectoarele vizuale cu preview/lightbox rămân disponibile.
+- [x] Nu se dublează datele native sau opțiunile WooCommerce. Instalarea păstrează culorile și conținutul existente; modificările se aplică explicit din panou. Authoring-ul nu adaugă scripturi de frontend.
+- [x] **7/7 teste Playwright Studio** trecute local, inclusiv persistență, conflicte, permisiuni, media, meniuri/submeniuri și administrare fără overflow la 390/1440 px.
+- [x] Build, WPCS, **56 teste PHPUnit / 417 aserțiuni**, integrare și migrare/rollback trecute. **10 aserțiuni noi de integrare** verifică persistența nativă, validarea atomică, permisiunile și conflictele.
+- [x] Ambele ZIP-uri **1.1.27** generate și verificate față de sursă: **131 fișiere Theme / 9 fișiere Core**. Biblioteca Studio este inclusă explicit în pachetul temei.
+- [x] Cele **126 de scenarii Playwright** verificate local: suita generală, noul Studio, regresiile Control Center și clasificarea. Cele trei verificări ale legăturilor de editare urmăresc acum Zion Studio; rerularea lor a trecut **3/3**, iar clasificarea **1/1**. Studio a trecut din nou **7/7**, inclusiv resetarea în preview.
+- [ ] GitHub Actions și instalarea verificată pe staging.
+
+Ghid: [Zion Studio și controale native](docs/zion-studio.md).
 
 ## Zion Continuum · Software 1.1.26
 

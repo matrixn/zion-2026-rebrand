@@ -65,3 +65,81 @@
   .zion-design-picker :is(.zion-design-choices, .zion-design-preview, .zion-preview-hint), .zion-design-picker > .description { grid-column: 1; grid-row: auto; }
   .zion-design-picker .zion-design-preview { max-width: 480px; }
 }
+
+/* Zion Studio: native controls and authoring data in one workspace. */
+.zion-control { --wp-admin-theme-color: #2d5229; --wp-admin-theme-color-darker-10: #243e21; --wp-admin-theme-color-darker-20: #1b3218; }
+.zion-control .components-button:disabled { opacity: .5; }
+.zion-setting-search { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-block: 0 22px; font-weight: 600; }
+.zion-setting-search input { width: min(100%, 420px); min-height: 42px; border-radius: 7px; }
+.zion-control input[type="range"] { accent-color: #2d5229; }
+.zion-control .zion-range { display: inline-block; width: min(100%, 240px); margin-inline-end: 16px; vertical-align: middle; }
+.zion-control .zion-toggle { display: inline-flex; align-items: center; justify-content: start; gap: 10px; min-height: 42px; min-width: 145px; margin-inline-end: 12px; padding: 8px 12px; border: 1px solid #8c9890; border-radius: 22px; background: #f1f4f1; color: #24372a; cursor: pointer; font: 600 13px/1.5 system-ui; }
+.zion-toggle::before { content: ""; width: 17px; height: 17px; border: 2px solid currentColor; border-radius: 50%; background: #fff; }
+.zion-control .zion-toggle[aria-checked="true"] { background: #e3f4b9; border-color: #38612f; color: #25421e; }
+.zion-toggle[aria-checked="true"]::before { background: #38612f; }
+.zion-control .zion-toggle + select { width: 160px; }
+.zion-order-list { display: grid; gap: 6px; max-width: 640px; margin: 0 0 16px; padding: 0; list-style: none; }
+.zion-order-list li { display: flex; gap: 6px; align-items: center; margin: 0; padding: 8px 10px; border: 1px solid #dce3dc; border-radius: 7px; background: #f8faf8; }
+.zion-order-list li[draggable="true"] { cursor: grab; }
+.zion-order-list label { flex: 1; display: flex; align-items: center; gap: 9px; }
+.zion-order-list .button { min-height: 36px; min-width: 38px; }
+.zion-studio-card { padding: 20px; margin-block: 16px; border: 1px solid #dce3dc; border-radius: 12px; background: #f8faf8; }
+.zion-studio-card > summary { font-size: 15px; font-weight: 650; cursor: pointer; min-height: 36px; }
+.zion-studio-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-block: 16px; }
+.zion-studio-fields > * { min-width: 0; }
+.zion-studio-fields label, .zion-document-meta > label, .zion-preview-tools label, .zion-token-panel > label { display: grid; gap: 8px; font-weight: 600; }
+.zion-studio-fields input, .zion-document-meta input { width: 100%; min-height: 40px; }
+.zion-studio-fields label:has(> input[type="checkbox"]) { display:flex; align-items:center; align-self:center; }
+.zion-studio-fields input[type="checkbox"] { width:24px; min-height:24px; height:24px; margin:0; }
+.zion-image-control { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px; border: 1px solid #dce3dc; border-radius: 8px; }
+.zion-image-control > span { width: 100%; font-weight: 600; }
+.zion-image-control img { width: 100px; height: 75px; object-fit: contain; background: #e8eee9; border-radius: 4px; }
+.zion-studio-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 16px 0; border-block: 1px solid #e5e9e5; }
+.zion-studio-toolbar > strong { flex: 1; min-width: 190px; }
+.zion-studio-toolbar label { display: grid; gap: 6px; font-size: 12px; font-weight: 600; min-width: 0; flex: 1 1 180px; }
+.zion-studio-toolbar :is(select,input) { max-width: 100%; width: 100%; min-height: 40px; }
+.zion-control .components-button { min-height: 40px; border-radius: 5px; }
+.zion-control .components-button.is-primary { background: #253b26; color: #e4ff75; }
+.zion-design-layout { display: grid; grid-template-columns: minmax(260px, .85fr) minmax(0, 1.15fr); gap: 24px; align-items: start; }
+.zion-token-panel { min-width: 0; }
+.zion-token-panel > nav { display: flex; flex-wrap: wrap; gap: 6px; margin-block: 12px 20px; }
+.zion-token-panel input[type="search"] { min-height: 40px; width: 100%; }
+.zion-token { padding-block: 18px; border-top: 1px solid #e5e9e5; }
+.zion-token > label { display: block; margin-bottom: 10px; font-weight: 650; font-size: 13px; }
+.zion-token > :is(input,select) { width: 100%; min-height: 40px; }
+.zion-token small { display: block; line-height: 1.6; color: #505c52; }
+.zion-token-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #505c52; }
+.zion-color-control { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.zion-color-control input { width: 110px; min-height: 40px; font-family: monospace; }
+.zion-color-swatch { display: inline-block; width: 24px; height: 24px; border: 1px solid #708274; border-radius: 4px; margin-inline-end: 8px; }
+.zion-studio-preview { min-width: 0; position: sticky; top: 44px; padding: 14px; border: 1px solid #dce3dc; border-radius: 12px; background: #f5f8f5; }
+.zion-preview-tools > div { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.zion-preview-tools select { max-width: 100%; }
+.zion-preview-holder { position: relative; width: 100%; overflow: hidden; border-radius: 8px; background: #fff; }
+.zion-preview-holder iframe { position: absolute; top: 0; left: 0; max-width: none; border: 0; }
+.zion-contrast { padding: 10px; border-radius: 6px; background: #eef3ef; font-size: 11px; line-height: 1.8; }
+.zion-document { margin-top: 16px; }
+.zion-document-meta { padding: 16px; border: 1px solid #dce3dc; border-radius: 10px; background: #f8faf8; }
+.zion-document-meta .zion-studio-toolbar { margin-top: 16px; }
+.zion-block-tools { padding: 10px; border: 1px solid #dce3dc; background: #fff; }
+.zion-block-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; border: 1px solid #dce3dc; }
+.zion-block-layout.is-wide { grid-template-columns: minmax(0, 1fr); }
+.zion-block-canvas { min-width: 0; background: #fff; }
+.zion-block-inspector { min-width: 0; border-inline-start: 1px solid #dce3dc; background: #fff; max-height: 700px; overflow: auto; }
+.zion-control:has(#zion-content-studio) { max-width: none; }
+@media (max-width: 1200px) {
+  .zion-design-layout { grid-template-columns: minmax(0, 1fr); }
+  .zion-studio-preview { position: relative; top: auto; }
+  .zion-block-layout { grid-template-columns: minmax(0, 1fr); }
+  .zion-block-inspector { border-inline-start: 0; border-top: 1px solid #dce3dc; }
+}
+@media (max-width: 650px) {
+  .zion-studio-fields { grid-template-columns: minmax(0, 1fr); }
+  .zion-control .zion-range { display: block; width: 100%; margin-bottom: 12px; }
+  .zion-control .zion-toggle { margin-bottom: 8px; }
+  .zion-studio-toolbar > .components-button { flex: 1 1 auto; }
+}
+.zion-control .zion-menu-tree { display:grid; gap:12px; }
+.zion-control .zion-menu-item { padding:16px; border:1px solid #c8d1c8; border-radius:12px; background:#fff; }
+.zion-control .zion-menu-item-title { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.zion-control .zion-menu-item > .zion-menu-tree { margin:16px 0 0 16px; padding-left:12px; border-left:3px solid #a8ce28; }

@@ -136,4 +136,5 @@ require __DIR__ . '/contact.php';
 require __DIR__ . '/journal.php';
 require __DIR__ . '/faq.php';
 require __DIR__ . '/software.php';
+require __DIR__ . '/studio.php';
 WP_CLI::success( 'Catalog integration passed.' );

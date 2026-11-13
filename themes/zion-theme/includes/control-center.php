@@ -47,6 +47,7 @@ function zion_theme_register_control_page(): void {
 			wp_enqueue_script( 'zion-theme-control', get_theme_file_uri( 'assets/admin/control-center.js' ), array(), wp_get_theme()->get( 'Version' ), true );
 			wp_enqueue_style( 'zion-theme-control', get_theme_file_uri( 'assets/admin/control-center.css' ), array(), wp_get_theme()->get( 'Version' ) );
 			wp_add_inline_style( 'zion-theme-control', wp_get_global_stylesheet( array( 'variables' ) ) );
+			zion_theme_enqueue_studio();
 		}
 	);
 }
@@ -61,6 +62,7 @@ function zion_theme_control_sections(): array {
 	return array(
 		'general'     => 'General',
 		'design'      => 'Identitate și design',
+		'studio'      => 'Pagini și componente',
 		'header'      => 'Header și navigație',
 		'footer'      => 'Footer',
 		'woo'         => 'WooCommerce global',
@@ -421,6 +423,7 @@ function zion_theme_render_control_page(): void {
 	<div class="wrap zion-control">
 		<h1>Zion Control Center</h1>
 		<p class="zion-control-intro">Configurează experiența Zion, de la prima pagină la ultimul detaliu.</p>
+		<label class="zion-setting-search">Caută în această secțiune <input type="search" data-zion-setting-search placeholder="Culoare, buton, imagine…"></label>
 		<div class="zion-control-layout">
 		<nav class="nav-tab-wrapper" aria-label="Secțiuni Zion Control Center">
 			<?php foreach ( $sections as $key => $label ) : ?>
@@ -432,6 +435,11 @@ function zion_theme_render_control_page(): void {
 		<div data-zion-control-notices><?php zion_theme_control_notices( $config, $section, $updated ); ?></div>
 
 		<?php zion_theme_control_editor_links( $section ); ?>
+		<?php if ( 'design' === $section ) : ?>
+			<div id="zion-design-studio"><p role="status">Se încarcă Studio Design…</p></div>
+		<?php elseif ( 'studio' === $section ) : ?>
+			<div id="zion-content-studio"><p role="status">Se încarcă editorul Zion…</p></div>
+		<?php endif; ?>
 		<?php if ( in_array( $section, array( 'cards', 'product' ), true ) ) : ?>
 			<nav class="zion-card-targets" aria-label="Destinația designului">
 				<?php
@@ -483,7 +491,15 @@ function zion_theme_control_editor_links( string $section ): void {
 		$id    = wc_get_page_id( $section );
 		$label = 'cart' === $section ? 'Coș' : 'Finalizare comandă';
 		if ( $id > 0 ) {
-			echo '<p><a href="' . esc_url( get_edit_post_link( $id ) ) . '">' . esc_html( 'Editează blocul ' . $label . ' în editorul WordPress' ) . '</a></p>';
+				echo '<p><a href="' . esc_url(
+					add_query_arg(
+						array(
+							'kind'     => 'pages',
+							'document' => $id,
+						),
+						zion_theme_control_url( 'studio' )
+					)
+				) . '">' . esc_html( 'Editează conținutul ' . $label . ' în Zion Studio' ) . '</a></p>';
 			if ( ! has_block( 'woocommerce/' . $section, get_post_field( 'post_content', $id ) ) ) {
 				echo '<div class="notice notice-warning"><p>' . esc_html( 'Pagina trebuie să conțină blocul nativ ' . $label . ' WooCommerce pentru aceste designuri. Înlocuiește shortcode-ul clasic din editor după un backup.' ) . '</p></div>';
 			}
@@ -492,16 +508,24 @@ function zion_theme_control_editor_links( string $section ): void {
 	if ( 'account' === $section && function_exists( 'wc_get_page_id' ) ) {
 		$account_id = wc_get_page_id( 'myaccount' );
 		if ( $account_id > 0 ) {
-			echo '<p><a href="' . esc_url( get_edit_post_link( $account_id ) ) . '">Editează pagina nativă Contul meu</a></p>';
+			echo '<p><a href="' . esc_url(
+				add_query_arg(
+					array(
+						'kind'     => 'pages',
+						'document' => $account_id,
+					),
+					zion_theme_control_url( 'studio' )
+				)
+			) . '">Editează pagina Contul meu în Zion Studio</a></p>';
 			if ( ! has_shortcode( get_post_field( 'post_content', $account_id ), 'woocommerce_my_account' ) ) {
 				echo '<div class="notice notice-warning"><p>Aceste designuri stilizează componenta nativă [woocommerce_my_account]. Verifică pagina Contul meu în editor; conținutul existent nu este rescris automat.</p></div>';
 			}
 		}
 	}
 	$views = match ( $section ) {
-		'account' => array( array( 'wp_template', 'page', 'Editează șablonul paginii în Site Editor' ) ),
-		'cart' => array( array( 'wp_template', 'page-cart', 'Editează șablonul coșului în Site Editor' ) ),
-		'checkout' => array( array( 'wp_template', 'page-checkout', 'Editează șablonul checkoutului în Site Editor' ) ),
+		'account' => array( array( 'wp_template', 'page', 'Editează șablonul paginii în Zion Studio' ) ),
+		'cart' => array( array( 'wp_template', 'page-cart', 'Editează șablonul coșului în Zion Studio' ) ),
+		'checkout' => array( array( 'wp_template', 'page-checkout', 'Editează șablonul checkoutului în Zion Studio' ) ),
 		'header' => array( array( 'wp_template_part', 'header', 'Editează Header, logo, meniu și CTA' ) ),
 		'footer' => array( array( 'wp_template_part', 'footer', 'Editează Footer, contact și linkuri sociale' ) ),
 		'blog' => array( array( 'wp_template', 'home', 'Editează Jurnal' ), array( 'wp_template', 'single', 'Editează șablonul de articol' ) ),
@@ -509,15 +533,15 @@ function zion_theme_control_editor_links( string $section ): void {
 		default => array(),
 	};
 	if ( in_array( $section, array( 'general', 'design' ), true ) ) {
-		echo '<p><a href="' . esc_url( admin_url( 'site-editor.php' ) ) . '">Deschide Site Editor</a></p>';
+		echo '<p><a class="button" href="' . esc_url( zion_theme_control_url( 'studio' ) ) . '">Editează pagini, șabloane și meniuri în Zion Studio</a></p>';
 	}
 	foreach ( $views as $view ) {
 		$url = add_query_arg(
 			array(
-				'p'      => '/' . $view[0] . '/' . rawurlencode( get_stylesheet() . '//' . $view[1] ),
-				'canvas' => 'edit',
+				'kind'     => 'wp_template_part' === $view[0] ? 'parts' : 'templates',
+				'document' => get_stylesheet() . '//' . $view[1],
 			),
-			admin_url( 'site-editor.php' )
+			zion_theme_control_url( 'studio' )
 		);
 		echo '<p><a href="' . esc_url( $url ) . '">' . esc_html( $view[2] ) . '</a></p>';
 	}
@@ -667,7 +691,7 @@ function zion_theme_render_control_form( string $section, int $id, string $type,
 				$value           = isset( $values[ $key ] ) ? ( is_bool( $values[ $key ] ) ? (string) (int) $values[ $key ] : (string) $values[ $key ] ) : '';
 				$control_id      = 'zion-field-' . $key;
 				?>
-				<tr data-zion-requires="<?php echo esc_attr( $field['requires'] ?? '' ); ?>">
+				<tr data-zion-requires="<?php echo esc_attr( $field['requires'] ?? '' ); ?>" data-zion-field="<?php echo esc_attr( $key ); ?>" data-zion-type="<?php echo esc_attr( $field['type'] ); ?>" data-zion-title="<?php echo esc_attr( $field['label'] ); ?>" data-zion-value="<?php echo esc_attr( (string) ( is_bool( $effective['value'] ) ? (int) $effective['value'] : $effective['value'] ) ); ?>" data-zion-choices="<?php echo esc_attr( wp_json_encode( $field['allowed'] ) ); ?>">
 					<th scope="row"><label for="<?php echo esc_attr( $control_id ); ?>"><?php echo esc_html( $field['label'] ); ?></label></th>
 					<td>
 					<?php if ( 'int' === $field['type'] ) : ?>
@@ -761,7 +785,7 @@ function zion_theme_card_picker( string $selected, string $control_id, string $k
 		<?php
 		echo esc_html(
 			match ( $kind ) {
-			'header' => 'Preview conceptual desktop și mobil. Linkurile reale, logo-ul și CTA provin din Header și blocul Navigație editabile în Site Editor. Structura submeniurilor urmează meniul salvat.',
+			'header' => 'Preview conceptual desktop și mobil. Linkurile reale, logo-ul și CTA provin din Header și blocul Navigație editabile în Zion Studio. Structura submeniurilor urmează meniul salvat.',
 			'account' => 'Preview conceptual cu date ilustrative. Comenzile, adresele și fișierele reale aparțin utilizatorului autentificat și sunt gestionate de WooCommerce.',
 			default => 'Preview conceptual cu produs ilustrativ. Fotografiile, prețurile, stocurile și atributele din magazin provin din produsele WooCommerce.'
 			}
