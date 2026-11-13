@@ -54,6 +54,43 @@ test('native page editing and date picker publish a scheduled synthetic page',as
   const stale=await admin.request.post('/wp-json/zion-theme/v1/document',{headers,data:{kind:'pages',id:String(record.id),revision:old.revision,values:{title:'Stale overwrite'}}});expect(stale.status()).toBe(409);
 });
 
+test('home and both storefronts preview and persist isolated native colors fonts and spacing',async({page})=>{
+  test.setTimeout(180000);await login(page);
+  const profiles=[['home','/','#baff33','Georgia, serif','28px'],['3d','/magazin-3d/','#33ccff','Arial, Helvetica, sans-serif','32px'],['software','/magazin-software/','#cc88ff','Verdana, Geneva, sans-serif','36px']];
+  try{
+    for(const [scope,path,color,font,space] of profiles){
+      const before=await readDesign();await page.goto(base+'&section=design&design_scope='+scope);await expect(page.getByRole('combobox',{name:'Destinație design',exact:true})).toHaveValue(scope);
+      await page.locator('#zion-token-color_accent').fill(color);const preview=page.frameLocator('iframe[title="Preview design Zion"]');await expect.poll(()=>preview.locator('body').evaluate(e=>getComputedStyle(e).getPropertyValue('--wp--preset--color--accent').trim())).toBe(color);expect(new URL(await page.locator('iframe[title="Preview design Zion"]').getAttribute('src')).pathname).toBe(path);
+      await page.getByRole('button',{name:'Tipografie',exact:true}).click();await page.locator('#zion-token-font_body').selectOption(font);await expect.poll(()=>preview.locator('body').evaluate(e=>getComputedStyle(e).fontFamily)).toContain(font.split(',')[0]);
+      await page.getByRole('button',{name:'Spațiere',exact:true}).click();await page.locator('#zion-token-spacing_regular').fill(space);await page.locator('#zion-token-spacing_section').fill('48px');await expect.poll(()=>preview.locator('body').evaluate(e=>getComputedStyle(e).getPropertyValue('--wp--preset--spacing--regular').trim())).toBe(space);
+      if(scope==='home')await expect(preview.locator('.zion-homepage > .zion-overview-band').nth(1)).toHaveCSS('padding-top','48px');
+      expect((await readDesign()).document).toEqual(before.document);await page.getByRole('button',{name:'Salvează designul',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Design salvat.'})).toBeVisible();
+    }
+    for(const [scope,path,color,font,space] of profiles){for(const width of [390,768,1024,1440]){
+      await page.setViewportSize({width,height:1000});await page.goto(path);await expect(page.locator('body')).toHaveClass(new RegExp('zion-design-'+scope));expect(await page.locator('body').evaluate(e=>getComputedStyle(e).getPropertyValue('--wp--preset--color--accent').trim())).toBe(color);await expect(page.locator('body')).toHaveCSS('font-family',font);expect(await page.locator('body').evaluate(e=>getComputedStyle(e).getPropertyValue('--wp--preset--spacing--regular').trim())).toBe(space);expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
+      if(scope!=='3d'&&width===1440)await expect.poll(()=>page.locator('canvas[data-zion-spatial]').first().evaluate((canvas,color)=>{const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;const rgb=[1,3,5].map(n=>parseInt(color.slice(n,n+2),16));let matching=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i+3]>40&&rgb.every((v,j)=>Math.abs(pixels[i+j]-v)<6))matching++;return matching;},color)).toBeGreaterThan(10);
+      if(width===390||width===1440)await page.screenshot({path:`build/design-${scope}-${width}-1.1.28.png`,fullPage:false});
+    }}
+    for(const path of ['/despre-noi/','/cart/','/product/zion-catalog-tools/']){await page.goto(path);await expect(page.locator('body')).toHaveClass(/zion-design-global/);expect(await page.locator('body').evaluate(e=>getComputedStyle(e).getPropertyValue('--wp--preset--color--accent').trim())).toBe(designOriginal.registry.color_accent.default);}
+  }finally{await restoreDesign();}
+});
+
+test('context resets imports global inheritance and stale saves protect sibling designs',async({page})=>{
+  test.setTimeout(90000);await login(page);
+  const saveScope=async(scope,values)=>{const state=await(await admin.request.get('/wp-json/zion-theme/v1/design?scope='+scope,{headers})).json();const response=await admin.request.post('/wp-json/zion-theme/v1/design',{headers,data:{scope,revision:state.revision,values}});expect(response.ok(),await response.text()).toBe(true);return response.json();};
+  try{
+    await saveScope('global',{color_accent:'#ffdd33'});await saveScope('3d',{color_accent:'#33ddaa'});await saveScope('software',{color_accent:'#aa88ff'});
+    await page.goto(base+'&section=design&design_scope=3d');await expect(page.locator('#zion-token-color_accent')).toHaveValue('#33ddaa');await page.getByRole('button',{name:'Resetează Lime',exact:true}).click();await expect(page.locator('#zion-token-color_accent')).toHaveValue('#ffdd33');const preview=page.frameLocator('iframe[title="Preview design Zion"]');await expect.poll(()=>preview.locator('body').evaluate(e=>getComputedStyle(e).getPropertyValue('--wp--preset--color--accent').trim())).toBe('#ffdd33');
+    await page.getByRole('button',{name:'Salvează designul',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Design salvat.'})).toBeVisible();
+    const before=await readDesign();await page.locator('input[type=file]').setInputFiles({name:'wrong-scope.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({version:2,scope:'software',values:{color_accent:'#ffffff'}}))});await expect(page.getByRole('status').filter({hasText:'Fișier de design invalid.'})).toBeVisible();expect((await readDesign()).document).toEqual(before.document);
+    await page.locator('input[type=file]').setInputFiles({name:'3d.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({version:2,scope:'3d',values:{color_accent:'#55ccff'}}))});await expect(page.locator('#zion-token-color_accent')).toHaveValue('#55ccff');expect((await readDesign()).document).toEqual(before.document);
+    page.once('dialog',dialog=>dialog.dismiss());await page.getByRole('combobox',{name:'Destinație design',exact:true}).selectOption('home');await expect(page.getByRole('combobox',{name:'Destinație design',exact:true})).toHaveValue('3d');
+    await page.getByRole('button',{name:'Salvează designul',exact:true}).click();await expect(page.getByRole('status').filter({hasText:'Design salvat.'})).toBeVisible();await page.getByRole('combobox',{name:'Destinație design',exact:true}).selectOption('home');await expect(page.locator('#zion-token-color_accent')).toHaveValue('#ffdd33');
+    const stale=await readDesign();await saveScope('software',{spacing_regular:'30px'});const conflict=await admin.request.post('/wp-json/zion-theme/v1/design',{headers,data:{scope:'home',revision:stale.revision,values:{color_accent:'#ffffff'}}});expect(conflict.status()).toBe(409);expect((await readDesign()).contexts.software.color_accent).toBe('#aa88ff');expect((await readDesign()).contexts['3d'].color_accent).toBe('#55ccff');
+    const invalid=await admin.request.get('/wp-json/zion-theme/v1/design?scope=product',{headers});expect(invalid.status()).toBe(400);
+  }finally{await restoreDesign();}
+});
+
 test('native menu links and template parts are edited from Zion without duplicating entities',async({page})=>{
   test.setTimeout(90000);
   const menu=await native('navigation',{title:'Synthetic Zion Studio menu',status:'publish',content:'<!-- wp:navigation-link {"label":"Synthetic link","url":"/contact/"} /-->'});fixtures.push('navigation/'+menu.id);

@@ -98,4 +98,99 @@ final class ZionThemeDesignTest extends TestCase {
 			array( array( 'content_width' => '2000px' ) ),
 		);
 	}
+
+	/** Page identities inherit globals without copying values into each profile. */
+	public function test_context_inheritance_and_independent_reset(): void {
+		$theme  = $this->theme();
+		$global = Zion_Theme_Design::patch_scope(
+			array(),
+			array(
+				'color_accent'    => '#bbcc33',
+				'font_body'       => 'Georgia, serif',
+				'spacing_regular' => '24px',
+			),
+			$theme
+		);
+		$home   = Zion_Theme_Design::patch_scope(
+			$global,
+			array(
+				'color_accent'    => '#ffcc33',
+				'spacing_section' => '48px',
+			),
+			$theme,
+			'home'
+		);
+		$both   = Zion_Theme_Design::patch_scope( $home, array( 'color_accent' => '#33bbff' ), $theme, '3d' );
+		$all    = Zion_Theme_Design::patch_scope( $both, array( 'font_body' => 'Arial, Helvetica, sans-serif' ), $theme, 'software' );
+		self::assertSame( '#bbcc33', Zion_Theme_Design::effective( $all, $theme )['color_accent'] );
+		self::assertSame( '#ffcc33', Zion_Theme_Design::effective( $all, $theme, 'home' )['color_accent'] );
+		self::assertSame( '#33bbff', Zion_Theme_Design::effective( $all, $theme, '3d' )['color_accent'] );
+		self::assertSame( '#bbcc33', Zion_Theme_Design::effective( $all, $theme, 'software' )['color_accent'] );
+		self::assertSame( 'Georgia, serif', Zion_Theme_Design::effective( $all, $theme, 'home' )['font_body'] );
+		self::assertSame( '24px', Zion_Theme_Design::effective( $all, $theme, '3d' )['spacing_regular'] );
+		self::assertSame( array( 'font_body' => 'Arial, Helvetica, sans-serif' ), Zion_Theme_Design::overrides( $all, $theme, 'software' ) );
+		$reset = Zion_Theme_Design::patch_scope(
+			$all,
+			array(
+				'color_accent'    => null,
+				'spacing_section' => null,
+			),
+			$theme,
+			'home'
+		);
+		self::assertSame( array(), Zion_Theme_Design::overrides( $reset, $theme, 'home' ) );
+		self::assertSame( Zion_Theme_Design::effective( $all, $theme ), Zion_Theme_Design::effective( $reset, $theme, 'home' ) );
+		self::assertSame( $all['settings']['custom']['zion']['designContexts']['3d'], $reset['settings']['custom']['zion']['designContexts']['3d'] );
+		self::assertSame( $global['settings']['color'], $reset['settings']['color'] );
+	}
+
+	/** Global edits and resets preserve explicit page choices. */
+	public function test_global_reset_preserves_context_overrides(): void {
+		$theme    = $this->theme();
+		$document = Zion_Theme_Design::patch_scope( array(), array( 'color_accent' => '#44bbff' ), $theme, 'software' );
+		$document = Zion_Theme_Design::patch_scope( $document, array( 'color_accent' => '#ffe033' ), $theme );
+		self::assertSame( '#ffe033', Zion_Theme_Design::effective( $document, $theme, '3d' )['color_accent'] );
+		$reset = Zion_Theme_Design::patch_scope( $document, array( 'color_accent' => null ), $theme );
+		self::assertSame( '#d9fb4f', Zion_Theme_Design::effective( $reset, $theme, 'home' )['color_accent'] );
+		self::assertSame( '#44bbff', Zion_Theme_Design::effective( $reset, $theme, 'software' )['color_accent'] );
+	}
+
+	/** Width validation uses inherited values and guards affected profiles. */
+	public function test_context_dimensions_resolve_inheritance(): void {
+		$theme    = $this->theme();
+		$document = Zion_Theme_Design::patch_scope( array(), array( 'wide_width' => '1800px' ), $theme );
+		$document = Zion_Theme_Design::patch_scope( $document, array( 'content_width' => '1600px' ), $theme, 'home' );
+		self::assertSame( '1800px', Zion_Theme_Design::effective( $document, $theme, 'home' )['wide_width'] );
+		$this->expectException( InvalidArgumentException::class );
+		Zion_Theme_Design::patch_scope( $document, array( 'wide_width' => '1200px' ), $theme );
+	}
+
+	/** Invalid page patches cannot create CSS or change other profiles. */
+	public function test_context_patch_rejects_invalid_css_atomically(): void {
+		$theme    = $this->theme();
+		$document = Zion_Theme_Design::patch_scope( array(), array( 'color_accent' => '#33bbff' ), $theme, '3d' );
+		$before   = $document;
+		try {
+			Zion_Theme_Design::patch_scope(
+				$document,
+				array(
+					'color_accent'    => '#ffee33',
+					'spacing_regular' => 'url(unsafe)',
+				),
+				$theme,
+				'home'
+			);
+			self::fail( 'Invalid CSS must fail.' );
+		} catch ( InvalidArgumentException $error ) {
+			self::assertSame( $before, $document );
+		}
+		$document['settings']['custom']['zion']['designContexts']['home']['color_accent'] = 'red;display:none';
+		self::assertSame( '#d9fb4f', Zion_Theme_Design::effective( $document, $theme, 'home' )['color_accent'] );
+	}
+
+	/** There is no implicit fallback for an unknown authoring target. */
+	public function test_unknown_context_is_rejected(): void {
+		$this->expectException( InvalidArgumentException::class );
+		Zion_Theme_Design::patch_scope( array(), array( 'color_accent' => '#ffffff' ), $this->theme(), 'product' );
+	}
 }

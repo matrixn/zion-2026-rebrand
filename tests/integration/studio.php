@@ -71,6 +71,65 @@
 			'A stale design form cannot overwrite a newer native save'
 		);
 		$zion_studio_assert( get_option( Zion_Theme_Settings::OPTION ) === $zion_studio_config, 'Native styles are never duplicated in zion_theme_settings' );
+		$home = $zion_studio_request( 'GET', 'design', array( 'scope' => 'home' ) )->get_data();
+		$zion_studio_assert( '#aabb33' === $home['inherited']['color_accent'] && array() === $home['overrides'], 'Homepage inherits global styles without copying defaults' );
+		foreach ( array(
+			'home'     => '#ffcc33',
+			'3d'       => '#33ccff',
+			'software' => '#cc88ff',
+		) as $scope => $accent ) {
+			$current = $zion_studio_request( 'GET', 'design', array( 'scope' => $scope ) )->get_data();
+			$scoped  = $zion_studio_request(
+				'POST',
+				'design',
+				array(
+					'scope'    => $scope,
+					'revision' => $current['revision'],
+					'values'   => array(
+						'color_accent'    => $accent,
+						'font_body'       => 'Georgia, serif',
+						'spacing_regular' => '32px',
+					),
+				)
+			);
+			$zion_studio_assert( 200 === $scoped->get_status() && $scoped->get_data()['overrides']['color_accent'] === $accent, $scope . ' persists validated native design overrides independently' );
+		}
+		$current = $zion_studio_request( 'GET', 'design', array( 'scope' => 'home' ) )->get_data();
+		$zion_studio_assert( '#aabb33' === $current['inherited']['color_accent'] && '#33ccff' === $current['contexts']['3d']['color_accent'], 'Scoped writes preserve global presets and sibling contexts' );
+		$invalid = $zion_studio_request(
+			'POST',
+			'design',
+			array(
+				'scope'    => 'home',
+				'revision' => $current['revision'],
+				'values'   => array( 'color_accent' => 'red;display:none' ),
+			)
+		);
+		$zion_studio_assert( 400 === $invalid->get_status() && zion_theme_design_document() === $current['document'], 'Invalid context CSS is rejected before any write' );
+		$zion_studio_assert( 400 === $zion_studio_request( 'GET', 'design', array( 'scope' => 'product' ) )->get_status(), 'Unknown design scopes never fall back to Global' );
+		$zion_studio_assert(
+			409 === $zion_studio_request(
+				'POST',
+				'design',
+				array(
+					'scope'    => 'software',
+					'revision' => $home['revision'],
+					'values'   => array( 'color_accent' => '#ffffff' ),
+				)
+			)->get_status(),
+			'A concurrent save in another scope invalidates stale forms'
+		);
+		$reset = $zion_studio_request(
+			'POST',
+			'design',
+			array(
+				'scope'    => 'home',
+				'revision' => $current['revision'],
+				'values'   => array( 'color_accent' => null ),
+			)
+		)->get_data();
+		$zion_studio_assert( ! isset( $reset['overrides']['color_accent'] ) && '#cc88ff' === $reset['contexts']['software']['color_accent'], 'Resetting one page token restores inheritance and preserves siblings' );
+		$zion_studio_assert( get_option( Zion_Theme_Settings::OPTION ) === $zion_studio_config, 'Page design profiles do not duplicate the native palette in Zion settings' );
 		$params = array(
 			'kind' => 'pages',
 			'id'   => (string) $zion_studio_page,

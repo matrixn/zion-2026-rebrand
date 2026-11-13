@@ -28,17 +28,81 @@ function zion_theme_design_document(): array {
 /**
  * Current design and its canonical native revision.
  *
- * @return array
+ * @param WP_REST_Request|null $request Optional authoring destination.
+ * @return array|WP_Error
  */
-function zion_theme_design_state(): array {
+function zion_theme_design_state( ?WP_REST_Request $request = null ): array|WP_Error {
 	$theme    = zion_theme_design_defaults();
 	$document = zion_theme_design_document();
+	$scope    = $request['scope'] ?? 'global';
+	if ( ! in_array( $scope, Zion_Theme_Design::scopes(), true ) ) {
+		return new WP_Error( 'zion_invalid_scope', 'Destinație de design necunoscută.', array( 'status' => 400 ) );
+	}
 	return array(
-		'registry' => Zion_Theme_Design::registry( $theme ),
-		'document' => $document,
-		'revision' => hash( 'sha256', get_stylesheet() . wp_json_encode( $document ) ),
+		'registry'  => Zion_Theme_Design::registry( $theme ),
+		'document'  => $document,
+		'scope'     => $scope,
+		'scopes'    => zion_theme_design_targets(),
+		'overrides' => Zion_Theme_Design::overrides( $document, $theme, $scope ),
+		'inherited' => 'global' === $scope ? array_map( static fn( $field ) => $field['default'], Zion_Theme_Design::registry( $theme ) ) : Zion_Theme_Design::effective( $document, $theme ),
+		'contexts'  => array_combine( Zion_Theme_Design::scopes(), array_map( static fn( $key ) => Zion_Theme_Design::overrides( $document, $theme, $key ), Zion_Theme_Design::scopes() ) ),
+		'revision'  => hash( 'sha256', get_stylesheet() . wp_json_encode( $document ) ),
 	);
 }
+
+/**
+ * Map design identities to existing public pages; no pages are created here.
+ *
+ * @return array
+ */
+function zion_theme_design_targets(): array {
+	$targets = array(
+		'global' => array(
+			'label' => 'Global',
+			'url'   => home_url( '/' ),
+		),
+		'home'   => array(
+			'label' => 'Homepage',
+			'url'   => home_url( '/' ),
+		),
+	);
+	foreach ( array(
+		'3d'       => 'Magazin 3D',
+		'software' => 'Magazin Software',
+	) as $key => $label ) {
+		$page            = get_page_by_path( 'magazin-' . $key );
+		$targets[ $key ] = array(
+			'label' => $label,
+			'url'   => $page && 'publish' === $page->post_status ? get_permalink( $page ) : '',
+		);
+	}
+	return $targets;
+}
+
+/**
+ * The context belongs to the requested catalog page, never to embedded products.
+ *
+ * @return string
+ */
+function zion_theme_design_scope(): string {
+	if ( is_front_page() ) {
+		return 'home';
+	}
+	$shop = is_page() ? zion_theme_item_shop( get_queried_object_id(), 'page' ) : '';
+	return $shop ? $shop : 'global';
+}
+
+/**
+ * Stable body hooks for the same native presets in each page identity.
+ *
+ * @param array $classes Existing body classes.
+ * @return array
+ */
+function zion_theme_design_body_classes( array $classes ): array {
+	$classes[] = 'zion-design-' . zion_theme_design_scope();
+	return $classes;
+}
+add_filter( 'body_class', 'zion_theme_design_body_classes' );
 
 /**
  * Store typed patches in the existing wp_global_styles entity.
@@ -47,7 +111,10 @@ function zion_theme_design_state(): array {
  * @return array|WP_Error
  */
 function zion_theme_design_save( WP_REST_Request $request ): array|WP_Error {
-	$state = zion_theme_design_state();
+	$state = zion_theme_design_state( $request );
+	if ( is_wp_error( $state ) ) {
+		return $state;
+	}
 	if ( ! is_string( $request['revision'] ) || ! hash_equals( $state['revision'], $request['revision'] ) ) {
 		return new WP_Error( 'zion_conflict', 'Designul s-a schimbat în altă sesiune. Reîncarcă înainte să salvezi.', array( 'status' => 409 ) );
 	}
@@ -58,7 +125,7 @@ function zion_theme_design_save( WP_REST_Request $request ): array|WP_Error {
 		return $state;
 	}
 	try {
-		$document = Zion_Theme_Design::patch( $state['document'], $request['values'], zion_theme_design_defaults() );
+		$document = Zion_Theme_Design::patch_scope( $state['document'], $request['values'], zion_theme_design_defaults(), $state['scope'] );
 	} catch ( InvalidArgumentException $error ) {
 		return new WP_Error( 'zion_invalid_design', $error->getMessage(), array( 'status' => 400 ) );
 	}
@@ -70,7 +137,7 @@ function zion_theme_design_save( WP_REST_Request $request ): array|WP_Error {
 		return $response->as_error();
 	}
 	WP_Theme_JSON_Resolver::clean_cached_data();
-	return zion_theme_design_state();
+	return zion_theme_design_state( $request );
 }
 
 /**
@@ -191,7 +258,13 @@ function zion_theme_register_studio_rest(): void {
 				'required'  => true,
 				'maxLength' => 200,
 			),
-		) : array();
+		) : array(
+			'scope' => array(
+				'type'    => 'string',
+				'default' => 'global',
+				'enum'    => Zion_Theme_Design::scopes(),
+			),
+		);
 		register_rest_route(
 			'zion-theme/v1',
 			$route,
@@ -218,9 +291,39 @@ add_action( 'rest_api_init', 'zion_theme_register_studio_rest' );
  * Derive Zion button variables from the existing native style, only if explicit.
  */
 function zion_theme_native_component_tokens(): void {
-	$radius = zion_theme_design_document()['styles']['elements']['button']['border']['radius'] ?? null;
-	if ( is_string( $radius ) && preg_match( '/^\d+(?:\.\d{1,3})?(?:px|rem)$/D', $radius ) ) {
-		wp_add_inline_style( 'zion-theme', ':root{--zion-button-radius:' . $radius . ';}body .wp-site-blocks :is(.wp-element-button,.wc-block-components-button),.wp-site-blocks .zion-card-design .zion-card-actions :is(.wp-element-button,.wc-block-components-product-button__button){border-radius:var(--zion-button-radius);}' );
+	$theme    = zion_theme_design_defaults();
+	$document = zion_theme_design_document();
+	$registry = Zion_Theme_Design::registry( $theme );
+	$css      = '';
+	$scope    = zion_theme_design_scope();
+	foreach ( array_unique( array( 'global', $scope ) ) as $target ) {
+		$values       = Zion_Theme_Design::overrides( $document, $theme, $target );
+		$declarations = '';
+		foreach ( $values as $key => $value ) {
+			$field = $registry[ $key ];
+			if ( 'global' === $target && 'button_radius' === $key && ( ! is_string( $value ) || ! preg_match( '/^\d+(?:\.\d{1,3})?(?:px|rem)$/D', $value ) ) ) {
+				continue;
+			}
+			if ( 'global' !== $target || 'button_radius' === $key ) {
+				$declarations .= $field['css'] . ':' . $value . ';';
+			}
+			if ( $field['alias'] ) {
+				$declarations .= $field['alias'] . ':var(' . $field['css'] . ');';
+			}
+		}
+		$selector = 'global' === $target ? ':root' : 'body.zion-design-' . $target;
+		if ( $declarations ) {
+			$css .= $selector . '{' . $declarations . '}';
+		}
+		if ( isset( $values['button_radius'] ) && is_string( $values['button_radius'] ) && preg_match( '/^\d+(?:\.\d{1,3})?(?:px|rem)$/D', $values['button_radius'] ) ) {
+			$body = 'global' === $target ? 'body' : $selector;
+			$css .= $body . ' .wp-site-blocks :is(.wp-element-button,.wc-block-components-button),' . $body . ' .wp-site-blocks .zion-card-design .zion-card-actions :is(.wp-element-button,.wc-block-components-product-button__button){border-radius:var(--zion-button-radius);}';
+		}
+	}
+	if ( $css ) {
+		wp_register_style( 'zion-design', false, array( 'zion-theme' ), wp_get_theme()->get( 'Version' ) );
+		wp_enqueue_style( 'zion-design' );
+		wp_add_inline_style( 'zion-design', $css );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'zion_theme_native_component_tokens', 20 );
@@ -237,22 +340,23 @@ function zion_theme_enqueue_studio(): void {
 	wp_enqueue_media();
 	$dependencies = array( 'wp-element', 'wp-components', 'wp-api-fetch' );
 	$config       = array(
-		'home'      => home_url( '/' ),
-		'url'       => add_query_arg(
+		'home'         => home_url( '/' ),
+		'designScopes' => zion_theme_design_targets(),
+		'url'          => add_query_arg(
 			array(
 				'page'    => 'zion-theme',
 				'section' => 'studio',
 			),
 			admin_url( 'themes.php' )
 		),
-		'timezone'  => wp_timezone_string(),
-		'identity'  => current_user_can( 'manage_options' ),
-		'types'     => zion_theme_studio_types(),
-		'templates' => array(
+		'timezone'     => wp_timezone_string(),
+		'identity'     => current_user_can( 'manage_options' ),
+		'types'        => zion_theme_studio_types(),
+		'templates'    => array(
 			'pages' => wp_get_theme()->get_page_templates( null, 'page' ),
 			'posts' => wp_get_theme()->get_page_templates( null, 'post' ),
 		),
-		'previews'  => array_map(
+		'previews'     => array_map(
 			static fn( $page ) => array(
 				'id'    => $page->ID,
 				'title' => $page->post_title,

@@ -1,6 +1,16 @@
 (() => {
   document.querySelectorAll('nav.zion-navigation').forEach(nav => {
     const overlay = nav.querySelector('.wp-block-navigation__responsive-container');
+    const header = nav.closest('.zion-header');
+    const tools = header?.querySelector(':scope > .zion-header-tools');
+    const mobile = matchMedia('(max-width:1100px)');
+    if (tools) {
+      const origin = document.createComment('Zion desktop navigation position');
+      nav.before(origin);
+      const position = () => { if(mobile.matches) tools.after(nav); else origin.after(nav); };
+      mobile.addEventListener('change',position);
+      position();
+    }
     const path = value => decodeURI(value).replace(/\/+$/, '') || '/';
     const markCurrent = () => {
       nav.querySelectorAll('.zion-nav-current,.zion-nav-ancestor').forEach(item => item.classList.remove('zion-nav-current', 'zion-nav-ancestor'));

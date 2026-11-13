@@ -6,7 +6,7 @@
   const motion = matchMedia('(prefers-reduced-motion: reduce)');
   const finePointer = matchMedia('(pointer: fine)');
   const compact = matchMedia('(max-width: 600px)').matches;
-  const rootStyle = getComputedStyle(document.documentElement);
+  const rootStyle = getComputedStyle(root);
   const color = name => rootStyle.getPropertyValue(`--wp--preset--color--${name}`).trim();
   const palette = { accent: color('accent'), text: color('text'), muted: color('muted'), ink: color('ink'), deep: color('deep') };
   const home = root.classList.contains('zion-homepage');

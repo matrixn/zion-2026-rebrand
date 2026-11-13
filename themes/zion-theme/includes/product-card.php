@@ -64,6 +64,7 @@ function zion_theme_catalog_product_card( string $template, string $shop ): stri
 	if ( ! in_array( $shop, Zion_Theme_Settings::SHOPS, true ) ) {
 		return $template;
 	}
+	zion_theme_enqueue_card_cart();
 	if ( zion_theme_card_profile( $shop )['show']['quick_view'] ) {
 		// The native filter router can add cards after an initially empty result.
 		zion_theme_enqueue_quick_view();
@@ -71,6 +72,20 @@ function zion_theme_catalog_product_card( string $template, string $shop ): stri
 	return '<!-- wp:zion/product-card ' . serialize_block_attributes( array( 'shop' => $shop ) ) . ' /-->';
 }
 add_filter( 'zion_core_product_card_blocks', 'zion_theme_catalog_product_card', 10, 2 );
+
+/** Load one presentation subscriber for WooCommerce's canonical cart store. */
+function zion_theme_enqueue_card_cart(): void {
+	wp_enqueue_script(
+		'zion-card-cart',
+		get_theme_file_uri( 'assets/blocks/card-cart.js' ),
+		array( 'wp-data', 'wc-blocks-data-store', 'jquery' ),
+		wp_get_theme()->get( 'Version' ),
+		array(
+			'in_footer' => true,
+			'strategy'  => 'defer',
+		)
+	);
+}
 
 /**
  * Resolve one configuration for the collection, independent of individual product data.
@@ -344,12 +359,19 @@ function zion_theme_render_product_card( array $attributes, string $content, WP_
 	}
 	$profile = zion_theme_card_profile( $shop );
 	$show    = $profile['show'];
-	$level   = 3 === ( $attributes['level'] ?? 2 ) ? 3 : 2;
-	$url     = $product->get_permalink();
-	$design  = isset( Zion_Theme_Settings::card_designs()[ $profile['preset'] ] );
-	$stock   = $design && $show['availability'] && in_array( $profile['preset'], array( 'editorial', 'technical' ), true )
+	if ( $show['cart'] ) {
+		zion_theme_enqueue_card_cart();
+	}
+	$level     = 3 === ( $attributes['level'] ?? 2 ) ? 3 : 2;
+	$url       = $product->get_permalink();
+	$design    = isset( Zion_Theme_Settings::card_designs()[ $profile['preset'] ] );
+	$stock     = $design && $show['availability'] && in_array( $profile['preset'], array( 'editorial', 'technical' ), true )
 		? zion_theme_card_element( 'availability', $product, $url, $show, $level ) : '';
-	$image   = zion_theme_card_image( $product, $show, $url, ! empty( $attributes['deferImage'] ), $stock );
+	$image     = zion_theme_card_image( $product, $show, $url, ! empty( $attributes['deferImage'] ), $stock );
+	$cart_link = $show['cart'] ? '<a class="zion-card-cart-hop" href="' . esc_url( wc_get_cart_url() ) . '" aria-label="' . esc_attr__( 'Vezi coșul', 'zion-theme' ) . '" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 8h14l-1 13H6L5 8Z M9 9V6a3 3 0 0 1 6 0v3"/></svg><span class="zion-cart-hop-label">' . esc_html__( 'Vezi coșul', 'zion-theme' ) . '</span><span class="zion-cart-hop-count" aria-hidden="true"></span><span class="zion-cart-hop-arrow" aria-hidden="true">↗</span></a>' : '';
+	if ( $image && $cart_link ) {
+		$image = substr( $image, 0, -6 ) . $cart_link . '</div>';
+	}
 	$overlay = $stock && $image;
 	$items   = '';
 	$groups  = array();
@@ -390,6 +412,6 @@ function zion_theme_render_product_card( array $attributes, string $content, WP_
 		$classes[] = 'zion-card-has-image';
 	}
 	$style = sprintf( '--zion-card-ratio:%s;--zion-card-fit:%s;--zion-card-lines:%d', $profile['ratio'], $profile['fit'], $profile['title_lines'] );
-	return '<article class="' . esc_attr( implode( ' ', $classes ) ) . '" style="' . esc_attr( $style ) . '">' .
-		$image . '<div class="zion-product-card__body">' . $items . '</div></article>';
+	return '<article class="' . esc_attr( implode( ' ', $classes ) ) . '" data-zion-product="' . esc_attr( (string) $id ) . '" data-zion-product-url="' . esc_url( $url ) . '" data-zion-product-name="' . esc_attr( $product->get_name() ) . '" style="' . esc_attr( $style ) . '">' .
+		$image . ( ! $image ? $cart_link : '' ) . '<div class="zion-product-card__body">' . $items . '</div></article>';
 }

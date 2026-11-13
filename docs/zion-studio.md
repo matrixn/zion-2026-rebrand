@@ -1,4 +1,4 @@
-# Zion Studio · administrare 1.1.27
+# Zion Studio · administrare 1.1.28
 
 Intrarea este **Aspect → Zion Theme**. Panoul reunește designul, documentele native și configurațiile Zion existente. Nu este necesar să deschizi Site Editor pentru operațiile de mai jos.
 
@@ -14,6 +14,18 @@ Intrarea este **Aspect → Zion Theme**. Panoul reunește designul, documentele 
 - Numele site-ului, descrierea, logo-ul și pictograma prin biblioteca media nativă. Identitatea are propriul buton de salvare și necesită `manage_options`.
 
 Valorile implicite vin din `theme.json`. Modificările vizuale folosesc **același document nativ `wp_global_styles`** ca WordPress. Nu sunt copiate în `zion_theme_settings`. Sunt modificate numai tokenurile din registru, păstrând presetările și stilurile de bloc neadministrate aici. Resetarea elimină suprascrierea, nu copiază valorile implicite în baza de date.
+
+### Destinații independente
+
+Selectorul **Destinație design** oferă **Global**, **Homepage**, **Magazin 3D** și **Magazin Software**. Pentru fiecare destinație poți modifica paleta, fonturile, dimensiunile, spațierea, lățimile și rotunjirile, apoi vezi rezultatul înainte de salvare. Identitatea site-ului rămâne globală.
+
+O destinație moștenește Global până când modifici explicit un token. „Moștenește Global” elimină doar suprascrierea acelui câmp; resetarea destinației păstrează celelalte destinații. Resetarea Global păstrează suprascrierile paginilor. Schimbarea destinației cere confirmare dacă există modificări nesalvate. Revenirea la valoarea inițială elimină modificarea din draft.
+
+Homepage înseamnă pagina frontală WordPress; cele două magazine sunt paginile publicate `/magazin-3d/` și `/magazin-software/`. Un produs Software afișat pe homepage folosește designul homepage-ului. Aceste profiluri nu schimbă automat paginile individuale de produs, coșul, checkoutul sau alte pagini. Headerul, footerul și scenele Canvas Continuum moștenesc paleta paginii curente.
+
+Exportul vizual folosește JSON **v2**, cu destinația și numai suprascrierile explicite. Importul într-o altă destinație este refuzat; fișierul se încarcă întâi în preview și nu se salvează automat. Exporturile v1 sunt acceptate numai în Global. Acest fișier de design este separat de exportul setărilor funcționale Zion.
+
+Stocare: tokenurile globale folosesc câmpurile native existente; cele locale sunt în `settings.custom.zion.designContexts.{home|3d|software}` din același document Global Styles. Rendererul suprascrie pe `body.zion-design-*` aceleași variabile native `--wp--preset--*`, fără paletă paralelă. Aliasurile componentelor pentru spațierea secțiunilor/grilelor și titluri trimit la acești tokenuri. Fără suprascrieri, layoutul existent rămâne neschimbat. O singură revizie pentru întregul document protejează salvările concurente între destinații.
 
 Fonturile sunt locale, de sistem; panoul nu descarcă fonturi externe. Dimensiunile acceptă valori limitate în px/rem; containerele acceptă 240–2400 px și lățimea extinsă trebuie să fie cel puțin egală cu cea de conținut. Câmpurile invalide nu produc scrieri parțiale.
 

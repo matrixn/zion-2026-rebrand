@@ -68,7 +68,130 @@ final class Zion_Theme_Design {
 				'default' => $item[4],
 			);
 		}
+		foreach ( $fields as $key => &$field ) {
+			$field['css'] = match ( true ) {
+				isset( $field['slug'] ) => '--wp--preset--' . match ( $field['type'] ) {
+					'color' => 'color',
+					'font' => 'font-family',
+					'space' => 'spacing',
+					default => 'font-size',
+				} . '--' . $field['slug'],
+				'line_height' === $key => 'line-height',
+				'card_radius' === $key => '--wp--custom--zion--card-radius',
+				'button_radius' === $key => '--zion-button-radius',
+				default => '--wp--style--global--' . ( 'wide_width' === $key ? 'wide' : 'content' ) . '-size',
+			};
+			$field['alias'] = match ( $key ) {
+				'spacing_section' => '--zion-design-section-spacing',
+				'spacing_grid' => '--zion-design-grid-spacing',
+				'typography_display' => '--zion-design-display-size',
+				'typography_section-title' => '--zion-design-heading-size',
+				default => '',
+			};
+		}
+		unset( $field );
 		return $fields;
+	}
+
+	/**
+	 * Supported page identities; the values override existing native presets.
+	 *
+	 * @return string[]
+	 */
+	public static function scopes(): array {
+		return array( 'global', 'home', '3d', 'software' );
+	}
+
+	/**
+	 * Explicit token values from one canonical Global Styles document.
+	 *
+	 * @param array  $document Native styles.
+	 * @param array  $theme Theme defaults.
+	 * @param string $scope Page identity.
+	 * @return array
+	 * @throws InvalidArgumentException Unknown scope.
+	 */
+	public static function overrides( array $document, array $theme, string $scope = 'global' ): array {
+		if ( ! in_array( $scope, self::scopes(), true ) ) {
+			throw new InvalidArgumentException( 'Destinație de design necunoscută.' );
+		}
+		$values = array();
+		foreach ( self::registry( $theme ) as $key => $field ) {
+			$value = 'global' === $scope ? self::read( $document, $field ) : ( $document['settings']['custom']['zion']['designContexts'][ $scope ][ $key ] ?? null );
+			if ( null !== $value ) {
+				if ( 'global' !== $scope ) {
+					try {
+						$value = self::validate( $value, $field );
+					} catch ( InvalidArgumentException $error ) {
+						continue;
+					}
+				}
+				$values[ $key ] = $value;
+			}
+		}
+		return $values;
+	}
+
+	/**
+	 * Resolve page overrides, global values and theme.json defaults.
+	 *
+	 * @param array  $document Native styles.
+	 * @param array  $theme Defaults.
+	 * @param string $scope Page identity.
+	 * @return array
+	 */
+	public static function effective( array $document, array $theme, string $scope = 'global' ): array {
+		$defaults = array_map( static fn( $field ) => $field['default'], self::registry( $theme ) );
+		return array_replace( $defaults, self::overrides( $document, $theme ), self::overrides( $document, $theme, $scope ) );
+	}
+
+	/**
+	 * Validate a page patch atomically and preserve all other contexts.
+	 *
+	 * @param array  $document Canonical native document.
+	 * @param array  $values Typed changes; null removes an override.
+	 * @param array  $theme Defaults.
+	 * @param string $scope Page identity.
+	 * @return array
+	 * @throws InvalidArgumentException Invalid scope, key, value or dimensions.
+	 */
+	public static function patch_scope( array $document, array $values, array $theme, string $scope = 'global' ): array {
+		self::overrides( $document, $theme, $scope );
+		if ( 'global' === $scope ) {
+			$document = self::patch( $document, $values, $theme );
+		} else {
+			$registry = self::registry( $theme );
+			$target   = $document['settings']['custom']['zion']['designContexts'][ $scope ] ?? array();
+			if ( ! is_array( $target ) ) {
+				throw new InvalidArgumentException( 'Configurație de destinație invalidă.' );
+			}
+			foreach ( $values as $key => $value ) {
+				if ( ! isset( $registry[ $key ] ) ) {
+					throw new InvalidArgumentException( 'Token de design necunoscut.' );
+				}
+				if ( null === $value ) {
+					unset( $target[ $key ] );
+				} else {
+					$target[ $key ] = self::validate( $value, $registry[ $key ] );
+				}
+			}
+			if ( $target ) {
+				$document['settings']['custom']['zion']['designContexts'][ $scope ] = $target;
+			} else {
+				unset( $document['settings']['custom']['zion']['designContexts'][ $scope ] );
+			}
+			$document['version']                     = 3;
+			$document['isGlobalStylesUserThemeJSON'] = true;
+		}
+		if ( array_key_exists( 'content_width', $values ) || array_key_exists( 'wide_width', $values ) ) {
+			foreach ( 'global' === $scope ? self::scopes() : array( $scope ) as $check ) {
+				$effective = self::effective( $document, $theme, $check );
+				if ( (float) $effective['content_width'] > (float) $effective['wide_width'] ) {
+					throw new InvalidArgumentException( 'Lățimea extinsă trebuie să fie cel puțin egală cu lățimea conținutului în fiecare destinație.' );
+				}
+			}
+		}
+		return $document;
 	}
 
 	/**

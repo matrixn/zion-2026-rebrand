@@ -1000,17 +1000,20 @@ test('Technical card actions stay aligned after the native view-cart link appear
           const add = card.locator('.wc-block-components-product-button__button');
           const details = card.locator('.zion-product-card__details a');
           const originalDetails = await details.boundingBox();
+          const originalCard = await card.boundingBox();
           await add.click();
-          const view = card.locator('.wc-block-components-product-button__view-cart, .added_to_cart');
+          const view = card.locator('.zion-card-cart-hop');
           await expect(view).toBeVisible();
           const [a, b, c, v] = await Promise.all([add.boundingBox(), details.boundingBox(), card.boundingBox(), view.boundingBox()]);
           expect(b.height).toBeCloseTo(originalDetails.height, 0);
           expect(a.height).toBeLessThan(80);
-          expect(v.y).toBeGreaterThanOrEqual(a.y + a.height - 1);
+          expect(c.height).toBeCloseTo(originalCard.height,0);
+          expect(v.y).toBeLessThan(a.y);
           expect(v.y + v.height).toBeLessThanOrEqual(c.y + c.height + 1);
-          if (width > 520) expect(Math.abs(a.y - b.y)).toBeLessThan(1);
+          if (width>520 && await card.locator('.zion-product-card__body').evaluate(e=>e.clientWidth-parseFloat(getComputedStyle(e).paddingLeft)-parseFloat(getComputedStyle(e).paddingRight))>260) expect(Math.abs(a.y-b.y)).toBeLessThan(1); else expect(b.y).toBeGreaterThanOrEqual(a.y+a.height-1);
           expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
-          if (url.includes('software') && width === 1440) await card.screenshot({ path: 'build/technical-added-to-cart-1.1.12.png' });
+          await customer.reload();await expect(card.locator('.zion-card-cart-hop')).toBeVisible();await expect(card.locator('.wc-block-components-product-button__button')).toContainText('în coș');
+          if (url.includes('software') && width === 1440) await card.screenshot({ path: 'build/technical-added-to-cart-1.1.28.png' });
         } finally { await guest.close(); }
       }
     }
@@ -1353,7 +1356,7 @@ test('five header designs preserve an edited native menu, active ancestors, poin
     const content = item('Acasă',baseURL+'/')+item('Magazin 3D',baseURL+'/magazin-3d/')+
       item('Servicii',baseURL+'/servicii/',item('Printare 3D',baseURL+'/printare-3d/')+item('Proiectare și modelare 3D',baseURL+'/proiectare-3d/')+item('Software personalizat pentru afaceri',baseURL+'/software-personalizat/')+item('Platforme și produse SaaS',baseURL+'/platforme-saas/')+item('Pluginuri și integrări software',baseURL+'/pluginuri-si-integrari/')+item('Aplicații Windows și Linux',baseURL+'/aplicatii-windows-linux/')+item('Integrări AI și automatizări inteligente',baseURL+'/integrari-ai/'))+
       item('Software',baseURL+'/magazin-software/',item('WordPress & WooCommerce',group.link,item('Zion Privacy',leaf.link))+item('Magazin Software',baseURL+'/magazin-software/'))+
-      item('Zion Food','https://food.zion3d.ro/')+item('Resurse',baseURL+'/jurnal/',item('Blog',baseURL+'/jurnal/'))+item('Despre noi',group.link)+item('Contact',group.link);
+      item('Zion Food','https://food.zion3d.ro/')+item('Resurse',baseURL+'/jurnal/',item('Blog',baseURL+'/jurnal/')+Array.from({length:24},(_,i)=>item('Destinația '+(i+1),group.link+'?destination='+i)).join(''))+item('Despre noi',group.link)+item('Contact',group.link);
     const menu = await create('navigation',{title:'Zion edited menu fixture',content});
     const canonicalMenu = (await (await page.request.get('/wp-json/wp/v2/navigation/'+menu.id+'?context=edit',{headers})).json()).content.raw;
     const customHeader = `<!-- wp:group {"className":"zion-shell zion-header"} --><div class="wp-block-group zion-shell zion-header"><!-- wp:site-logo {"width":56,"className":"zion-header-logo"} /--><!-- wp:site-title {"level":0,"className":"zion-wordmark"} /--><!-- wp:navigation {"ref":${menu.id},"ariaLabel":"Meniu principal","overlayMenu":"mobile","className":"zion-navigation","layout":{"type":"flex","justifyContent":"right"}} /--><!-- wp:group {"className":"zion-header-tools"} --><div class="wp-block-group zion-header-tools"><!-- wp:woocommerce/customer-account {"displayStyle":"icon_only","className":"zion-header-account"} /--><!-- wp:woocommerce/mini-cart {"hasHiddenPrice":true,"className":"zion-header-cart"} /--></div><!-- /wp:group --></div><!-- /wp:group -->`;
@@ -1388,13 +1391,16 @@ test('five header designs preserve an edited native menu, active ancestors, poin
         expect(Math.abs(geometry.left)).toBeLessThanOrEqual(1); expect(Math.abs(geometry.right-geometry.width)).toBeLessThanOrEqual(1); expect(geometry.line).toBe('1px');
         expect(await guest.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);
         if(width<1101) {
-          const opener=nav.locator('.wp-block-navigation__responsive-container-open'); await opener.focus(); await guest.keyboard.press('Enter');
+          const opener=nav.locator('.wp-block-navigation__responsive-container-open');const cart=await guest.locator('.zion-header-cart-link').boundingBox();const burger=await opener.boundingBox();expect(burger.x).toBeGreaterThanOrEqual(cart.x+cart.width-1);expect(Math.abs(burger.y+burger.height/2-cart.y-cart.height/2)).toBeLessThan(2);
+          expect(await guest.locator('.zion-header').evaluate(header=>!!(header.querySelector('.zion-header-tools').compareDocumentPosition(header.querySelector('nav.zion-navigation'))&Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+          await opener.focus(); await guest.keyboard.press('Enter');
           await expect(nav.getByRole('dialog')).toBeVisible(); await expect(active).toBeVisible();
           const parent=nav.getByRole('button',{name:/WordPress/}); await expect(parent).toHaveAttribute('aria-expanded','true');
           const services=nav.getByRole('button',{name:/Servicii/}); await expect(services).toHaveAttribute('aria-expanded','false');
           if(designs[index]==='technical') await expect(parent.locator('..').locator(':scope > ul')).toHaveCSS('background-color','rgb(241, 244, 235)');
           await parent.focus(); await guest.keyboard.press('Enter'); await expect(parent).toHaveAttribute('aria-expanded','false'); await expect(active).toBeHidden();
           await guest.keyboard.press('Enter'); await expect(active).toBeVisible();
+          const longMenu=nav.getByRole('button',{name:'Resurse submenu',exact:true});await longMenu.click();const lastLink=nav.getByRole('link',{name:'Destinația 24',exact:true});await lastLink.focus();await expect(lastLink).toBeInViewport();const overlay=nav.locator('.wp-block-navigation__responsive-container');expect(await overlay.evaluate(e=>e.scrollTop)).toBeGreaterThan(100);const panel=await overlay.locator('.wp-block-navigation__responsive-close').boundingBox();const tail=await lastLink.boundingBox();expect(panel.y+panel.height).toBeGreaterThanOrEqual(tail.y+tail.height);await expect(overlay.locator('.wp-block-navigation__responsive-close')).toHaveCSS('background-color','rgb(20, 31, 22)');if(width===390)await guest.screenshot({path:`build/menu-scroll-${designs[index]}-1.1.28.png`});await longMenu.click();await active.focus();
           await nav.locator('.wp-block-navigation__responsive-container-close').focus(); await guest.keyboard.press('Shift+Tab');
           expect(await nav.evaluate(e=>e.contains(document.activeElement))).toBe(true);
           if(width===390) await guest.screenshot({path:`build/menu-${designs[index]}-${width}-1.1.17.png`});

@@ -1,0 +1,11 @@
+# Feedback coș și navigație mobilă · 1.1.28
+
+Cardurile folosesc o acțiune flotantă **Vezi coșul**, cu pictogramă, cantitate și săgeată. Apare peste imagine când produsul este deja în coș, fără rând nou în zona butoanelor și fără schimbarea înălțimii cardului. Pe imagini înguste rămâne pictograma; numele accesibil include produsul și cantitatea. Pentru carduri fără imagine, acțiunea ocupă colțul superior rezervat. Badge-urile poziționate jos mută acțiunea sus.
+
+Același renderer deservește homepage-ul, colecțiile și cele două magazine, indiferent de preset. Legătura nativă adăugată de WooCommerce în interiorul cardului este ascunsă împreună cu învelișul ei; în afara cardurilor, legăturile native primesc stil de buton Zion. Acțiunile din carduri înguste se așază vertical și au aceeași poziție înainte și după adăugare.
+
+Starea este citită din **cartStore WooCommerce**, după rezolvarea coșului, inclusiv după refresh. Nu se încorporează în HTML informație personalizată despre coș, astfel încât o pagină cache-uită să nu poarte starea altui client. Produsele variabile sunt asociate și prin URL-ul canonic al părintelui. Colecțiile introduse ulterior prin AJAX sunt sincronizate cu același store. Evenimentele clasice și cele de blocuri invalidează acest store; dacă există contorul din header, se reutilizează puntea lui. Nu există un al doilea motor de coș și nu se modifică regulile de cumpărare. Fără JavaScript rămân legătura din header și cumpărarea nativă; indicatorul flotant necesită JavaScript.
+
+Pe mobil, același bloc Navigation este mutat după instrumentele headerului, astfel încât **coș → hamburger** este și ordinea vizuală, și ordinea DOM. La revenirea pe desktop se restaurează poziția originală. Nu este creat un meniu duplicat. Panoul mobil poate depăși înălțimea ecranului, are fundal continuu și derulare verticală; păstrează acordeoanele, focusul și Escape native.
+
+Teste: matrice Technical pe homepage/3D/Software la 390/768/1024/1440 px, poziție absolută și înălțime stabilă înainte/după adăugare, persistență după refresh; contor cu mini-coș dezactivat; toate cele cinci meniuri la cele patru lățimi, grup cu 25 de sublinkuri, acces la ultimul link, fundal complet și ordine coș/hamburger.
