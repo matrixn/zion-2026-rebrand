@@ -25,7 +25,7 @@ Homepage înseamnă pagina frontală WordPress; cele două magazine sunt paginil
 
 Exportul vizual folosește JSON **v2**, cu destinația și numai suprascrierile explicite. Importul într-o altă destinație este refuzat; fișierul se încarcă întâi în preview și nu se salvează automat. Exporturile v1 sunt acceptate numai în Global. Acest fișier de design este separat de exportul setărilor funcționale Zion.
 
-Stocare: tokenurile globale folosesc câmpurile native existente; cele locale sunt în `settings.custom.zion.designContexts.{home|3d|software}` din același document Global Styles. Rendererul suprascrie pe `body.zion-design-*` aceleași variabile native `--wp--preset--*`, fără paletă paralelă. Aliasurile componentelor pentru spațierea secțiunilor/grilelor și titluri trimit la acești tokenuri. Fără suprascrieri, layoutul existent rămâne neschimbat. O singură revizie pentru întregul document protejează salvările concurente între destinații.
+Stocare: tokenurile globale folosesc câmpurile native existente; cele locale sunt în `settings.custom.zion.designContexts.{home|3d|software}` din același document Global Styles. Rendererul suprascrie pe `body.zion-design-*` aceleași variabile native `--wp--preset--*`, fără paletă paralelă. Aliasurile componentelor pentru spațierea secțiunilor/grilelor și titluri trimit la aceste tokenuri. Fără suprascrieri, layoutul existent rămâne neschimbat. O singură revizie pentru întregul document protejează salvările concurente între destinații.
 
 Fonturile sunt locale, de sistem; panoul nu descarcă fonturi externe. Dimensiunile acceptă valori limitate în px/rem; containerele acceptă 240–2400 px și lățimea extinsă trebuie să fie cel puțin egală cu cea de conținut. Câmpurile invalide nu produc scrieri parțiale.
 
