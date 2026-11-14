@@ -27,7 +27,19 @@ Acțiuni: **Doar necesare**, **Refuză opționalele**, **Personalizează**, **Ac
 
 Selector: **Preferințe cookie**. Introducere: „Alege categoriile de cookie-uri pe care le permiți. Cele necesare rămân active pentru funcționarea site-ului. Poți modifica oricând aceste alegeri.”
 
-Este activ rezumatul cu categorii și contoare; lista individuală de detalii din fereastra publică este ascunsă pentru un selector compact. Această opțiune nu șterge și nu reclasifică inventarul. Numele și descrierile tehnice primite de la API rămân în forma originală în administrare; traducerea lor editorială nu face parte din această actualizare.
+Sunt active categoriile, contoarele și lista individuală de detalii din fereastra publică. Numele și descrierile tehnice primite de la API rămân în forma originală; traducerea lor editorială nu face parte din această actualizare.
+
+## Corecție: restabilirea detaliilor
+
+Opțiunea **Show cookie details** fusese dezactivată la stilizare pentru afișarea compactă. Aceasta ascundea informațiile disponibile anterior. La solicitarea utilizatorului, opțiunea a fost reactivată din panoul Banner, păstrând culorile și traducerile interfeței. Nu a fost necesară schimbarea surselor CSS/JS sau a versiunii pluginului.
+
+- [x] Cele **13 intrări** din inventarul curent sunt din nou în modal, în categoriile corespunzătoare.
+- [x] Verificare live la **390/768/1024/1440 px**: comutatorul Analiză se activează și se dezactivează prin click și răspunde la Space; conținutul are scroll în interiorul modalului, fără overflow orizontal.
+- [x] Verificate separat comutatoarele Preferințe și Marketing, butonul Anulează, redeschiderea și Închide. Modificările temporare au fost abandonate; nu s-a salvat un consimțământ nou pe live.
+- [x] **11/11 teste Playwright** rulate din nou pe instanța locală cu date sintetice.
+- [x] Configurare salvată în WordPress; invalidate două fișiere exclusiv din cache-ul dedicat zion3d.ro. Verificarea hash-urilor confirmă păstrarea setărilor protejate și a clasificărilor.
+
+Capturile și măsurătorile corecției sunt în directorul local de dovezi, cu prefixul `details-restored-`. README și cele două arhive Theme/Core au fost actualizate conform fluxului proiectului, fără modificări de surse sau versiuni ale componentelor.
 
 ## Actualizarea clientului
 
