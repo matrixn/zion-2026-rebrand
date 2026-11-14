@@ -56,3 +56,78 @@ function zion_theme_cart_empty_labels( string $html ): string {
 	return $tags->get_updated_html();
 }
 add_filter( 'render_block_woocommerce/empty-cart-block', 'zion_theme_cart_empty_labels' );
+
+/**
+ * Recognize only the stock single-shop button, preserving merchant-authored actions.
+ *
+ * @param array $block Parsed child block.
+ * @return bool
+ */
+function zion_theme_cart_stock_return_button( array $block ): bool {
+	if ( 'core/buttons' !== $block['blockName'] || 1 !== count( $block['innerBlocks'] ) || 'core/button' !== $block['innerBlocks'][0]['blockName'] ) {
+		return false;
+	}
+	$button = $block['innerBlocks'][0]['innerHTML'];
+	$tags   = new WP_HTML_Tag_Processor( $button );
+	$text   = trim( wp_strip_all_tags( $button ) );
+	return $tags->next_tag( 'A' ) && untrailingslashit( wc_get_page_permalink( 'shop' ) ) === untrailingslashit( (string) $tags->get_attribute( 'href' ) ) &&
+		in_array( $text, array( 'Browse store', 'Return to shop', 'Return to Shop', 'Continue shopping', 'Înapoi la magazin', 'Continuă cumpărăturile' ), true );
+}
+
+/**
+ * Give the native empty state two destinations without changing saved cart content.
+ *
+ * The native Cart block keeps ownership of its empty/filled transition. Only its
+ * stock heading and stock single-shop action are replaced; recommendations and
+ * other merchant blocks retain their original slots and markup.
+ *
+ * @param array $block Parsed block.
+ * @return array
+ */
+function zion_theme_cart_empty_cta( array $block ): array {
+	if ( 'woocommerce/empty-cart-block' !== $block['blockName'] || is_admin() || ! function_exists( 'wc_get_page_permalink' ) ) {
+		return $block;
+	}
+	$original = $block;
+	// Recent WooCommerce versions store the stock heading/buttons as pattern references.
+	$block   = resolve_pattern_blocks( array( $block ) )[0];
+	$heading = null;
+	foreach ( $block['innerBlocks'] as $index => $child ) {
+		if ( in_array( 'zion-empty-cart-cta', explode( ' ', $child['attrs']['className'] ?? '' ), true ) ) {
+			return $original;
+		}
+		if ( 'core/heading' === $child['blockName'] && in_array( trim( wp_strip_all_tags( $child['innerHTML'] ) ), array( 'Your cart is currently empty!', 'Your cart is currently empty.', 'Coșul tău este gol', 'Coșul tău este gol.' ), true ) ) {
+			$heading = $index;
+		}
+	}
+	$pattern = WP_Block_Patterns_Registry::get_instance()->get_registered( 'zion-theme/empty-cart' );
+	if ( null === $heading || ! $pattern ) {
+		return $original;
+	}
+	$cta = array_values( array_filter( parse_blocks( $pattern['content'] ), static fn ( array $child ): bool => 'core/group' === $child['blockName'] ) )[0] ?? null;
+	if ( ! $cta ) {
+		return $original;
+	}
+	$children = array();
+	$content  = array();
+	$index    = 0;
+	foreach ( $block['innerContent'] as $chunk ) {
+		if ( null !== $chunk ) {
+			$content[] = $chunk;
+			continue;
+		}
+		$child = $block['innerBlocks'][ $index ];
+		if ( $heading === $index ) {
+			$children[] = $cta;
+			$content[]  = null;
+		} elseif ( ! zion_theme_cart_stock_return_button( $child ) ) {
+			$children[] = $child;
+			$content[]  = null;
+		}
+		++$index;
+	}
+	$block['innerBlocks']  = $children;
+	$block['innerContent'] = $content;
+	return $block;
+}
+add_filter( 'render_block_data', 'zion_theme_cart_empty_cta' );

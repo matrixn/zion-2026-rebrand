@@ -1066,6 +1066,69 @@ test('cart visual designs preserve native totals, quantities, coupons and checko
   }
 });
 
+test('empty cart offers both Zion shops on direct visits and after removing the last item', async ({ page, browser, baseURL }) => {
+  test.setTimeout(180_000);
+  await login(page);
+  await openSection(page, 'tools');
+  const original = await exportSettings(page);
+  const guest = await browser.newContext({ baseURL });
+  const customer = await guest.newPage();
+  const errors = [];
+  customer.on('pageerror', error => errors.push(error.message));
+  try {
+    for (const design of ['atelier', 'editorial', 'technical', 'contrast', 'focus']) {
+      const config = JSON.parse(original);
+      config.global = { ...config.global, cart_design: design };
+      await importSettings(page, JSON.stringify(config));
+      const response = await customer.goto('/cart/');
+      expect(response.status()).toBe(200);
+      const cta = customer.locator(`.zion-cart--${design} .zion-empty-cart-cta`);
+      await expect(cta).toHaveCount(1);
+      await expect(cta.getByRole('heading', { name: 'Coșul tău este gol.', exact: true })).toBeVisible();
+      await expect(cta.getByRole('heading', { name: 'Următoarea idee începe aici.', exact: true })).toBeVisible();
+      await expect(cta.getByRole('link')).toHaveCount(2);
+      await expect(cta.getByRole('link', { name: 'Magazin 3D', exact: true })).toHaveAttribute('href', new URL('/magazin-3d/', baseURL).href);
+      await expect(cta.getByRole('link', { name: 'Magazin Software', exact: true })).toHaveAttribute('href', new URL('/magazin-software/', baseURL).href);
+      await expect(customer.locator('.wp-block-woocommerce-product-new')).toBeVisible();
+      for (const width of [390, 768, 1024, 1440]) {
+        await customer.setViewportSize({ width, height: 1000 });
+        expect(await customer.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+        for (const link of await cta.getByRole('link').all()) {
+          const style = await link.evaluate(e => ({ height: e.getBoundingClientRect().height, ink: getComputedStyle(e).color, bg: getComputedStyle(e).backgroundColor }));
+          expect(style.height).toBeGreaterThanOrEqual(44);
+          expect(contrastRatio(style.ink, style.bg)).toBeGreaterThanOrEqual(4.5);
+          await link.focus();
+          await expect(link).toHaveCSS('outline-style', 'solid');
+        }
+        if (design === 'atelier' && [390, 1440].includes(width)) await cta.screenshot({ path: `build/empty-cart-${width}-1.1.39.png` });
+      }
+    }
+    for (const [label, path] of [['Magazin 3D', '/magazin-3d/'], ['Magazin Software', '/magazin-software/']]) {
+      await customer.locator('.zion-empty-cart-cta').getByRole('link', { name: label, exact: true }).click();
+      await expect(customer).toHaveURL(new URL(path, baseURL).href);
+      await customer.goBack();
+      await expect(customer.locator('.zion-empty-cart-cta')).toBeVisible();
+    }
+    const [product] = await (await guest.request.get('/wp-json/wc/store/v1/products?slug=suport-modular-3d')).json();
+    await customer.goto('/?add-to-cart=' + product.id);
+    await customer.goto('/cart/');
+    await expect(customer.locator('.zion-empty-cart-cta')).not.toBeVisible();
+    await expect(customer.locator('.wc-block-cart-item__remove-link')).toHaveCount(1);
+    const documentStart = await customer.evaluate(() => performance.timeOrigin);
+    await customer.locator('.wc-block-cart-item__remove-link').click();
+    await expect(customer.locator('.zion-empty-cart-cta')).toBeVisible();
+    expect(await customer.evaluate(() => performance.timeOrigin)).toBe(documentStart);
+    const cart = await (await guest.request.get('/wp-json/wc/store/v1/cart')).json();
+    expect(cart.items).toHaveLength(0);
+    await customer.reload();
+    await expect(customer.locator('.zion-empty-cart-cta')).toHaveCount(1);
+    expect(errors).toEqual([]);
+  } finally {
+    await importSettings(page, original);
+    await guest.close();
+  }
+});
+
 test('Technical card actions stay aligned after the native view-cart link appears', async ({ page, browser, baseURL }) => {
   test.setTimeout(240_000);
   await login(page);

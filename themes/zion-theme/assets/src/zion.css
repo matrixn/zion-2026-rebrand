@@ -2943,6 +2943,20 @@ body:has(.zion-product-page--sticky) {
 .zion-cart--focus .wc-block-cart__payment-options:empty { display: none; }
 .zion-cart--focus .wc-block-cart__submit { grid-area: submit; align-self: center; }
 .zion-cart .wp-block-woocommerce-empty-cart-block { padding: clamp(1.25rem, 4vw, 3rem); border: 1px solid var(--cart-rule); border-radius: .85rem; background: var(--cart-surface); }
+.zion-cart .wp-block-woocommerce-empty-cart-block:has(> .zion-empty-cart-cta) { padding: 0; border: 0; background: transparent; }
+.zion-cart .zion-empty-cart-cta { position: relative; isolation: isolate; overflow: hidden; box-sizing: border-box; padding: clamp(1.5rem, 5vw, 4rem); border: 1px solid var(--cart-rule); border-radius: 1.25rem; background: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--wp--preset--color--accent) 10%, transparent), transparent 60%), var(--cart-surface); text-align: start; }
+.zion-empty-cart-cta::after { content: ''; position: absolute; z-index: -1; inset: -5rem -4rem auto auto; inline-size: 20rem; block-size: 20rem; border: 1px solid color-mix(in srgb, var(--wp--preset--color--accent) 14%, transparent); border-radius: 2rem; box-shadow: 0 0 0 2rem color-mix(in srgb, var(--wp--preset--color--accent) 3%, transparent), 0 0 0 4rem color-mix(in srgb, var(--wp--preset--color--accent) 2%, transparent); transform: rotate(32deg); pointer-events: none; }
+.zion-cart .zion-empty-cart-state { margin: 0 0 1.4rem; color: var(--cart-muted); font: 500 .8rem/1.6 var(--wp--preset--font-family--mono); letter-spacing: .04em; }
+.zion-cart .zion-empty-cart-title { max-inline-size: 18ch; margin: 0; color: var(--cart-ink); font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 600; line-height: 1.08; letter-spacing: -.045em; text-wrap: balance; }
+.zion-cart .zion-empty-cart-copy { max-inline-size: 58ch; margin-block: 1.25rem 2rem; color: var(--cart-muted); font-size: 1rem; line-height: 1.8; }
+.zion-cart .zion-empty-cart-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-inline-size: 42rem; margin: 0; }
+.zion-empty-cart-actions .wp-block-button { inline-size: 100%; min-inline-size: 0; }
+.zion-cart .zion-empty-cart-shop .wp-block-button__link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; box-sizing: border-box; inline-size: 100%; min-block-size: 64px; padding: 1rem 1.25rem; border: 1px solid var(--wp--preset--color--accent); border-radius: .75rem; background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); font-size: 1rem; font-weight: 600; line-height: 1.5; text-align: start; text-decoration: none; }
+.zion-cart .zion-empty-cart-shop--software .wp-block-button__link { border-color: color-mix(in srgb, var(--wp--preset--color--accent) 45%, var(--cart-surface)); background: var(--cart-surface); color: var(--cart-ink); }
+.zion-empty-cart-shop .wp-block-button__link span { flex-shrink: 0; color: inherit; font-size: 1.35rem; }
+.zion-cart .zion-empty-cart-shop .wp-block-button__link:hover { box-shadow: inset 0 0 0 1px currentColor; }
+.zion-cart .zion-empty-cart-note { margin-block: 1.5rem 0; color: var(--cart-muted); font-size: .78rem; line-height: 1.6; }
+@media (max-width: 600px) { .zion-cart .zion-empty-cart-actions { grid-template-columns: minmax(0, 1fr); } }
 @media (min-width: 821px) {
   .zion-cart--focus .wc-block-cart .wc-block-cart__sidebar:has(.wc-block-cart__payment-options:empty) { grid-template-areas: 'heading heading' 'coupon coupon' 'totals totals' 'total submit'; }
 }
