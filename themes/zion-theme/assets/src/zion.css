@@ -3889,3 +3889,58 @@ body.wp-theme-zion-theme .select2-results__option--highlighted[aria-selected] { 
 @media (forced-colors: active) {
   body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible):focus { outline-color: Highlight; }
 }
+.zion-migration-announcement.is-enhanced {
+  display: block;
+  padding: 0;
+}
+.zion-migration-announcement__toggle { display: none; }
+.zion-migration-announcement__panel {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 260ms ease;
+}
+.zion-migration-announcement__clip { min-height: 0; overflow: hidden; }
+.zion-migration-announcement__body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: .625rem var(--wp--preset--spacing--gutter, 1rem);
+}
+@media (max-width: 767px) {
+  .zion-migration-announcement__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .625rem;
+    min-height: 44px;
+    max-width: calc(100% - 2rem);
+    margin: .25rem auto;
+    padding: .5rem 1rem;
+    border: 1px solid var(--wp--preset--color--deep);
+    border-radius: 999px;
+    color: var(--wp--preset--color--text);
+    background: var(--wp--preset--color--ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .zion-migration-announcement__toggle:focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 2px; }
+  .zion-migration-announcement__count {
+    display: grid;
+    place-items: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--wp--preset--color--accent);
+    color: var(--wp--preset--color--ink);
+    font-size: .75rem;
+  }
+  .zion-migration-announcement__chevron { color: var(--wp--preset--color--accent); transform: rotate(180deg); transition: transform 260ms ease; }
+  .zion-migration-announcement.is-collapsed .zion-migration-announcement__panel { grid-template-rows: 0fr; }
+  .zion-migration-announcement.is-collapsed .zion-migration-announcement__chevron { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zion-migration-announcement__panel, .zion-migration-announcement__chevron { transition: none; }
+}

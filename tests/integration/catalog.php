@@ -141,4 +141,5 @@ require __DIR__ . '/customer-location.php';
 require __DIR__ . '/seo.php';
 require __DIR__ . '/sameday-translations.php';
 require __DIR__ . '/empty-cart.php';
+require __DIR__ . '/announcements.php';
 WP_CLI::success( 'Catalog integration passed.' );

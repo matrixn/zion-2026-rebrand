@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.40** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.41** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.40** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.41** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,16 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Anunț de migrare pe mobil · 1.1.41
+
+- [x] Buton centrat **Notificări · 1**, vizibil pe telefon atât cu anunțul deschis, cât și restrâns. Panoul se extinde/restrânge vertical; preferința de mișcare redusă este respectată.
+- [x] Starea **deschis/închis** se păstrează la navigare, refresh și Back/Forward, în browserul clientului. Un mesaj modificat are o preferință nouă; pe desktop anunțul rămâne complet vizibil.
+- [x] Mesajul și linkul WhatsApp rămân în blocul HTML editabil al Headerului. JavaScript este încărcat numai când acel bloc este prezent; fără JavaScript se vede mesajul original.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni** și **7 scenarii Playwright** pentru notificare trecute.
+- [x] Integrare WordPress și **2 regresii de navigație** trecute. Theme/Core **1.1.41** instalate pe live; ambele stări verificate între pagini, la refresh și în istoric, fără overflow la 390/768/1024/1440 px. Cele **152 de fișiere** distribuite coincid cu ZIP-urile.
+
+Detalii și verificarea publicării: [anunț mobil 1.1.41](docs/migration-announcement-1.1.41.md).
 
 ## Banner Zion Privacy · 0.1.48
 
@@ -95,7 +105,7 @@ Implementare, verificări, limite și rollback: [checkout și selecturi](docs/ch
 ## Banner migrare · conținut 1.0.1
 
 - [x] Anunț compact deasupra meniului pe **zion3d.ro**, cu perioada corectată **14–15 noiembrie 2026**, scuze, indisponibilitatea temporară a plăților online și buton **Comandă pe WhatsApp**.
-- [x] Bloc nativ HTML personalizat în Header, editabil în Site Editor, cu tokenurile Zion, fără JavaScript sau dependențe; conținutul anterior și meniurile sunt păstrate.
+- [x] Bloc nativ HTML personalizat în Header, editabil în Site Editor, cu tokenurile Zion. Conținutul original este static; [îmbunătățirea mobilă 1.1.41](docs/migration-announcement-1.1.41.md) adaugă deschidere/închidere și memorie în browser, fără biblioteci externe. Conținutul și meniurile sunt păstrate.
 - [x] Verificat live la **390/768/1024/1440 px**, fără overflow, cu CTA de **44 px** și meniu mobil funcțional; anunț prezent și în răspunsurile anonime ale paginilor principale după invalidarea cache-ului dedicat.
 - [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare catalog și **2/2 regresii Playwright** trecute. Backup privat și procedură de eliminare fără pierderea editărilor headerului.
 - [x] ZIP de conținut **1.0.1** și ZIP-urile WordPress sursă **1.1.31** generate; componentele live nu au fost actualizate implicit.

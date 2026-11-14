@@ -33,6 +33,7 @@ require_once __DIR__ . '/includes/software.php';
 require_once __DIR__ . '/includes/navigation.php';
 require_once __DIR__ . '/includes/menu-design.php';
 require_once __DIR__ . '/includes/seo.php';
+require_once __DIR__ . '/includes/announcements.php';
 if ( is_admin() ) {
 	require_once __DIR__ . '/includes/control-center.php';
 }
