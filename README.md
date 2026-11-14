@@ -40,6 +40,16 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Banner Zion Privacy · 0.1.48
+
+- [x] Configurat pe live din **Zion Privacy → Banner**: antracit, accent lime din identitatea temei, text deschis, fontul site-ului și butoane cu contrast.
+- [x] Texte în română pentru banner, preferințe, categorii, contoare, etichete accesibile și pictograma de redeschidere. Selector compact pe categorii, cu numărul cookie-urilor; inventarul tehnic original rămâne în administrarea pluginului.
+- [x] Actualizat separat **Zion Privacy Client 0.1.48**, cu câmpuri HEX, traduceri native WordPress și transmiterea corectă a valorilor booleene. Setările și revizia consimțământului nu au fost resetate.
+- [x] **11 teste Playwright**, integrare cu încărcătorul nativ WordPress și verificări PHP trecute. Bannerul, preferințele și pictograma verificate live; fără overflow orizontal la 390/768/1024/1440 px.
+- [x] Codul pluginului publicat pe `main`; pachetul instalat conține exact cele **90 de fișiere** verificate. Theme/Core rămân **1.1.40**, cu ZIP-urile regenerate.
+
+Raport, configurare și limitele verificării: [banner Zion Privacy 0.1.48](docs/privacy-banner-0.1.48.md).
+
 ## Introducere magazin Software · 1.1.40
 
 - [x] Descrierea magazinului Software ocupă întreaga lățime a containerului, inclusiv paddingul și bordura, în locul limitei editoriale de 65ch.
