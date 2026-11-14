@@ -3526,6 +3526,7 @@ body:has(.zion-product-page--sticky) {
 .zion-software-toc a[aria-current] { border-color: var(--wp--preset--color--accent); color: var(--wp--preset--color--accent); background: var(--wp--preset--color--surface); }
 .zion-software-content { min-width: 0; overflow-wrap: anywhere; }
 .zion-software-content > p { max-width: 65ch; color: var(--wp--preset--color--muted); line-height: 1.85; }
+.zion-software-content > .zion-store-intro { box-sizing: border-box; width: 100%; max-width: none; }
 .zion-software-section { margin: 0; padding-block: 0 clamp(2.75rem, 5vw, 5rem); scroll-margin-top: var(--zion-forge-top, 8rem); }
 .zion-software-section + .zion-software-section { padding-block-start: clamp(2rem, 4vw, 3.5rem); border-block-start: 1px solid var(--wp--preset--color--deep); }
 .zion-software-section > h2 { max-width: 30ch; margin-block: 0 1.4rem; color: var(--wp--preset--color--text); font-size: clamp(1.7rem, 2.7vw, 2.7rem); line-height: 1.2; letter-spacing: -.035em; }

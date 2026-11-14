@@ -67,6 +67,11 @@ for (const width of [390, 768, 1024, 1440]) {
       await page.goto(path);
       const card = cards(page).first();
       await expect(card).toBeVisible();
+      if (path === '/magazin-software/') {
+        const intro = page.locator('.zion-software-content > .zion-store-intro');
+        await expect(intro).toBeVisible();
+        expect(await intro.evaluate(element => Math.abs(element.getBoundingClientRect().width - element.parentElement.getBoundingClientRect().width))).toBeLessThan(1);
+      }
       expect(await card.evaluate(element => {
         const trackWidth = parseFloat(getComputedStyle(element.parentElement).gridTemplateColumns);
         return Math.abs(element.getBoundingClientRect().width - trackWidth);
