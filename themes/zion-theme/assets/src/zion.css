@@ -2597,6 +2597,64 @@ body:has(.zion-product-page--sticky) {
 .zion-checkout .wc-block-components-radio-control { border-color: var(--checkout-rule); border-radius: .45rem; }
 .zion-checkout .wc-block-components-radio-control__option { background: var(--checkout-surface); color: var(--checkout-ink); min-block-size: 48px; }
 .zion-checkout .wc-block-components-radio-control__option-checked { box-shadow: inset 0 0 0 1px var(--wp--preset--color--accent); }
+/* Native delivery/payment panels only: express wallets retain provider styling. */
+.zion-checkout :is(.wp-block-woocommerce-checkout-shipping-methods-block, .wp-block-woocommerce-checkout-payment-block) .wc-block-components-radio-control {
+  display: grid; gap: 1rem; border: 0; border-radius: 0; overflow: visible;
+}
+.zion-checkout :is(.wp-block-woocommerce-checkout-shipping-methods-block, .wp-block-woocommerce-checkout-payment-block) .wc-block-components-radio-control::after,
+.zion-checkout :is(.wp-block-woocommerce-checkout-shipping-methods-block, .wp-block-woocommerce-checkout-payment-block) .wc-block-components-radio-control .wc-block-components-radio-control__option::after,
+.zion-checkout .wp-block-woocommerce-checkout-payment-block .wc-block-components-radio-control .wc-block-components-radio-control-accordion-option::after { content: none; }
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control__option {
+  position: relative; display: flex; align-items: center; box-sizing: border-box; min-block-size: 84px; margin: .3rem 0 0;
+  padding: 1.15rem 1rem 1.15rem 3rem; border: 1px solid var(--checkout-rule); border-radius: .85rem;
+  background: var(--checkout-surface); box-shadow: none;
+}
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control .wc-block-components-radio-control__option-checked {
+  border-color: color-mix(in srgb, var(--wp--preset--color--accent) 45%, var(--checkout-rule));
+  background: linear-gradient(115deg, color-mix(in srgb, var(--wp--preset--color--accent) 9%, var(--checkout-surface)), var(--checkout-surface));
+  box-shadow: inset 3px 0 var(--wp--preset--color--accent), 0 8px 24px color-mix(in srgb, var(--checkout-ink) 5%, transparent);
+}
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control .wc-block-components-radio-control__option-checked::after {
+  content: "✓  Selectat"; position: absolute; display: inline-flex; align-items: center; justify-content: center;
+  inset: -.65rem .9rem auto auto; inline-size: auto; block-size: auto; min-block-size: 24px;
+  padding: .1rem .65rem; border: 1px solid var(--wp--preset--color--accent); border-radius: 999px;
+  background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink);
+  font-size: .72rem; font-weight: 700; line-height: 1.4; white-space: nowrap; pointer-events: none;
+}
+.zion-checkout :is(.wp-block-woocommerce-checkout-shipping-methods-block, .wp-block-woocommerce-checkout-payment-block) .wc-block-components-radio-control .wc-block-components-radio-control__option .wc-block-components-radio-control__input {
+  position: absolute; inset-block-start: 50%; inset-inline-start: 1rem; margin: 0; transform: translateY(-50%);
+  accent-color: var(--wp--preset--color--accent); border-color: var(--checkout-muted);
+}
+.zion-checkout :is(.wp-block-woocommerce-checkout-shipping-methods-block, .wp-block-woocommerce-checkout-payment-block) .wc-block-components-radio-control__option-layout { inline-size: 100%; min-inline-size: 0; }
+.zion-checkout :is(.wp-block-woocommerce-checkout-shipping-methods-block, .wp-block-woocommerce-checkout-payment-block) .wc-block-components-radio-control__input:checked { border-color: var(--wp--preset--color--accent); }
+.zion-checkout :is(.wp-block-woocommerce-checkout-shipping-methods-block, .wp-block-woocommerce-checkout-payment-block) .wc-block-components-radio-control__input:checked::before { background: var(--wp--preset--color--accent); }
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control__label-group { gap: .75rem; flex-wrap: wrap; }
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control__label { font-weight: 600; line-height: 1.5; }
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .wc-block-components-radio-control__secondary-label { margin-inline-start: auto; color: var(--checkout-ink); font-weight: 600; white-space: nowrap; }
+.zion-checkout .wp-block-woocommerce-checkout-payment-block .wc-block-components-radio-control .wc-block-components-radio-control-accordion-option {
+  border: 1px solid var(--checkout-rule); border-radius: .85rem; background: var(--checkout-surface); box-shadow: none;
+}
+.zion-checkout .wp-block-woocommerce-checkout-payment-block .wc-block-components-radio-control__option {
+  box-sizing: border-box; min-block-size: 72px; padding: 1rem 1rem 1rem 3rem; border: 0; border-radius: .85rem; background: transparent; box-shadow: none;
+}
+.zion-checkout .wp-block-woocommerce-checkout-payment-block .wc-block-components-radio-control-accordion-content {
+  margin: 0; padding: 1.1rem; border-block-start: 1px solid var(--checkout-rule); color: var(--checkout-ink);
+}
+.zion-checkout .wp-block-woocommerce-checkout-payment-block .wc-block-components-payment-method-label { font-weight: 600; }
+.zion-checkout .wp-block-woocommerce-checkout-payment-block .wc-block-components-payment-methods__save-card-info { margin-block: 1rem 0; font-size: .85rem; line-height: 1.6; }
+.zion-checkout .wc-block-checkout__use-address-for-billing { min-block-size: 44px; margin-block-start: 1rem; }
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .sameday-blocks-locker { margin-block-start: 1rem; }
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .sameday_select_locker {
+  display: inline-flex; align-items: center; justify-content: center; min-block-size: 44px; max-inline-size: 100%;
+  margin-block: .25rem; padding: .7rem 1rem; border: 1px solid var(--wp--preset--color--accent); border-radius: .65rem;
+  background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); font: inherit; font-weight: 600; line-height: 1.5; white-space: normal;
+}
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .sameday-blocks-ship-to {
+  align-self: stretch; box-sizing: border-box; inline-size: 100%; margin-block-start: .8rem; padding: .75rem 1rem; border-inline-start: 2px solid var(--wp--preset--color--accent);
+  background: color-mix(in srgb, var(--checkout-ink) 3%, transparent); border-radius: 0 .5rem .5rem 0;
+  color: var(--checkout-ink); font-size: .85rem; line-height: 1.6; overflow-wrap: anywhere;
+}
+.zion-checkout .wp-block-woocommerce-checkout-shipping-methods-block .sameday-blocks-ship-to:empty { display: none; }
 .zion-checkout :is(input, select, textarea, button, a):focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
 .zion-checkout .wc-block-components-order-summary-item__description { min-inline-size: 0; }
 .zion-checkout .wc-block-components-product-name { font-size: .95rem; line-height: 1.5; font-weight: 500; text-decoration: none; overflow-wrap: anywhere; }
@@ -3762,3 +3820,57 @@ body:has(.zion-product-page--sticky) {
 @keyframes zion-cart-arrival { from { opacity:0; transform:translateY(5px) scale(.96); } to { opacity:1; transform:none; } }
 @media (prefers-reduced-motion:reduce) { .zion-product-card .zion-card-cart-hop { animation:none; } }
 .zion-motion-reduced .zion-card-cart-hop { animation:none; }
+
+/* Shared frontend controls: reserve a complete text line instead of clipping it. */
+body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible) {
+  --zion-select-surface: var(--account-surface, var(--checkout-surface, var(--wp--preset--color--surface)));
+  --zion-select-ink: var(--account-ink, var(--checkout-ink, var(--wp--preset--color--text)));
+  box-sizing: border-box; max-inline-size: 100%; min-inline-size: 0;
+  border-radius: .6rem;
+  background-color: var(--zion-select-surface); color: var(--zion-select-ink);
+  font-family: inherit; font-size: 1rem; line-height: 1.4; box-shadow: none;
+}
+body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible):not([aria-invalid="true"]):not(.wpcf7-not-valid) { border: 1px solid color-mix(in srgb, var(--zion-select-ink) 40%, var(--zion-select-surface)); }
+body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible):disabled { opacity: .65; cursor: not-allowed; }
+body.wp-theme-zion-theme .wp-site-blocks select:not([multiple]):is(:not([size]), [size="0"], [size="1"]):not(.select2-hidden-accessible):not(.wc-blocks-components-select__select) {
+  block-size: auto; min-block-size: 48px; padding-block: .625rem; padding-inline: .875rem 2.25rem;
+}
+body.wp-theme-zion-theme .wp-site-blocks .wc-blocks-components-select select.wc-blocks-components-select__select {
+  block-size: auto; min-block-size: 56px; padding-block: 1.5rem .375rem; line-height: 1.4;
+}
+body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible) option {
+  background: var(--zion-select-surface); color: var(--zion-select-ink);
+}
+body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible) option:disabled { color: color-mix(in srgb, var(--zion-select-ink) 50%, var(--zion-select-surface)); }
+body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible):focus,
+body.wp-theme-zion-theme .wp-site-blocks .select2-container--focus .select2-selection,
+body.wp-theme-zion-theme .wp-site-blocks .select2-container--open .select2-selection {
+  outline: 2px solid var(--zion-select-focus, var(--wp--preset--color--accent)); outline-offset: -2px; box-shadow: none;
+}
+.zion-checkout--contrast { --zion-select-focus: var(--checkout-ink); }
+.zion-account--contrast { --zion-select-focus: var(--account-ink); }
+.zion-section--paper { --zion-select-focus: var(--wp--preset--color--ink); }
+.zion-product-page .zion-purchase .variations td.value select { display: block; inline-size: 100%; margin-inline: 0; }
+.zion-product-page .zion-purchase .variations .reset_variations { display: inline-flex; align-items: center; min-block-size: 36px; margin-block-start: .35rem; }
+body.wp-theme-zion-theme .wp-site-blocks .variations :is(th.label, td.label) { vertical-align: top; padding-block-start: .75rem; }
+body.wp-theme-zion-theme .wp-site-blocks .variations label { overflow-wrap: normal; word-break: normal; }
+@media (max-width: 600px) {
+  body.wp-theme-zion-theme .wp-site-blocks .variations :is(tbody, tr, th, td) { display: block; inline-size: 100%; box-sizing: border-box; }
+  body.wp-theme-zion-theme .wp-site-blocks .variations :is(th.label, td.label) { padding-block: .25rem .5rem; }
+}
+body.wp-theme-zion-theme .wp-site-blocks .select2-container .select2-selection {
+  box-sizing: border-box; min-block-size: 48px; block-size: auto; border-radius: .6rem;
+  background: var(--account-surface, var(--checkout-surface, var(--wp--preset--color--surface)));
+  color: var(--account-ink, var(--checkout-ink, var(--wp--preset--color--text))); font-size: 1rem;
+}
+body.wp-theme-zion-theme .wp-site-blocks .select2-container .select2-selection:not(.woocommerce-invalid .select2-selection) { border-color: color-mix(in srgb, var(--wp--preset--color--text) 40%, var(--wp--preset--color--surface)); }
+body.wp-theme-zion-theme .wp-site-blocks .select2-container .select2-selection--single { display: flex; align-items: center; }
+body.wp-theme-zion-theme .wp-site-blocks .select2-container .select2-selection--single .select2-selection__rendered {
+  box-sizing: border-box; inline-size: 100%; padding-block: .625rem; padding-inline: .875rem 2.25rem; color: inherit; line-height: 1.4; white-space: normal; overflow-wrap: anywhere;
+}
+body.wp-theme-zion-theme .wp-site-blocks .select2-container .select2-selection--single .select2-selection__arrow { block-size: 100%; inset-block-start: 0; inset-inline-end: .5rem; }
+body.wp-theme-zion-theme .select2-dropdown { border-color: var(--wp--preset--color--deep); background: var(--wp--preset--color--surface); color: var(--wp--preset--color--text); }
+body.wp-theme-zion-theme .select2-results__option--highlighted[aria-selected] { background: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); }
+@media (forced-colors: active) {
+  body.wp-theme-zion-theme .wp-site-blocks select:not(.select2-hidden-accessible):focus { outline-color: Highlight; }
+}

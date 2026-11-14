@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.31** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.36** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.31** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.36** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,17 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Checkout și selecturi · 1.1.36
+
+- [x] Sameday și Easybox în carduri coerente cu Zion, cu radio aliniat, preț separat și badge **„✓ Selectat”** care urmează selecția nativă; butonul hărții și rezumatul punctului integrate în paletă.
+- [x] Panou WooPayments aerisit pentru card, cu câmpurile securizate native. Apple Pay/Google Pay și configurarea gateway-ului sunt păstrate.
+- [x] Aceeași adresă pentru facturare bifată implicit prin setarea nativă WooCommerce, cu posibilitatea de debifare; fără setări duplicate sau script care să anuleze alegerea clientului.
+- [x] Selecturi de minimum **48 px**, fără text tăiat, focus rotunjit în interior, variații responsive pentru produse fizice/virtuale, sortare și SelectWoo. Etichetele flotante din checkout au spațiu propriu.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și **3 scenarii Playwright** relevante trecute; verificări live la **390/768/1024/1440 px** fără overflow, inclusiv produsul Renault semnalat.
+- [x] ZIP-uri **Theme/Core 1.1.36**, backup privat înainte de intervenție și verificarea fișierelor/configurării după instalare. Modificările sunt de prezentare; regulile financiare WooCommerce rămân native.
+
+Implementare, verificări, limite și rollback: [checkout și selecturi](docs/checkout-selects-1.1.36.md).
 
 ## Banner migrare · conținut 1.0.1
 

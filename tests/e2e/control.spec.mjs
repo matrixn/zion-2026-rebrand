@@ -19,6 +19,28 @@ async function expectCouponContrast(input) {
   if(colors.label) expect(contrastRatio(colors.label, colors.bg)).toBeGreaterThanOrEqual(4.5);
 }
 
+async function expectSelectTextFits(select) {
+  const size = await select.evaluate(e => {
+    const s = getComputedStyle(e);
+    const rect = e.getBoundingClientRect();
+    const label = e.closest('.variations tr')?.querySelector('label')?.getBoundingClientRect();
+    return {
+      height: e.getBoundingClientRect().height,
+      available: e.clientHeight - parseFloat(s.paddingTop) - parseFloat(s.paddingBottom),
+      line: s.lineHeight === 'normal' ? parseFloat(s.fontSize) * 1.2 : parseFloat(s.lineHeight),
+      labelOffset: label ? Math.abs(label.y + label.height / 2 - rect.y - rect.height / 2) : null,
+      labelAbove: label ? label.bottom <= rect.top + 1 : null,
+      narrow: innerWidth <= 600,
+    };
+  });
+  expect(size.height).toBeGreaterThanOrEqual(44);
+  expect(size.available + .5).toBeGreaterThanOrEqual(size.line);
+  if (size.labelOffset !== null) {
+    if (size.narrow) expect(size.labelAbove).toBe(true);
+    else expect(size.labelOffset).toBeLessThanOrEqual(4);
+  }
+}
+
 async function openCoupon(page) {
   const input=page.locator('.wc-block-components-totals-coupon input');
   if(!await input.isVisible())await page.getByRole('button',{name:'Adaugă cupoane',exact:true}).click();
@@ -347,10 +369,16 @@ test('product presets and native purchases work with real variations, mobile and
     });
     const variable = await create({
       name: 'Zion variable test', type: 'variable',
-      attributes: [{ name: 'Material', visible: true, variation: true, options: ['PLA', 'PETG'] }],
+      attributes: [{ name: 'Material', visible: true, variation: true, options: ['PLA Translucent (95A)', 'PETG'] }],
     });
-    await create({ regular_price: '89', manage_stock: true, stock_quantity: 10, attributes: [{ name: 'Material', option: 'PLA' }] }, `/${variable.id}/variations`);
+    const availableVariation = await create({ regular_price: '89', manage_stock: true, stock_quantity: 10, attributes: [{ name: 'Material', option: 'PLA Translucent (95A)' }] }, `/${variable.id}/variations`);
     await create({ regular_price: '99', manage_stock: true, stock_quantity: 0, stock_status: 'outofstock', attributes: [{ name: 'Material', option: 'PETG' }] }, `/${variable.id}/variations`);
+    const virtualVariable = await create({
+      name: 'Zion virtual variable test', type: 'variable', virtual: true,
+      attributes: [{ name: 'Licență', visible: true, variation: true, options: ['Licență personală (1 PC)', 'Licență business (5 PC-uri)'] }],
+    });
+    await create({ regular_price: '129', virtual: true, attributes: [{ name: 'Licență', option: 'Licență personală (1 PC)' }] }, `/${virtualVariable.id}/variations`);
+    await create({ regular_price: '249', virtual: true, attributes: [{ name: 'Licență', option: 'Licență business (5 PC-uri)' }] }, `/${virtualVariable.id}/variations`);
 
     await page.goto(`/wp-admin/post.php?post=${download.id}&action=edit`);
     await page.locator('#zion-product-detail-version').fill('7.2.1');
@@ -401,7 +429,7 @@ test('product presets and native purchases work with real variations, mobile and
     await expect(page.getByRole('button', { name: 'Partener test' })).toBeVisible();
     await expect(page.locator('.zion-buy-now, [data-zion-sticky]')).toHaveCount(0);
 
-    for (const width of [390, 1440]) {
+    for (const width of [390, 768, 1024, 1440]) {
       const guest = await browser.newContext({ baseURL, viewport: { width, height: 850 } });
       try {
         const productPage = await guest.newPage();
@@ -422,7 +450,15 @@ test('product presets and native purchases work with real variations, mobile and
           await expect(buy).toBeDisabled();
           await expect(form.locator('.woocommerce-variation-availability')).toContainText(/stoc epuizat/i);
         }
-        await material.selectOption({ label: 'PLA' });
+        await material.selectOption('');
+        await expect(sticky).toHaveText('Alege opțiunile');
+        await material.press('ArrowDown');
+        await expect(material).toHaveValue('PLA Translucent (95A)');
+        await expect(form.locator('input.variation_id')).toHaveValue(String(availableVariation.id));
+        await expectSelectTextFits(material);
+        const focus = await material.evaluate(e => ({ outline: getComputedStyle(e).outlineStyle, color: getComputedStyle(e).outlineColor, bg: getComputedStyle(e).backgroundColor }));
+        expect(focus.outline).toBe('solid');
+        expect(contrastRatio(focus.color, focus.bg)).toBeGreaterThanOrEqual(3);
         await expect(sticky).toHaveText('Adaugă în coș');
         await expect(form.locator('.woocommerce-variation-price')).toContainText('89');
         const documentStart = await productPage.evaluate(() => performance.timeOrigin);
@@ -437,11 +473,20 @@ test('product presets and native purchases work with real variations, mobile and
         await expect(productPage.locator('.wc-block-cart-items input').first()).toHaveValue('2');
         if (width === 1440) {
           await productPage.goto(variable.permalink);
-          await material.selectOption({ label: 'PLA' });
+          await material.selectOption({ label: 'PLA Translucent (95A)' });
           await expect(buy).toBeEnabled();
           await buy.click();
           await expect(productPage).toHaveURL(/\/checkout\/?$/);
         }
+        await productPage.goto('/magazin-3d/');
+        await expectSelectTextFits(productPage.getByRole('combobox', { name: 'Sortează', exact: true }));
+        expect(await productPage.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+        await productPage.goto(virtualVariable.permalink);
+        const license = productPage.locator('form.variations_form select');
+        await license.selectOption({ label: 'Licență personală (1 PC)' });
+        await expectSelectTextFits(license);
+        await expect(productPage.locator('.woocommerce-variation-price')).toContainText('129');
+        expect(await productPage.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       } finally {
         await guest.close();
       }
@@ -452,6 +497,7 @@ test('product presets and native purchases work with real variations, mobile and
       const productPage = await noScript.newPage();
       await productPage.goto(variable.permalink);
       await expect(productPage.getByText(/Activează JavaScript/)).toBeVisible();
+      await expectSelectTextFits(productPage.locator('form.variations_form select'));
       await expect(productPage.locator('[data-zion-sticky]')).toHaveAttribute('href', '#zion-purchase');
       await productPage.goto('/product/suport-modular-3d/');
       await expect(productPage.locator('.zion-product-media .woocommerce-product-gallery')).toHaveCSS('opacity', '1');
@@ -459,6 +505,20 @@ test('product presets and native purchases work with real variations, mobile and
       await expect(productPage).toHaveURL(/\/checkout\/?$/);
     } finally {
       await noScript.close();
+    }
+    await page.goto('/my-account/edit-address/billing/');
+    const accountCountry = page.locator('#billing_country');
+    const enhancedCountry = page.locator('.select2-container .select2-selection--single').first();
+    if (await enhancedCountry.count()) {
+      expect(await enhancedCountry.evaluate(e => e.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+      const textSpace = await enhancedCountry.locator('.select2-selection__rendered').evaluate(e => {
+        const s = getComputedStyle(e);
+        return e.clientHeight - parseFloat(s.paddingTop) - parseFloat(s.paddingBottom) - parseFloat(s.lineHeight);
+      });
+      expect(textSpace).toBeGreaterThanOrEqual(-.5);
+      await expect(accountCountry).toHaveClass(/select2-hidden-accessible/);
+    } else {
+      await expectSelectTextFits(accountCountry);
     }
   } finally {
     await importSettings(page, original);
@@ -1084,6 +1144,7 @@ test('checkout design selector preserves native form, validation and totals at f
         expect(contrastRatio(badgeColors.ink,badgeColors.bg)).toBeGreaterThanOrEqual(4.5);
         await expect(checkout.locator('.wc-block-components-checkout-place-order-button')).toHaveCount(1);
         await expect(customer.locator('#email')).toBeVisible();
+        for (const select of await checkout.locator('select:visible').all()) await expectSelectTextFits(select);
         // Physical carts may default to using the shipping address for billing.
         // Select separate billing explicitly before testing the billing fields.
         const sameAddress = customer.getByRole('checkbox', { name: 'Folosește aceeași adresă pentru facturare', exact: true });
