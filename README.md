@@ -40,15 +40,15 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
-## Banner migrare · conținut 1.0.0
+## Banner migrare · conținut 1.0.1
 
-- [x] Anunț compact deasupra meniului pe **zion3d.ro**, cu perioada solicitată **14–15 octombrie 2026**, scuze, indisponibilitatea temporară a plăților online și buton **Comandă pe WhatsApp**.
+- [x] Anunț compact deasupra meniului pe **zion3d.ro**, cu perioada corectată **14–15 noiembrie 2026**, scuze, indisponibilitatea temporară a plăților online și buton **Comandă pe WhatsApp**.
 - [x] Bloc nativ HTML personalizat în Header, editabil în Site Editor, cu tokenurile Zion, fără JavaScript sau dependențe; conținutul anterior și meniurile sunt păstrate.
 - [x] Verificat live la **390/768/1024/1440 px**, fără overflow, cu CTA de **44 px** și meniu mobil funcțional; anunț prezent și în răspunsurile anonime ale paginilor principale după invalidarea cache-ului dedicat.
 - [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare catalog și **2/2 regresii Playwright** trecute. Backup privat și procedură de eliminare fără pierderea editărilor headerului.
-- [x] ZIP de conținut **1.0.0** și ZIP-urile WordPress sursă **1.1.31** generate; componentele live nu au fost actualizate implicit.
+- [x] ZIP de conținut **1.0.1** și ZIP-urile WordPress sursă **1.1.31** generate; componentele live nu au fost actualizate implicit.
 
-Sursă, verificări, administrare și eliminare: [bannerul de migrare](docs/migration-announcement-1.0.0.md). Anunțul nu expiră automat; se elimină după încheierea migrării.
+Sursă actuală: `config/announcements/migration-2026-11.html`. Corecția perioadei: [banner 1.0.1](docs/migration-announcement-1.0.1.md). Implementare, verificări inițiale, administrare și eliminare: [banner 1.0.0](docs/migration-announcement-1.0.0.md). Anunțul nu expiră automat; se elimină după încheierea migrării.
 
 ## Acces API și indexare live · 14 noiembrie 2026
 

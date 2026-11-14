@@ -1,5 +1,7 @@
 # Banner de migrare · conținut 1.0.0
 
+**Raport istoric:** perioada inițială de mai jos a fost corectată la cererea utilizatorului în **14–15 noiembrie 2026**. Versiunea activă este [1.0.1](migration-announcement-1.0.1.md), cu sursa `config/announcements/migration-2026-11.html`.
+
 Publicat pe **zion3d.ro** la 14 noiembrie 2026, la cererea explicită a utilizatorului. Perioada afișată este **14–15 octombrie 2026**, exact perioada solicitată; nu a fost schimbată automat în noiembrie și nu există expirare automată.
 
 ## Mesaj și implementare
