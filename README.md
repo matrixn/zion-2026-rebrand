@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.36** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.37** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.36** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.37** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,17 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Traduceri Sameday / easybox · 1.1.37
+
+- [x] „Show Locations Map” → **Alege un punct de ridicare pe hartă**, „Ship to” → **Livrare la**, mesajul de selectare → **Alege un locker easybox pentru livrare.**
+- [x] Traduse și eticheta dropdownului și mesajul de încărcare a listei easybox.
+- [x] Integrare prin filtrul gettext al furnizorului, pentru PHP și configurația Checkout Blocks; fără modificări în pluginul Sameday, JavaScript suplimentar sau date comerciale duplicate.
+- [x] Păstrate traducerile instalate, mesajele necunoscute, administrarea și celelalte limbi.
+- [x] Build/package, WPCS, **61 teste PHPUnit / 436 aserțiuni** și integrare, inclusiv **14 verificări Sameday**, trecute.
+- [x] Regresie Playwright trecută; Theme/Core **1.1.37** instalate pe live după reboot, texte verificate după Ajax și refresh la **390/768/1024/1440 px**, zero overflow. ZIP-uri versionate generate, **149 de fișiere** verificate și pluginul Sameday păstrat intact.
+
+Raport și rollback: [traduceri Sameday 1.1.37](docs/sameday-translations-1.1.37.md).
 
 ## Checkout și selecturi · 1.1.36
 

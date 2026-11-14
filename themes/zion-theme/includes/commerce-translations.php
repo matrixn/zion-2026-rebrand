@@ -332,3 +332,26 @@ function zion_theme_commerce_script_translations(): void {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'zion_theme_commerce_script_translations' );
+
+/**
+ * Supply missing Sameday labels before its native checkout configuration reaches JS.
+ *
+ * @param string $translated Installed translation.
+ * @param string $text Source message.
+ * @param string $domain Gettext domain.
+ * @return string
+ */
+function zion_theme_translate_sameday( string $translated, string $text, string $domain ): string {
+	if ( 'samedaycourier-shipping' !== $domain || $translated !== $text || ! zion_theme_romanian_commerce( 'woocommerce' ) ) {
+		return $translated;
+	}
+	$strings = array(
+		'Show Locations Map'                           => 'Alege un punct de ridicare pe hartă',
+		'Ship to'                                      => 'Livrare la',
+		'Please choose your EasyBox Locker !'          => 'Alege un locker easybox pentru livrare.',
+		'Select easyBox'                               => 'Alege un locker easybox',
+		'Please wait for easyBox list to be populated' => 'Se încarcă lista punctelor easybox…',
+	);
+	return $strings[ $text ] ?? $translated;
+}
+add_filter( 'gettext_samedaycourier-shipping', 'zion_theme_translate_sameday', 10, 3 );
