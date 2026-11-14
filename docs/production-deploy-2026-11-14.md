@@ -36,7 +36,7 @@ Rollbackul integral presupune fereastră de mentenanță, salvarea stării curen
 - [x] `home` și `siteurl`: `https://zion3d.ro`; `WP_ENVIRONMENT_TYPE=production`, `DB_CHARSET=utf8mb4`, collation implicită; debug, afișarea și logarea debug dezactivate.
 - [x] `blog_public=1` pe live. Stagingul păstrează politica separată noindex. Coșul și contul păstrează noindex pentru pagini utilitare.
 - [x] WP-Cron nativ reactivat; nu s-a creat un job extern de cron.
-- [x] Accesul extern rămâne restrâns, cu allowlist pentru `api.wordpress.org`, `downloads.wordpress.org`, `s.w.org`, `wordpress.org`; nu s-a eliminat global restricția HTTP.
+- [x] La momentul restaurării, accesul extern a fost păstrat restrâns, cu allowlist WordPress.org. **Ulterior, la cererea explicită a utilizatorului, restricția de staging a fost eliminată de pe live pentru serviciile comerciale**: vezi [intervenția HTTP/WooPayments](live-http-2026-11-14.md).
 - [x] Rewrite rules regenerate cu pluginurile active, inclusiv WooCommerce.
 - [x] Nginx: `robots.txt` este trimis către WordPress; bypass cache pentru `/cos/` și `/contul-meu/`, alături de checkout și rutele sensibile existente. Cache key separat pentru acest deploy evită răspunsurile vechi din timpul instalării; nu s-au șters cache-urile altor aplicații.
 - [x] Curățare nativă a instalatorului. Backupurile/importurile/logurile Duplicator rămase au fost mutate în `removed-public-backup-folders` sub directorul privat de rollback; DAF, installer și bootstrap log răspund public **404**.

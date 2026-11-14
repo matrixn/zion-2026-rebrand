@@ -40,6 +40,16 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Acces API și indexare live · 14 noiembrie 2026
+
+- [x] Eliminate din **zion3d.ro**, la cererea utilizatorului, `WP_HTTP_BLOCK_EXTERNAL` și `WP_ACCESSIBLE_HOSTS` moștenite din staging; backup privat și verificare PHP înainte de aplicare. Accesul extern folosește comportamentul normal WordPress.
+- [x] Jetpack nu mai este blocat; API-urile WordPress.com/WordPress.org răspund **200** prin WordPress HTTP API. WooPayments ajunge la **autentificarea WordPress.com**, fără eroarea HTTP inițială.
+- [x] Live: mod production, magazin public, `blog_public=1`, homepage/magazin/robots/sitemap **200**, fără noindex pe paginile publice. Stagingul rămâne **noindex**.
+- [x] Build/package trecute, ZIP-uri sursă **1.1.31** regenerate; nu s-a schimbat sursa runtime și nu s-au actualizat componentele live.
+- [ ] Proprietarul finalizează autentificarea/autorizarea WordPress.com și configurarea comercială WooPayments. Verifică țara firmei: interfața afișa SUA; nu au fost schimbate datele de firmă sau activate plăți.
+
+Detalii și rollback: [acces HTTP și indexare](docs/live-http-2026-11-14.md).
+
 ## Migrare pe zion3d.ro · 14 noiembrie 2026
 
 - [x] Restaurare integrală autorizată din backupul Duplicator al stagingului: **Theme/Core 1.1.30**, 28 pagini și 32 produse publicate; datele vechi înlocuite conform confirmării utilizatorului.
