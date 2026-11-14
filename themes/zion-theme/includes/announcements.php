@@ -6,7 +6,7 @@
  */
 
 /**
- * Load the mobile disclosure only when its native HTML block is rendered.
+ * Load the header disclosure only when its native HTML block is rendered.
  *
  * @param string $html Rendered HTML block.
  * @return string

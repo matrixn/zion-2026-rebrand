@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.41** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.42** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.41** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.42** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -40,7 +40,19 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Notificări în header · 1.1.42
+
+- [x] Clopoțel circular cu badge lime în rândul iconițelor din meniu, între cont și coș, pe mobil și desktop. Butonul rămâne accesibil cu anunțul închis sau deschis.
+- [x] Anunțul se extinde sub meniu și poate fi restrâns inclusiv pe PC. Starea păstrată în browser se aplică la toate dimensiunile, între pagini, la refresh și în istoric; preferințele existente sunt reutilizate.
+- [x] Aceleași noduri de conținut și Headerul nativ editabil; fără rescrierea mesajului din baza de date sau a setărilor WooCommerce.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare WordPress și **10 scenarii Playwright** ale notificării trecute.
+- [x] **2 regresii ale meniului** trecute. Theme/Core **1.1.42** instalate pe live; ordinea cont–notificări–coș, ambele stări și persistența verificate la 390/768/1024/1440 px, fără overflow. Cele **152 de fișiere** instalate coincid cu ZIP-urile.
+
+Detalii: [notificări în header 1.1.42](docs/migration-announcement-1.1.42.md).
+
 ## Anunț de migrare pe mobil · 1.1.41
+
+Raportul de mai jos descrie prima variantă; poziționarea și comportamentul desktop au fost actualizate în **1.1.42**.
 
 - [x] Buton centrat **Notificări · 1**, vizibil pe telefon atât cu anunțul deschis, cât și restrâns. Panoul se extinde/restrânge vertical; preferința de mișcare redusă este respectată.
 - [x] Starea **deschis/închis** se păstrează la navigare, refresh și Back/Forward, în browserul clientului. Un mesaj modificat are o preferință nouă; pe desktop anunțul rămâne complet vizibil.

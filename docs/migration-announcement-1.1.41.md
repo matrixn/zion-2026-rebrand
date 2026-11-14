@@ -1,5 +1,7 @@
 # Anunț de migrare pe mobil · Theme/Core 1.1.41
 
+**Raport istoric.** Poziționarea curentă în header și posibilitatea de restrângere pe desktop sunt documentate în [1.1.42](migration-announcement-1.1.42.md).
+
 Pe telefon, anunțul de migrare poate fi restrâns la butonul centrat **Notificări · 1**. Butonul rămâne în afara panoului și este disponibil în ambele stări. Apăsarea lui deschide sau închide panoul printr-o animație verticală de 260 ms. Mesajul nu poate fi eliminat definitiv din interfață.
 
 ## Comportament
