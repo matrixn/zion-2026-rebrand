@@ -62,6 +62,7 @@ $zion_theme_partners = array(
 	'Thingiverse ↗'                => 'https://www.thingiverse.com/',
 	'Time 2 Decorate ↗'            => 'https://time2decorate.co.uk/',
 	'Hausmeisterdienst Konstanz ↗' => 'https://hausmeisterdienst-konstanz.de/',
+	'Fortis Build ↗'               => 'https://fortisbuild.ro',
 );
 $zion_theme_privacy  = get_privacy_policy_url();
 $zion_theme_legal    = array(
