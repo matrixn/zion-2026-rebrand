@@ -40,7 +40,18 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Plăți în testare · conținut 1.0.3
+
+- [x] Notificarea spune acum: **„Plățile online sunt active, în curs de testare. Dacă întâmpini dificultăți la finalizarea plății, contactează-ne pe WhatsApp.”** Perioada rămâne **14–20 noiembrie 2026**.
+- [x] Schimbat exclusiv textul din Headerul live, cu backup privat și verificarea structurii originale. Răspunsuri anonime **200** pe homepage, ambele magazine, Contact și coș, cu mesajul nou și fără formularea despre indisponibilitate.
+- [x] Verificat la **390/768/1024/1440 px**, fără overflow; clopoțelul închide/redeschide anunțul, iar starea se păstrează între pagini. Setările comerciale sunt păstrate; nu a fost efectuată o tranzacție de plată.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și **12 teste Playwright** trecute. Arhiva de conținut **1.0.3** și ambele ZIP-uri WordPress **1.1.42** regenerate și validate.
+
+Detalii și limitele verificării: [mesaj plăți în testare 1.0.3](docs/migration-announcement-1.0.3.md). Theme/Core rămân **1.1.42**; nu este necesară reinstalarea componentelor pentru această modificare de text.
+
 ## Perioada notificării de plăți · conținut 1.0.2
+
+Istoric: perioada rămâne valabilă; formularea despre plăți a fost actualizată în **1.0.3**.
 
 - [x] Perioada notificării este **14–20 noiembrie 2026**, prelungită la cererea utilizatorului în 16 noiembrie. Mesajul despre plățile online și legătura WhatsApp sunt păstrate.
 - [x] Headerul actualizat pe live prin API WordPress, cu o singură schimbare de perioadă și patternul original păstrat. Noua dată verificată la 390/768/1024/1440 px și în răspunsurile anonime ale paginilor principale.

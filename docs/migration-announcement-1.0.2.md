@@ -1,5 +1,7 @@
 # Notificare de plăți · conținut 1.0.2
 
+Raport istoric: perioada de mai jos este păstrată, dar formularea despre indisponibilitatea plăților a fost înlocuită în [conținut 1.0.3](migration-announcement-1.0.3.md).
+
 La cererea utilizatorului din **16 noiembrie 2026**, perioada notificării este prelungită de la 14–15 la **14–20 noiembrie 2026**, inclusiv ziua de 20.
 
 > **Site în migrare · 14–20 noiembrie 2026.** Plățile online sunt momentan indisponibile. Ne cerem scuze pentru disconfort. Pentru comenzi, scrie-ne pe WhatsApp.
