@@ -40,6 +40,14 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Perioada notificării de plăți · conținut 1.0.2
+
+- [x] Perioada notificării este **14–20 noiembrie 2026**, prelungită la cererea utilizatorului în 16 noiembrie. Mesajul despre plățile online și legătura WhatsApp sunt păstrate.
+- [x] Headerul actualizat pe live prin API WordPress, cu o singură schimbare de perioadă și patternul original păstrat. Noua dată verificată la 390/768/1024/1440 px și în răspunsurile anonime ale paginilor principale.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și **12 teste Playwright** trecute. ZIP-ul de conținut **1.0.2** și cele două ZIP-uri WordPress **1.1.42** regenerate și validate.
+
+Sursa de conținut: `config/announcements/migration-2026-11.html`. Raport: [perioadă prelungită 1.0.2](docs/migration-announcement-1.0.2.md). Theme/Core rămân **1.1.42**; această lucrare actualizează textul Headerului.
+
 ## Notificări în header · 1.1.42
 
 - [x] Clopoțel circular cu badge lime în rândul iconițelor din meniu, între cont și coș, pe mobil și desktop. Butonul rămâne accesibil cu anunțul închis sau deschis.
@@ -115,6 +123,8 @@ Raport și rollback: [traduceri Sameday 1.1.37](docs/sameday-translations-1.1.37
 Implementare, verificări, limite și rollback: [checkout și selecturi](docs/checkout-selects-1.1.36.md).
 
 ## Banner migrare · conținut 1.0.1
+
+Raport istoric. Perioada a fost prelungită până la **20 noiembrie 2026**, în [conținutul 1.0.2](docs/migration-announcement-1.0.2.md).
 
 - [x] Anunț compact deasupra meniului pe **zion3d.ro**, cu perioada corectată **14–15 noiembrie 2026**, scuze, indisponibilitatea temporară a plăților online și buton **Comandă pe WhatsApp**.
 - [x] Bloc nativ HTML personalizat în Header, editabil în Site Editor, cu tokenurile Zion. Conținutul original este static; [îmbunătățirea mobilă 1.1.41](docs/migration-announcement-1.1.41.md) adaugă deschidere/închidere și memorie în browser, fără biblioteci externe. Conținutul și meniurile sunt păstrate.

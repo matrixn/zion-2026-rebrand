@@ -1,5 +1,7 @@
 # Banner de migrare · conținut 1.0.1
 
+**Raport istoric:** perioada a fost prelungită în 16 noiembrie 2026 la **14–20 noiembrie 2026**. Versiunea curentă de conținut este [1.0.2](migration-announcement-1.0.2.md).
+
 Corecție cerută de utilizator la 14 noiembrie 2026: perioada activă a bannerului este **14–15 noiembrie 2026**.
 
 > **Site în migrare · 14–15 noiembrie 2026.** Plățile online sunt momentan indisponibile. Ne cerem scuze pentru disconfort. Pentru comenzi, scrie-ne pe WhatsApp.
