@@ -61,7 +61,7 @@ test('Pulse keyboard controls, reduced motion and isolation', async ({ page }) =
   await expect(page.locator('[data-pulse-motion]')).toBeDisabled();
   await expect(page.locator('.zion-pulse-signal')).toHaveCSS('animation-name', 'none');
   expect(requests).toEqual([]);
-  await page.goto('/');
+  await page.goto('/jurnal/');
   await expect(page.locator('link#zion-pulse-css')).toHaveCount(0);
   await expect(page.locator('script#zion-pulse-js')).toHaveCount(0);
 });

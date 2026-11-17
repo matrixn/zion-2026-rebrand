@@ -10,6 +10,7 @@
   const color = name => rootStyle.getPropertyValue(`--wp--preset--color--${name}`).trim();
   const palette = { accent: color('accent'), text: color('text'), muted: color('muted'), ink: color('ink'), deep: color('deep') };
   const home = root.classList.contains('zion-homepage');
+  const homeServiceCount = root.querySelectorAll('.zion-home-service').length;
   const services = root.classList.contains('zion-service-continuum');
   const contact = root.classList.contains('zion-contact');
   const journal = root.classList.contains('zion-editorial');
@@ -807,23 +808,24 @@
       line([a,[b[0],a[1]],b], .55); dot(a); dot(b);
       label('SOFTWARE / CONEXIUNI UTILE', 12, h - 18);
     } else if (type === 'home-services' || type === 'home-process') {
-      const count = type === 'home-services' ? 7 : 3;
+      const serviceNetwork = type === 'home-services';
+      const count = serviceNetwork ? Math.max(1, homeServiceCount) : 3;
       const xInset = w * (compact ? .07 : .09), y = h * .48;
-      const nodes = Array.from({length:count}, (_, i) => [mix(xInset,w-xInset,i/(count-1)),y+(i%2 ? -.16 : .12)*h]);
+      const nodes = Array.from({length:count}, (_, i) => [mix(xInset,w-xInset,i/Math.max(1,count-1)),y+(i%2 ? -.16 : .12)*h]);
       for (let i = 0; i < count - 1; i++) {
         line([nodes[i],[nodes[i+1][0],nodes[i][1]],nodes[i+1]], .42);
         photon(nodes[i],nodes[i+1],i / count,true);
-        if (count === 7 && i < count - 2) line([nodes[i],nodes[i+2]], .14);
+        if (serviceNetwork && i < count - 2) line([nodes[i],nodes[i+2]], .14);
       }
       nodes.forEach((p,i) => {
-        const active = count === 7 ? scene.active === i+1 : Math.floor(scroll * 3) === i;
-        const radius = count === 7 ? (compact ? 4 : 7) : (compact ? 9 : 15);
+        const active = serviceNetwork ? scene.active === i+1 : Math.floor(scroll * 3) === i;
+        const radius = serviceNetwork ? (compact ? 4 : 7) : (compact ? 9 : 15);
         ctx.strokeStyle = ink;
         line([[p[0],p[1]-radius],[p[0]+radius,p[1]],[p[0],p[1]+radius],[p[0]-radius,p[1]]],active ? 1 : .55,active ? 1.5 : 1,true);
         dot(p, active ? 3 : 1.5, active ? 1 : .6);
-        label(count === 7 ? `0${i+1}` : ['IDEE','DIRECȚIE','REALITATE'][i],p[0],p[1]+radius+24,'center');
+        label(serviceNetwork ? `0${i+1}` : ['IDEE','DIRECȚIE','REALITATE'][i],p[0],p[1]+radius+24,'center');
       });
-      if (count === 7) label('7 DISCIPLINE / UN SINGUR FIR',12,18);
+      if (serviceNetwork) label(`${count} DISCIPLINE / UN SINGUR FIR`,12,18);
     } else if (type === 'home-portal') {
       const centre = [w * .5,h * .4];
       for (let i = 0; i < 11; i++) {

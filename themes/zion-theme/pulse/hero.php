@@ -6,7 +6,7 @@
  */
 
 ?>
-<div class="zion-pulse-console zion-pulse-motion" data-pulse-motion-scene>
+<div class="zion-pulse-console zion-pulse-motion<?php echo ! empty( $zion_theme_pulse_preview ) ? ' zion-pulse-preview' : ''; ?>" data-pulse-motion-scene>
 	<div class="zion-pulse-console-top"><span><i class="zion-pulse-dot"></i> PULSE / SIGNAL LAB</span><span>HW + FW + SW</span></div>
 	<svg class="zion-pulse-circuit" viewBox="0 0 620 500" fill="none" aria-hidden="true" focusable="false">
 		<g class="zion-pulse-traces">

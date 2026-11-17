@@ -63,15 +63,22 @@
   const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
   document.querySelectorAll('[data-pulse-motion-scene]').forEach(scene => {
     const button = scene.querySelector('[data-pulse-motion]');
+    const home = scene.closest('.zion-homepage');
     let paused = preference.matches;
     const update = () => {
-      scene.classList.toggle('is-paused', paused || preference.matches);
-      button.setAttribute('aria-pressed', String(paused || preference.matches));
-      button.textContent = preference.matches ? 'Animație redusă' : (paused ? 'Pornește animația' : 'Pauză animație');
-      button.disabled = preference.matches;
+      const reduced = preference.matches || document.body.classList.contains('zion-motion-reduced');
+      const pagePaused = Boolean(home?.classList.contains('is-spatial-paused'));
+      scene.classList.toggle('is-paused', paused || reduced || pagePaused);
+      button.setAttribute('aria-pressed', String(paused || reduced || pagePaused));
+      button.textContent = reduced ? 'Animație redusă' : (pagePaused ? 'Animație oprită în pagină' : (paused ? 'Pornește animația' : 'Pauză animație'));
+      button.disabled = reduced || pagePaused;
     };
     button.addEventListener('click', () => { paused = !paused; update(); });
     preference.addEventListener('change', update);
+    if ('MutationObserver' in window) {
+      new MutationObserver(update).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      if (home) new MutationObserver(update).observe(home, { attributes: true, attributeFilter: ['class'] });
+    }
     update();
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => scene.classList.toggle('is-visible', entries[0].isIntersecting), { threshold: 0.05 });

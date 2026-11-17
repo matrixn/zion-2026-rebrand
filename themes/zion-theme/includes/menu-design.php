@@ -16,6 +16,7 @@ defined( 'ABSPATH' ) || exit;
 function zion_theme_menu_presentation( string $label ): array {
 	$text  = strtolower( remove_accents( wp_strip_all_tags( $label ) ) );
 	$items = array(
+		'zion pulse'       => array( 'pulse', 'Electronică, senzori și automatizări.' ),
 		'integrari ai'     => array( 'ai', 'Automatizări și fluxuri inteligente.' ),
 		'printare'         => array( 'cube', 'Prototipuri și piese funcționale.' ),
 		'proiectare'       => array( 'ruler', 'Modelare CAD pentru fabricație.' ),
@@ -62,6 +63,7 @@ function zion_theme_menu_presentation( string $label ): array {
  */
 function zion_theme_menu_icon( string $name ): string {
 	$paths = array(
+		'pulse'    => '<path d="M2 12h5l3-8 4 16 3-8h5"/>',
 		'home'     => '<path d="m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9"/>',
 		'cube'     => '<path d="m12 2 9 5v10l-9 5-9-5V7l9-5Zm0 10 9-5M12 12 3 7m9 5v10"/>',
 		'ruler'    => '<path d="m3 15 12-12 6 6L9 21l-6-6Zm5-5 3 3m1-7 3 3m-3 5 3 3"/>',

@@ -36,16 +36,21 @@ for (const width of [390, 1440]) {
     await expect(page.locator('main h1')).toHaveCount(1);
     await expect(page.locator('.zion-home-lab')).toHaveCSS('animation-name', 'none');
     expect(await page.locator('main h2').allTextContents()).toEqual([
-      'Lucruri mici. Posibilități mari.', 'Din atelier. Din cod. Pentru tine.', 'Șapte puncte de plecare.',
+      'Lucruri mici. Posibilități mari.', 'Din atelier. Din cod. Pentru tine.', 'Opt puncte de plecare.',
       'De aici poate începe ceva bun.', 'De la „dacă?” la „uite-l”.', 'Idei de luat mai departe.', 'Curiozitatea e un început bun.'
     ]);
-    await expect(page.locator('.zion-home-service h3 a')).toHaveCount(7);
+    await expect(page.locator('.zion-home-service h3 a')).toHaveCount(8);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     const services = await page.locator('.zion-home-service h3 a').evaluateAll(links =>
       links.map(link => ({ url: link.href, title: link.textContent.replace(' ↗', '') }))
     );
     for (const service of services) {
       await page.goto(service.url);
+      if (new URL(service.url).pathname === '/zion-pulse/') {
+        await expect(page.locator('main h1')).toContainText('Controlată inteligent.');
+        await expect(page.locator('[data-pulse-demo]')).toHaveAttribute('data-enhanced', 'true');
+        continue;
+      }
       await expect(page.locator('main.zion-service-main h1')).toBeVisible();
       await expect(page.locator('.zion-overview-lead .zion-overview-label')).toContainText(service.title);
       await expect(page.locator('.zion-detail-screen')).toBeVisible();

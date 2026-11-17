@@ -202,6 +202,7 @@ foreach ( $zion_core_fixture['products'] as $zion_core_item ) {
 	zion_core_restore_demo_media( (int) $zion_core_product->get_image_id(), WP_CONTENT_DIR . '/zion-config/demo-images/' . strtolower( $zion_core_item['sku'] ) . '.png' );
 }
 
+require __DIR__ . '/seed-pulse.php';
 if ( function_exists( 'zion_theme_create_service_pages' ) ) {
 	require __DIR__ . '/seed-library.php';
 } else {

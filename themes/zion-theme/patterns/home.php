@@ -108,6 +108,8 @@ $zion_theme_paths = zion_theme_service_group(
 
 $zion_theme_service_tiles = '';
 $zion_theme_service_index = 0;
+$zion_theme_pulse_page    = get_page_by_path( 'zion-pulse' );
+$zion_theme_has_pulse     = $zion_theme_pulse_page && 'publish' === $zion_theme_pulse_page->post_status && ! post_password_required( $zion_theme_pulse_page );
 foreach ( zion_theme_services() as $zion_theme_slug => $zion_theme_service ) {
 	++$zion_theme_service_index;
 	$zion_theme_url            = zion_theme_service_url( $zion_theme_slug );
@@ -122,6 +124,9 @@ foreach ( zion_theme_services() as $zion_theme_slug => $zion_theme_service ) {
 		zion_theme_service_text( $zion_theme_service[1] )
 	);
 }
+if ( $zion_theme_has_pulse ) {
+	$zion_theme_service_tiles .= '<!-- wp:pattern {"slug":"zion-theme/home-pulse"} /-->';
+}
 $zion_theme_services = zion_theme_service_group(
 	'zion-overview-band zion-home-services',
 	zion_theme_service_group(
@@ -129,7 +134,7 @@ $zion_theme_services = zion_theme_service_group(
 		zion_theme_service_group(
 			'zion-home-heading',
 			zion_theme_service_text( '03 / CONSTRUIT ÎN JURUL IDEII TALE', 0, 'zion-overview-label' ) .
-			zion_theme_service_text( 'Șapte puncte de plecare.', 2 ) .
+			zion_theme_service_text( $zion_theme_has_pulse ? 'Opt puncte de plecare.' : 'Șapte puncte de plecare.', 2 ) .
 			zion_theme_service_text( 'Nu găsești soluția potrivită în magazin? Pornim de la ce vrei să obții și alegem împreună ce merită construit.' )
 		) .
 		zion_theme_service_buttons( array( 'Vezi toate serviciile ↗' => home_url( '/servicii/' ) ) )

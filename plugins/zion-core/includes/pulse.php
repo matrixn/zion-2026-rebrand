@@ -29,7 +29,8 @@ function zion_core_pulse_assets(): void {
 /** Preload conditional styles in the head, avoiding late layout changes. */
 function zion_core_pulse_enqueue(): void {
 	$post = get_queried_object();
-	if ( $post instanceof WP_Post && ( has_shortcode( $post->post_content, 'zion_pulse' ) || is_page( array( 'servicii', 'printare-3d' ) ) ) ) {
+	$page = is_front_page() ? get_page_by_path( 'zion-pulse' ) : null;
+	if ( $post instanceof WP_Post && ( has_shortcode( $post->post_content, 'zion_pulse' ) || is_page( array( 'servicii', 'printare-3d' ) ) || ( $page && 'publish' === $page->post_status ) ) ) {
 		zion_core_pulse_assets();
 	}
 }
@@ -44,10 +45,11 @@ add_action( 'wp_enqueue_scripts', 'zion_core_pulse_enqueue', 25 );
 function zion_core_pulse_component( $attributes = array() ): string {
 	$attributes = shortcode_atts( array( 'type' => 'demo' ), $attributes, 'zion_pulse' );
 	$type       = $attributes['type'];
-	if ( ! is_string( $type ) || ! in_array( $type, array( 'hero', 'demo', 'modules', 'directory' ), true ) ) {
+	if ( ! is_string( $type ) || ! in_array( $type, array( 'hero', 'demo', 'modules', 'directory', 'preview' ), true ) ) {
 		return '';
 	}
-	$file = get_theme_file_path( 'pulse/' . $type . '.php' );
+	$zion_theme_pulse_preview = 'preview' === $type;
+	$file                     = get_theme_file_path( 'pulse/' . ( $zion_theme_pulse_preview ? 'hero' : $type ) . '.php' );
 	if ( ! file_exists( $file ) ) {
 		return '';
 	}
@@ -57,6 +59,17 @@ function zion_core_pulse_component( $attributes = array() ): string {
 	return (string) ob_get_clean();
 }
 add_shortcode( 'zion_pulse', 'zion_core_pulse_component' );
+
+/**
+ * Templates do not run the post-content shortcode filter; enhance only Pulse blocks.
+ *
+ * @param string $html Native shortcode block content.
+ * @return string
+ */
+function zion_core_pulse_shortcode_block( string $html ): string {
+	return has_shortcode( $html, 'zion_pulse' ) ? do_shortcode( shortcode_unautop( $html ) ) : $html;
+}
+add_filter( 'render_block_core/shortcode', 'zion_core_pulse_shortcode_block' );
 
 /**
  * Add one native page link without rewriting an existing menu or removing children.

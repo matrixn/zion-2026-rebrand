@@ -17,7 +17,7 @@ for (const width of [390, 768, 1024, 1440]) {
     await expect(page.locator('script#zion-continuum-js')).toHaveCount(1);
     await expect(page.locator('.zion-home-products .zion-library-collection')).toHaveCount(1);
     await expect(page.locator('.zion-home-products canvas')).toHaveCount(0);
-    await expect(page.locator('.zion-home-service h3 a')).toHaveCount(7);
+    await expect(page.locator('.zion-home-service h3 a')).toHaveCount(8);
     for (const type of types) {
       const canvas = page.locator(`[data-zion-spatial="home-${type}"]`);
       await expect(canvas).toHaveAttribute('data-render-mode', 'static');
@@ -104,7 +104,7 @@ test('homepage stays complete without JavaScript', async ({ browser, baseURL }) 
     const noJs=await context.newPage(); await noJs.goto('/');
     await expect(noJs.locator('.zion-home-lab svg')).toBeVisible();
     await expect(noJs.locator('.zion-home-hero h1')).toBeVisible();
-    await expect(noJs.locator('.zion-home-service h3 a')).toHaveCount(7);
+    await expect(noJs.locator('.zion-home-service h3 a')).toHaveCount(8);
     await expect(noJs.locator('.zion-home-products .zion-product-card').first()).toBeVisible();
     for (const panel of await noJs.locator('.zion-home-motion').all()) await expect(panel).toBeHidden();
     expect(await noJs.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBe(0);

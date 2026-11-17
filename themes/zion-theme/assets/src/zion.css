@@ -2403,6 +2403,33 @@ body:has(.zion-product-page--sticky) {
 	background: color-mix(in srgb, var(--wp--preset--color--accent) 7%, var(--wp--preset--color--surface));
 }
 
+.zion-homepage .zion-home-service-pulse {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+	align-items: center;
+	gap: clamp(1.25rem, 3vw, 2.5rem);
+	padding: clamp(1.4rem, 3vw, 2.2rem);
+	border-color: color-mix(in srgb, var(--wp--preset--color--accent) 40%, transparent);
+	background: linear-gradient(125deg, var(--wp--preset--color--surface), var(--wp--preset--color--ink));
+	font-family: inherit;
+	isolation: isolate;
+}
+.zion-home-service-pulse .zion-home-pulse-copy { min-inline-size: 0; }
+.zion-home-service-pulse .zion-home-pulse-copy h3 { margin-block: .85rem; font-size: clamp(1.8rem, 3vw, 2.6rem); }
+.zion-home-service-pulse .zion-home-pulse-copy > p:not(.zion-overview-label) { max-inline-size: 52ch; color: var(--wp--preset--color--muted); font-size: 1rem; line-height: 1.8; }
+.zion-home-service-pulse .zion-home-pulse-copy > .zion-home-pulse-tags { margin-block-start: 1rem; font: .75rem/1.8 var(--wp--preset--font-family--mono); }
+.zion-home-service-pulse .zion-pulse-preview { position: relative; z-index: 1; margin: 0; pointer-events: none; }
+.zion-home-service-pulse .zion-pulse-preview .zion-pulse-console-top,
+.zion-home-service-pulse .zion-pulse-preview .zion-pulse-svg-label { display: none; }
+.zion-home-service-pulse .zion-pulse-preview .zion-pulse-circuit { max-block-size: 15rem; }
+.zion-home-service-pulse .zion-pulse-preview .zion-pulse-console-bottom { padding: .5rem .75rem; }
+.zion-home-service-pulse .zion-pulse-preview button { pointer-events: auto; }
+@media (max-width: 699px) {
+	.zion-homepage .zion-home-service-pulse { grid-template-columns: minmax(0, 1fr); }
+	.zion-home-service-pulse .zion-pulse-preview .zion-pulse-circuit { max-block-size: 12rem; }
+}
+
 .zion-homepage > .zion-home-cases { --overview-bg: var(--wp--preset--color--surface); }
 .zion-home-cases .zion-service-grid,
 .zion-home-process .zion-service-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }

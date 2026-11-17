@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.44** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.45** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.44** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.45** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,16 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Pulse pe homepage și în meniu · 1.1.45
+
+- [x] Submeniul Servicii afișează pentru Pulse descrierea **„Electronică, senzori și automatizări.”** și o iconiță originală de semnal, cu aceeași stilizare ca celelalte servicii.
+- [x] Al optulea card în secțiunea de servicii a homepage-ului, cu circuit animat compact, link către pagina Pulse și conținut în blocuri native. Titlul devine **„Opt puncte de plecare.”**, iar rețeaua Continuum folosește numărul real de carduri.
+- [x] Animația reutilizează rendererul Pulse, cu pauză proprie, pauză generală, oprire în afara ecranului și respectarea preferinței de mișcare redusă.
+- [x] Build și WPCS curate; PHPUnit **61 teste / 436 assertions**, integrare **248 verificări** și **27 scenarii Playwright** vizate. Verificare live la **390/768/1024/1440 px**, fără overflow orizontal sau erori JavaScript capturate.
+- [x] ZIP-uri Theme/Core **1.1.45** generate și instalate pe live; **163 fișiere** verificate prin SHA-256. Paginile, șabloanele, meniurile salvate și setările existente au aceeași amprentă ca înainte de actualizare. README și raport actualizate, commit și push pe `main`.
+
+Detalii: [homepage și meniu Pulse 1.1.45](docs/pulse-home-1.1.45.md).
 
 ## Zion Pulse · 1.1.44
 
