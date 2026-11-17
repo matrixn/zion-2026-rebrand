@@ -98,6 +98,8 @@ try {
 			'files'       => array( 'style.css', 'functions.php', 'theme.json', 'assets/admin/control-center.js', 'assets/admin/studio.js', 'assets/nexus-cube.svg' ),
 			'directories' => array(
 				'assets/blocks' => array( 'js' ),
+				'assets/pulse'  => array( 'html' ),
+				'pulse'         => array( 'php' ),
 				'assets/admin'  => array( 'css', 'png' ),
 				'assets/brand'  => array( 'webp' ),
 				'assets/images' => array( 'png', 'webp', 'jpg' ),

@@ -14,7 +14,10 @@ if (!process.env.npm_execpath) throw new Error('Run through npm run test:lightho
 const directory = resolve('build/lighthouse');
 await mkdir(directory, { recursive: true });
 const summary = [];
-for (const [route, slug] of [['/', 'home'], ['/magazin-3d/', '3d'], ['/product/zion-catalog-tools/', 'product']]) {
+const targets = process.env.ZION_LIGHTHOUSE_PULSE === '1'
+  ? [['/zion-pulse/', 'pulse']]
+  : [['/', 'home'], ['/magazin-3d/', '3d'], ['/product/zion-catalog-tools/', 'product']];
+for (const [route, slug] of targets) {
   for (const device of ['mobile', 'desktop']) {
     const file = resolve(directory, `${slug}-${device}.json`);
     const profile = await mkdtemp(join(tmpdir(), 'zion-lighthouse-'));
@@ -46,5 +49,5 @@ for (const [route, slug] of [['/', 'home'], ['/magazin-3d/', '3d'], ['/product/z
     });
   }
 }
-await writeFile(resolve(directory, 'summary.json'), JSON.stringify(summary, null, 2) + '\n');
+await writeFile(resolve(directory, process.env.ZION_LIGHTHOUSE_PULSE === '1' ? 'summary-pulse.json' : 'summary.json'), JSON.stringify(summary, null, 2) + '\n');
 console.table(summary);

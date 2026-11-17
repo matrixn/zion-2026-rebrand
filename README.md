@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.43** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.44** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.43** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.44** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,18 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Zion Pulse · 1.1.44
+
+- [x] Pagină de servicii **ZION PULSE — Automatizări inteligente & sisteme interactive**, cu circuit SVG, șase domenii de aplicare, arhitectură modulară, tehnologii, proces și FAQ nativ.
+- [x] Puzzle demonstrativ exclusiv software, cu cinci culori, validarea secvenței, resetare la greșeală, RESET, FORCE SOLVE și panou Game Master; animații reduse și controale accesibile.
+- [x] Extensie în Zion Core existent, prezentare separată în fișiere noi ale temei și asseturi condiționale. Blocuri Gutenberg editabile, metadate reutilizate și schema Service.
+- [x] Build, WPCS, **61 teste PHPUnit / 436 aserțiuni**, integrare și **9 teste Playwright** trecute. Ciornă și previzualizare înaintea publicării; verificare live la 390/768/1024/1440 px, fără overflow și fără erori JS capturate.
+- [x] Pagina publicată la **[zion3d.ro/zion-pulse/](https://zion3d.ro/zion-pulse/)**, cu link în submeniul **Servicii** și invitație în directorul serviciilor. Metadate, canonical și indexabilitate verificate anonim.
+- [x] Lighthouse local: performanță **89 mobil / 98 desktop**, accesibilitate și SEO **100/100**, CLS **0** în ultima măsurătoare. Asseturi Pulse versionate și prin hash; ancorele țin cont de headerul cu notificări.
+- [x] Backup privat și ZIP-uri Theme/Core **1.1.44** generate și validate; **162 de fișiere** instalate coincid cu arhivele. Conținutul celorlalte pagini și configurația protejată au hash identic înainte și după publicare.
+
+Arhitectură, editare, verificări și rollback: [Zion Pulse 1.1.44](docs/zion-pulse-1.1.44.md).
 
 ## Partener Fortis Build · 1.1.43
 
