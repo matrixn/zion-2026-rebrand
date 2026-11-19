@@ -13,7 +13,7 @@ Componentă opțională pentru articole: o ilustrație schematică a trecerii de
 
 ## Conținut editorial și confidențialitate
 
-Articolul solicitat este salvat exclusiv ca **draft** în WordPress. Are rezumat, categorie, etichete, imagine reprezentativă și fotografii cu text alternativ și credit pentru sursa publică. Nu este publicat de acest release.
+Articolul solicitat a fost livrat inițial ca **draft** în WordPress, cu rezumat, categorie, etichete, imagine reprezentativă și fotografii cu text alternativ și credit pentru sursa publică. Publicarea ulterioară și CTA-ul de sub titlu sunt consemnate în [actualizarea editorială din 19 noiembrie](article-cta-20261119.md). Release-ul inițial 1.1.46 nu a publicat ciorna.
 
 Conținutul efectiv al ciornei, corespondența, PDF-ul, fotografiile partenerului și rapoartele de previzualizare nu sunt incluse în repository sau în arhivele Theme/Core. Testele folosesc numai un articol sintetic, cu verificări împotriva executării pe un domeniu de producție.
 

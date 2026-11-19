@@ -40,12 +40,21 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
 
+## Actualizare editorială · 19 noiembrie 2026
+
+- [x] Articolul [Zion 3D Print × LovePaint](https://zion3d.ro/2026/11/19/zion3d-print-lovepaint-colaborare-kituri-educative-3d/) este publicat și salvat cu CTA-ul **„Explorează kiturile LovePaint ↗”** imediat sub titlu, către catalogul partenerului. CTA-ul de la final rămâne prezent.
+- [x] Șablon WordPress dedicat **Articol · parteneriat LovePaint**, aplicat numai acestui articol și editabil în Site Editor. Designul Continuum, headerul, footerul, textul, data și URL-ul articolului sunt păstrate.
+- [x] Buton vizibil la prima încărcare, fără scroll, la **390/768/1024/1440 px**; zero overflow orizontal. Verificare a navigării către LovePaint și răspuns anonim **HTTP 200**, cu același canonical.
+- [x] README și raport actualizate, ZIP-uri Theme/Core **1.1.46** regenerate, commit și push pe `main`. Actualizarea editorială și șablonul particular sunt stocate nativ în baza de date WordPress; sursele componentelor rămân la versiunea 1.1.46.
+
+Detalii: [CTA-ul articolului și verificarea publicării](docs/article-cta-20261119.md).
+
 ## Laborator editorial interactiv · 1.1.46
 
 - [x] Pattern Gutenberg **Zion · Articol / laborator de curiozitate**, cu blocuri native și componenta editorială reutilizabilă `learning_lab`.
 - [x] Demonstrație schematică în trei etape, colorare, întrebare cu feedback și resetare; controale de tastatură, pauză, mișcare redusă și fallback lizibil fără JavaScript.
 - [x] Script condițional, fără cereri de rețea, stocare sau colectare de date. Stiluri limitate la componentele editoriale noi și presetări din `theme.json`.
-- [x] Articolul solicitat este pregătit ca **draft WordPress**, cu fotografii creditate, rezumat, categorie și etichete. Conținutul ciornei și documentele sursă nu sunt distribuite în repository sau ZIP-uri.
+- [x] Articolul solicitat a fost livrat inițial ca **draft WordPress**, cu fotografii creditate, rezumat, categorie și etichete; actualizarea editorială de mai sus consemnează starea publicată. Conținutul editorial și documentele interne sursă rămân în afara repository-ului și ZIP-urilor.
 - [x] Build și WPCS curate; **61 teste PHPUnit / 436 assertions**, **255 verificări de integrare** și **42 scenarii Playwright**. Previzualizare autentificată verificată la 390/768/1024/1440 px, cu galerie, acordeoane, tastatură și mișcare redusă.
 - [x] Draft confirmat după reîncărcare; accesul anonim întoarce **404**, iar articolul lipsește din indexul public. Cele opt linkuri editoriale răspund cu **200**. Setările existente și conținutul publicat sunt păstrate.
 - [x] Arhive Theme/Core **1.1.46**, CRC valid și inventar SHA-256 identic pentru cele **166 fișiere** instalate. README și raport actualizate, commit și push pe `main`.
