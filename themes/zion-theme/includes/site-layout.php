@@ -274,7 +274,10 @@ function zion_theme_page_breadcrumb( int $id ): string {
  * @return string
  */
 function zion_theme_editorial( array $attributes, string $content, WP_Block $block ): string {
-	$part     = $attributes['part'] ?? '';
+	$part = $attributes['part'] ?? '';
+	if ( 'learning_lab' === $part ) {
+		return zion_theme_learning_lab();
+	}
 	$software = zion_theme_software_fragment( $part );
 	if ( null !== $software ) {
 		return $software;

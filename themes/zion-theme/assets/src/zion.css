@@ -3789,6 +3789,70 @@ body:has(.zion-product-page--sticky) {
 .zion-article-copy img { height: auto; border-radius: .4rem; }
 .zion-article-copy p > svg { display: inline-block; width: 1.5em; height: 1.5em; vertical-align: middle; fill: currentColor; color: var(--wp--preset--color--deep); }
 .zion-article-copy p:empty { display: none; }
+/* Optional editorial stories: native copy surrounds one local learning illustration. */
+.zion-learning-story { min-inline-size: 0; }
+.zion-learning-story .zion-learning-partnership { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 1rem; align-items: center; padding: clamp(1.2rem, 4vw, 2rem); margin-block: 0 2rem; border-radius: .8rem; background: var(--wp--preset--color--ink); color: var(--wp--preset--color--text); border: 1px solid var(--wp--preset--color--deep); }
+.zion-learning-partnership > p { margin: 0; font: .75rem/1.6 var(--wp--preset--font-family--mono); }
+.zion-learning-partnership strong { display: block; font: 700 clamp(1.15rem, 3vw, 1.6rem)/1.3 var(--wp--preset--font-family--body); color: var(--wp--preset--color--text); }
+.zion-learning-partnership > p:nth-child(2) { color: var(--wp--preset--color--accent); font-size: 1.6rem; }
+.zion-learning-story .zion-learning-note { padding: 1.25rem 1.5rem; margin-inline: 0; border-inline-start: 3px solid var(--wp--preset--color--deep); background: color-mix(in srgb, var(--wp--preset--color--accent) 15%, var(--wp--preset--color--paper)); border-radius: 0 .65rem .65rem 0; }
+.zion-learning-story .zion-learning-note p { margin: 0; }
+.zion-learning-story .zion-learning-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: start; margin-block: 2rem; }
+.zion-learning-gallery > figure { margin: 0; min-inline-size: 0; }
+.zion-learning-gallery img { display: block; inline-size: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.zion-learning-story figcaption { font-size: .8rem; line-height: 1.6; margin-block-start: .65rem; }
+.zion-learning-story .zion-learning-cta { padding: clamp(1.3rem, 4vw, 2rem); border-radius: .8rem; color: var(--wp--preset--color--text); background: var(--wp--preset--color--ink); }
+.zion-learning-story .zion-learning-cta :is(h2,h3) { color: var(--wp--preset--color--text); margin-block-start: 0; }
+.zion-learning-story .zion-learning-cta .wp-element-button { color: var(--wp--preset--color--ink); }
+.zion-learning-story details { border-block-end: 1px solid var(--wp--preset--color--deep); padding-block: 1rem; }
+.zion-learning-story summary { min-block-size: 44px; cursor: pointer; font-weight: 650; }
+.zion-learning-story summary:focus-visible { outline: 2px solid var(--wp--preset--color--deep); outline-offset: 4px; }
+.zion-learning-lab { color-scheme: dark; position: relative; isolation: isolate; overflow: hidden; min-inline-size: 0; margin-block: 2rem; padding: clamp(1rem, 3vw, 1.6rem); border: 1px solid var(--wp--preset--color--deep); border-radius: 1rem; background: radial-gradient(ellipse at 20% 60%, var(--wp--preset--color--surface), var(--wp--preset--color--ink) 75%); color: var(--wp--preset--color--text); font: 1rem/1.7 var(--wp--preset--font-family--body); }
+.zion-learning-lab :is(button,div) { box-sizing: border-box; min-inline-size: 0; }
+.zion-learning-lab-top { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem; font: .63rem/1.6 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--accent); }
+.zion-learning-lab .zion-learning-lab-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; margin-block: 1rem; }
+.zion-learning-lab button { min-block-size: 44px; padding: .65rem .75rem; border: 1px solid var(--wp--preset--color--deep); border-radius: .4rem; background: var(--wp--preset--color--surface); color: var(--wp--preset--color--text); font: 600 .8rem/1.5 var(--wp--preset--font-family--body); text-align: start; cursor: pointer; }
+.zion-learning-lab button[aria-pressed="true"] { background: var(--wp--preset--color--accent); border-color: var(--wp--preset--color--accent); color: var(--wp--preset--color--ink); }
+.zion-learning-lab button:hover:not(:disabled) { border-color: var(--wp--preset--color--accent); }
+.zion-learning-lab button:focus-visible { outline: 2px solid var(--wp--preset--color--accent); outline-offset: 3px; }
+.zion-learning-lab button:disabled { cursor: default; opacity: .7; }
+.zion-learning-lab-steps button span { display: block; font: .6rem/1.5 var(--wp--preset--font-family--mono); }
+.zion-learning-lab-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 1.25rem; }
+.zion-learning-lab-visual { position: relative; border-radius: .5rem; background: repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--wp--preset--color--deep) 30%, transparent) 32px), repeating-linear-gradient(90deg, transparent 0 31px, color-mix(in srgb, var(--wp--preset--color--deep) 30%, transparent) 32px); }
+.zion-learning-lab-svg { display: block; width: 100%; height: auto; }
+.zion-learning-trace { stroke: var(--wp--preset--color--deep); stroke-width: 1; }
+.zion-learning-plate { stroke: var(--wp--preset--color--muted); fill: var(--wp--preset--color--surface); stroke-width: 1.5; }
+.zion-learning-plate ellipse { fill: none; }
+.zion-learning-parts { fill: var(--wp--preset--color--paper); stroke: var(--wp--preset--color--muted); stroke-width: 2; transition: fill .4s ease; }
+.zion-learning-lab.is-painted .zion-learning-parts { fill: var(--wp--preset--color--accent); stroke: var(--wp--preset--color--deep); }
+.zion-learning-layer { stroke: var(--wp--preset--color--accent); stroke-width: 2; opacity: .8; }
+.zion-learning-flags { stroke: var(--wp--preset--color--accent); stroke-width: 1.5; opacity: .3; transition: opacity .4s ease; }
+.zion-learning-lab[data-stage="3"] .zion-learning-flags { opacity: 1; }
+.zion-learning-lab.is-discovered .zion-learning-plate { stroke: var(--wp--preset--color--accent); }
+.zion-learning-lab-coordinate { display: block; text-align: center; font: .55rem/1.6 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--muted); padding-block: .6rem; }
+.zion-learning-lab h3 { margin: 0 0 .75rem; color: var(--wp--preset--color--text); font-size: clamp(1.25rem, 2.5vw, 1.65rem); line-height: 1.3; }
+.zion-learning-lab p { margin: 0 0 1rem; color: var(--wp--preset--color--muted); font-size: .95rem; line-height: 1.75; }
+.zion-learning-lab .zion-learning-lab-status { margin-block: 1rem 0; padding-block-start: 1rem; border-block-start: 1px solid var(--wp--preset--color--deep); font: .7rem/1.7 var(--wp--preset--font-family--mono); color: var(--wp--preset--color--accent); }
+.zion-learning-lab-panels > [hidden] { display: none; }
+.zion-learning-answers { display: grid; gap: .5rem; }
+.zion-learning-lab-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; margin-block: 1.25rem 1rem; }
+.zion-learning-lab .zion-learning-lab-disclaimer { margin: 0; font-size: .7rem; }
+.zion-learning-lab.is-enhanced.is-visible[data-stage="1"] .zion-learning-layer { animation: zion-learning-scan 3.8s ease-in-out infinite; animation-play-state: var(--zion-learning-motion, running); }
+.zion-learning-lab.is-paused { --zion-learning-motion: paused; }
+@keyframes zion-learning-scan { 0%, 100% { transform: translateY(-55px); opacity: .15; } 50% { transform: translateY(65px); opacity: 1; } }
+@media (max-width: 600px) {
+	.zion-learning-lab-grid, .zion-learning-story .zion-learning-gallery { grid-template-columns: minmax(0, 1fr); }
+	.zion-learning-lab-visual { max-inline-size: 20rem; inline-size: 100%; margin-inline: auto; }
+	.zion-learning-lab-steps button { padding: .6rem .35rem; font-size: .72rem; }
+	.zion-learning-story .zion-learning-partnership { gap: .6rem; padding: 1rem; }
+	.zion-learning-partnership strong { font-size: 1rem; }
+	.zion-learning-partnership > p { font-size: .65rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.zion-learning-lab.is-enhanced.is-visible[data-stage="1"] .zion-learning-layer { animation: none; }
+	.zion-learning-lab :is(.zion-learning-parts, .zion-learning-flags) { transition: none; }
+}
+.zion-motion-reduced .zion-learning-lab.is-enhanced.is-visible[data-stage="1"] .zion-learning-layer { animation: none; }
 .zion-article-copy :is(pre,.wp-block-table) { max-width: 100%; overflow: auto; }
 .zion-article-copy pre { padding: 1.25rem; border-radius: .5rem; background: var(--wp--preset--color--ink); color: var(--wp--preset--color--text); font-size: .85rem; }
 .zion-article-copy blockquote { margin-inline: 0; padding-inline-start: 1.25rem; border-inline-start: 3px solid var(--wp--preset--color--deep); font-size: 1.15em; }

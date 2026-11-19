@@ -12,6 +12,7 @@
 		article_breadcrumb: 'Fir de navigare al articolului',
 		article_return: 'Înapoi la jurnal',
 		reading_progress: 'Progresul lecturii',
+		learning_lab: 'Laborator editorial interactiv · formă, culoare, descoperire',
 		software_intro: 'Context și introducere Software',
 		software_actions: 'Legături Software',
 		software_breadcrumb: 'Fir de navigare Software',
