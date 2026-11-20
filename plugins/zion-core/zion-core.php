@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Zion Core
  * Description: Product classification and storefront tools for Zion.
- * Version: 1.1.46
+ * Version: 1.1.47
  * Requires at least: 6.9
  * Requires PHP: 8.3
  * Text Domain: zion-core
@@ -16,6 +16,7 @@ require_once __DIR__ . '/includes/shops.php';
 require_once __DIR__ . '/includes/catalog.php';
 require_once __DIR__ . '/includes/product-collection.php';
 require_once __DIR__ . '/includes/collections.php';
+require_once __DIR__ . '/includes/header-updates.php';
 require_once __DIR__ . '/includes/classification.php';
 require_once __DIR__ . '/includes/product-details.php';
 require_once __DIR__ . '/includes/customer-location.php';

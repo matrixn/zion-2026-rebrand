@@ -1,5 +1,6 @@
 (function (blocks, editor, element) {
 	const labels = {
+		announcements: 'Noutăți automate · ultimele 2 articole și 2 produse 3D',
 		back_top: 'Înapoi sus',
 		breadcrumb: 'Fir de navigare',
 		reading_time: 'Timp estimat de citire',

@@ -275,6 +275,9 @@ function zion_theme_page_breadcrumb( int $id ): string {
  */
 function zion_theme_editorial( array $attributes, string $content, WP_Block $block ): string {
 	$part = $attributes['part'] ?? '';
+	if ( 'announcements' === $part ) {
+		return zion_theme_announcements();
+	}
 	if ( 'learning_lab' === $part ) {
 		return zion_theme_learning_lab();
 	}

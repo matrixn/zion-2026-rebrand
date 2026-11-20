@@ -1,69 +1,129 @@
-/* Header notice disclosure; the original authored content remains the fallback. */
+/* Progressive header news. Native links remain the source of truth. */
 (() => {
-  const initialise = () => {
-    document.querySelectorAll('.zion-migration-announcement[data-zion-notice-key]').forEach((notice, index) => {
-      if (notice.classList.contains('is-enhanced')) return;
-      const key = notice.dataset.zionNoticeKey;
-      let savedClosed = false;
-      const read = () => {
-        try {
-          savedClosed = window.localStorage.getItem(key) === 'closed';
-        } catch (_) { /* The control remains usable when storage is unavailable. */ }
-      };
-      read();
-
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'zion-migration-announcement__toggle';
-      button.innerHTML = '<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4M12 2V1"/></svg><span class="zion-migration-announcement__label">Notificări</span><span class="zion-migration-announcement__count" aria-hidden="true">1</span>';
-      const panel = document.createElement('div');
-      panel.id = `zion-notification-panel-${index + 1}`;
-      panel.className = 'zion-migration-announcement__panel';
-      const clip = document.createElement('div');
-      clip.className = 'zion-migration-announcement__clip';
-      const body = document.createElement('div');
-      body.className = 'zion-migration-announcement__body';
-      while (notice.firstChild) body.append(notice.firstChild);
-      clip.append(body);
-      panel.append(clip);
-      button.setAttribute('aria-controls', panel.id);
-
-      const sync = () => {
-        const closed = savedClosed;
-        notice.classList.toggle('is-collapsed', closed);
-        button.setAttribute('aria-expanded', String(!closed));
-        button.setAttribute('aria-label', closed ? 'Deschide notificarea despre migrare' : 'Restrânge notificarea despre migrare');
-        panel.setAttribute('aria-hidden', String(closed));
-        panel.inert = closed;
-      };
-      button.addEventListener('click', () => {
-        savedClosed = !savedClosed;
-        try { window.localStorage.setItem(key, savedClosed ? 'closed' : 'open'); } catch (_) { /* Optional persistence. */ }
-        sync();
-      });
-      const refresh = () => { read(); sync(); };
-      window.addEventListener('pageshow', refresh);
-      window.addEventListener('storage', event => {
-        if (event.key === key || event.key === null) refresh();
-      });
-      // The legacy HTML block has inline layout declarations; its copy and links stay intact.
-      notice.style.removeProperty('display');
-      notice.style.removeProperty('padding');
-      notice.classList.add('is-enhanced');
-      sync();
-      notice.append(panel);
-      const header = notice.closest('header')?.querySelector('.zion-header');
-      const tools = header?.querySelector(':scope > .zion-header-tools');
-      if (tools) {
-        const cart = [...tools.children].find(element => element.classList.contains('zion-header-cart'));
-        const account = [...tools.children].find(element => element.classList.contains('zion-header-account'));
-        if (cart) tools.insertBefore(button, cart);
-        else if (account) account.after(button);
-        else tools.prepend(button);
-        header.after(notice);
-      } else notice.prepend(button);
+  const initialise = () => document.querySelectorAll('.zion-updates:not(.is-enhanced)').forEach((notice, index) => {
+    const panel = notice.querySelector('.zion-updates__panel');
+    const items = [...notice.querySelectorAll('.zion-updates__items > li')];
+    if (!panel || !items.length) return;
+    const controls = notice.querySelector('.zion-updates__controls');
+    const pause = notice.querySelector('.zion-updates__pause');
+    const count = notice.querySelector('.zion-updates__count');
+    const motion = matchMedia('(prefers-reduced-motion: reduce)');
+    const key = 'zion-header-updates-v1';
+    const read = () => { try { return localStorage.getItem(key) !== 'closed'; } catch { return true; } };
+    let opened = read(), paused = false, hovered = false, focused = false;
+    let current = 0, cursor = 0, phase = 'typing', timer;
+    const segmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter('ro', { granularity: 'grapheme' }) : null;
+    const entries = items.map(item => {
+      const link = item.querySelector('a');
+      const title = item.querySelector('.zion-updates__title');
+      const text = title.textContent;
+      link.setAttribute('aria-label', `${item.querySelector('.zion-updates__category').textContent}: ${text}`);
+      title.setAttribute('aria-hidden', 'true');
+      const typed = document.createElement('span');
+      typed.className = 'zion-updates__typed';
+      title.append(typed);
+      return { item, typed, text, letters: segmenter ? [...segmenter.segment(text)].map(letter => letter.segment) : Array.from(text) };
     });
-  };
+    panel.id = `zion-updates-panel-${index + 1}`;
+    const bell = document.createElement('button');
+    bell.type = 'button';
+    bell.className = 'zion-updates__toggle';
+    bell.setAttribute('aria-controls', panel.id);
+    bell.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>';
+    const badge = document.createElement('span');
+    badge.className = 'zion-updates__badge';
+    badge.textContent = String(items.length);
+    badge.setAttribute('aria-hidden', 'true');
+    bell.append(badge);
+    const header = notice.closest('header')?.querySelector('.zion-header') || document.querySelector('.zion-header');
+    const tools = header?.querySelector('.zion-header-tools');
+    if (header) header.before(notice);
+    if (tools) {
+      const cart = tools.querySelector('.zion-header-cart');
+      if (cart) cart.before(bell);
+      else tools.append(bell);
+    } else notice.before(bell);
+    const stop = () => { clearTimeout(timer); timer = undefined; };
+    const canRun = () => opened && !paused && !motion.matches && !hovered && !focused && !document.hidden && entries.length > 1;
+    const schedule = delay => { stop(); if (canRun()) timer = setTimeout(step, delay); };
+    const show = () => {
+      entries.forEach((entry, i) => {
+        entry.item.classList.toggle('is-current', i === current);
+        entry.item.setAttribute('aria-hidden', String(i !== current));
+        entry.item.inert = i !== current;
+      });
+      count.textContent = `${current + 1} / ${entries.length}`;
+      notice.dataset.current = String(current + 1);
+      notice.classList.remove('is-leaving');
+    };
+    const complete = () => {
+      notice.classList.remove('is-leaving');
+      cursor = entries[current].letters.length;
+      entries[current].typed.textContent = entries[current].text;
+      phase = 'hold';
+    };
+    function step() {
+      if (!canRun()) return;
+      const entry = entries[current];
+      if (phase === 'typing') {
+        entry.typed.textContent = entry.letters.slice(0, ++cursor).join('');
+        if (cursor >= entry.letters.length) phase = 'hold';
+        schedule(phase === 'hold' ? 3600 : 22);
+      } else if (phase === 'hold') {
+        notice.classList.add('is-leaving');
+        phase = 'exit'; schedule(260);
+      } else {
+        current = (current + 1) % entries.length; cursor = 0; phase = 'typing';
+        entries[current].typed.textContent = ''; show(); schedule(180);
+      }
+    }
+    const sync = () => {
+      stop();
+      notice.classList.toggle('is-collapsed', !opened);
+      bell.setAttribute('aria-expanded', String(opened));
+      bell.setAttribute('aria-label', opened ? 'Ascunde noutățile Zion' : 'Arată noutățile Zion');
+      panel.setAttribute('aria-hidden', String(!opened));
+      panel.inert = !opened;
+      schedule(phase === 'hold' ? 3600 : 22);
+    };
+    const setOpen = value => {
+      opened = value;
+      try { localStorage.setItem(key, value ? 'open' : 'closed'); } catch { /* Storage is optional. */ }
+      sync();
+    };
+    bell.addEventListener('click', () => setOpen(!opened));
+    notice.querySelector('.zion-updates__close').addEventListener('click', () => { bell.focus(); setOpen(false); });
+    pause.addEventListener('click', () => {
+      paused = !paused;
+      pause.setAttribute('aria-pressed', String(paused));
+      pause.setAttribute('aria-label', paused ? 'Pornește animația' : 'Oprește animația');
+      pause.textContent = paused ? '▷' : 'Ⅱ';
+      if (paused) complete();
+      sync();
+    });
+    notice.querySelector('.zion-updates__next').addEventListener('click', () => {
+      stop(); current = (current + 1) % entries.length; complete(); show(); schedule(3600);
+    });
+    const reduce = () => {
+      stop();
+      pause.disabled = motion.matches;
+      pause.setAttribute('aria-label', motion.matches ? 'Mișcare redusă: navigare manuală' : (paused ? 'Pornește animația' : 'Oprește animația'));
+      if (motion.matches || entries.length === 1) { notice.classList.remove('is-leaving'); complete(); }
+      sync();
+    };
+    notice.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') { hovered = true; stop(); complete(); } });
+    notice.addEventListener('pointerleave', () => { hovered = false; schedule(3600); });
+    notice.addEventListener('focusin', () => { focused = true; stop(); complete(); });
+    notice.addEventListener('focusout', event => { if (!notice.contains(event.relatedTarget)) { focused = false; schedule(3600); } });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); else schedule(3600); });
+    window.addEventListener('pagehide', stop);
+    window.addEventListener('pageshow', () => { opened = read(); sync(); });
+    window.addEventListener('storage', event => { if (event.key === key || event.key === null) { opened = read(); sync(); } });
+    motion.addEventListener('change', reduce);
+    controls.hidden = false;
+    notice.classList.add('is-enhanced');
+    show(); reduce();
+  });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initialise, { once: true });
   else initialise();
 })();
