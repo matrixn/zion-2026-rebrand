@@ -49,9 +49,10 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
 - [x] Componentă nativă `zion/editorial` cu `part="announcements"`, fallback cu toate linkurile fără JavaScript și compatibilitate cu blocul HTML al notificării vechi, fără rescriere automată a șabloanelor sau datelor comerciale.
 - [x] Build, WPCS, PHPUnit **61 teste / 436 aserțiuni**, integrare WordPress **259 verificări** și **39/39 teste Playwright** trecute la 390/768/1024/1440 px. Nouă referințe vizuale actualizate și reverificate în Chromium-ul oficial folosit de CI.
 - [x] ZIP-uri Theme/Core **1.1.47** generate, cu CRC valid și **167 fișiere** identice cu sursele; README și raport actualizate.
-- [ ] Instalare și verificare **pe live**: accesul browserului conectat este indisponibil în acest chat; site-ul public păstrează versiunea anterioară până la încărcarea arhivelor.
+- [x] **Instalat pe live la 23 noiembrie 2026** prin actualizarea nativă WordPress, după backup privat al versiunii 1.1.46. Toate cele **167 fișiere** instalate coincid cu ZIP-urile; headerul salvat, conținutul editorial, setările protejate și indexarea activă sunt păstrate.
+- [x] Verificat live la **390/768/1024/1440 px**, fără overflow: bara deasupra meniului, scriere și rotație automată, X și clopoțel, focus de tastatură, meniu mobil și stări persistente la navigare/refresh/Back/Forward. Mișcare redusă și avans manual funcționale; toate cele patru linkuri răspund cu **HTTP 200**. Nicio eroare JS capturată în tabul de verificare.
 
-Detalii și pașii de publicare: [bara de noutăți 1.1.47](docs/header-updates-1.1.47.md). Rapoartele mai vechi despre anunțul de plăți de mai jos descriu istoricul proiectului.
+Detalii, verificarea live și rollback: [bara de noutăți 1.1.47](docs/header-updates-1.1.47.md). Rapoartele mai vechi despre anunțul de plăți de mai jos descriu istoricul proiectului.
 
 ## Actualizare editorială · 19 noiembrie 2026
 
