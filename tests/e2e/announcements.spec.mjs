@@ -21,6 +21,27 @@ async function fixture(page, baseURL, { withHeader = true, account = true, drawe
 const toggle = page => page.locator('.zion-updates__toggle');
 const panel = page => page.locator('.zion-updates__panel');
 
+async function expectInlineCaret(page) {
+  const geometry = await page.locator('.zion-updates .is-current .zion-updates__typed').evaluate(typed => {
+    const text = typed.firstChild;
+    const range = document.createRange();
+    range.setStart(text, text.length - 1);
+    range.setEnd(text, text.length);
+    const last = range.getBoundingClientRect();
+    const caret = typed.querySelector('.zion-updates__caret');
+    const anchor = caret.getBoundingClientRect();
+    const style = getComputedStyle(caret, '::after');
+    return { end: last.right, top: last.top, bottom: last.bottom, x: anchor.x, y: anchor.y,
+      width: anchor.width, cursorRight: anchor.right + parseFloat(style.insetInlineStart) + parseFloat(style.width),
+      availableRight: typed.parentElement.getBoundingClientRect().right };
+  });
+  expect(Math.abs(geometry.x - geometry.end)).toBeLessThanOrEqual(1);
+  expect(geometry.y).toBeGreaterThanOrEqual(geometry.top);
+  expect(geometry.y).toBeLessThanOrEqual(geometry.bottom);
+  expect(geometry.width).toBe(0);
+  expect(geometry.cursorRight).toBeLessThanOrEqual(geometry.availableRight + 1);
+}
+
 for (const width of [390, 1440]) test(`native WordPress header renders the real bounded news feed at ${width}px`, async ({ page, baseURL }, testInfo) => {
   assertLocal(baseURL);
   await page.setViewportSize({ width, height: 900 });
@@ -58,6 +79,7 @@ for (const width of [390, 768, 1024, 1440]) test(`news sits above menu, has four
     await expect(notice).toHaveAttribute('data-current', String(i % 4 + 1));
     expect(await page.locator('main').evaluate(node => node.getBoundingClientRect().top)).toBe(top);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+    await expectInlineCaret(page);
   }
   await page.screenshot({ path: testInfo.outputPath(`news-${width}.png`) });
   await notice.getByRole('button', { name: 'Închide bara de noutăți' }).click();
@@ -114,6 +136,36 @@ test('typewriter advances upward, pauses, and honors changes to reduced motion',
   await notice.getByRole('button', { name: 'Următoarea noutate' }).press('Enter');
   await expect(notice).toHaveAttribute('data-current', '3');
   await expect(typed).toHaveText(titles[2]);
+});
+
+test('terminal caret blinks after typing and stays static with pause or reduced motion', async ({ page, baseURL }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.mouse.move(0, 800);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install();
+  await fixture(page, baseURL);
+  const caret = page.locator('.zion-updates .is-current .zion-updates__caret');
+  const animation = () => caret.evaluate(node => getComputedStyle(node, '::after').animationName);
+  await page.clock.runFor(400);
+  expect(await animation()).toBe('none');
+  await expectInlineCaret(page);
+  await page.clock.runFor(titles[0].length * 22 + 100 - 400);
+  expect(await animation()).toBe('zion-news-caret');
+  await expectInlineCaret(page);
+  for (const [time, opacity] of [[100, '1'], [600, '0']]) {
+    const actual = await caret.evaluate((node, time) => {
+      const blink = node.getAnimations({ subtree: true }).find(animation => animation.animationName === 'zion-news-caret');
+      blink.pause(); blink.currentTime = time;
+      return getComputedStyle(node, '::after').opacity;
+    }, time);
+    expect(actual).toBe(opacity);
+  }
+  await page.getByRole('button', { name: 'Oprește animația', exact: true }).click();
+  expect(await animation()).toBe('none');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  expect(await animation()).toBe('none');
+  expect(await caret.evaluate(node => getComputedStyle(node, '::after').opacity)).toBe('1');
+  await expectInlineCaret(page);
 });
 
 test('blocked storage, missing account and a native cart drawer remain usable', async ({ page, baseURL }) => {

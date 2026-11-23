@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.47** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.48** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.47** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.48** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,17 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Cursor terminal în bara de noutăți · 1.1.48
+
+- [x] Cursorul rămâne la capătul ultimei linii scrise, inclusiv când titlul ocupă mai multe rânduri. Ancora fără lățime și spațiul rezervat elimină trecerea cursorului pe un rând propriu.
+- [x] Cursor continuu în timpul scrierii, apoi clipire de terminal la o secundă. Pauza, închiderea barei și preferința de mișcare redusă opresc clipirea; cu mișcare redusă cursorul rămâne static.
+- [x] Aceleași titluri, linkuri, ordine și preferințe de deschidere/închidere. Culorile folosesc în continuare presetările native existente.
+- [x] Build, WPCS, PHPUnit **61 teste / 436 aserțiuni** și integrare **259 verificări** trecute.
+- [x] **27/27 teste Playwright** trecute. Pe live: **16 verificări** ale alinierii cursorului după ultima literă, pentru cele patru titluri la 390/768/1024/1440 px; fazele vizibil/invizibil, pauza și mișcarea redusă confirmate, fără overflow.
+- [x] Theme/Core **1.1.48** instalate pe live după backup privat al versiunii 1.1.47; toate cele **167 fișiere** coincid cu ZIP-urile. README și raport actualizate, arhive versionate generate și validate.
+
+Detalii: [cursorul terminal 1.1.48](docs/header-caret-1.1.48.md).
 
 ## Noutăți automate deasupra meniului · 1.1.47
 

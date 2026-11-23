@@ -21,8 +21,13 @@
       title.setAttribute('aria-hidden', 'true');
       const typed = document.createElement('span');
       typed.className = 'zion-updates__typed';
+      const characters = document.createTextNode('');
+      const caret = document.createElement('span');
+      caret.className = 'zion-updates__caret';
+      caret.setAttribute('aria-hidden', 'true');
+      typed.append(characters, caret);
       title.append(typed);
-      return { item, typed, text, letters: segmenter ? [...segmenter.segment(text)].map(letter => letter.segment) : Array.from(text) };
+      return { item, characters, text, letters: segmenter ? [...segmenter.segment(text)].map(letter => letter.segment) : Array.from(text) };
     });
     panel.id = `zion-updates-panel-${index + 1}`;
     const bell = document.createElement('button');
@@ -55,26 +60,30 @@
       count.textContent = `${current + 1} / ${entries.length}`;
       notice.dataset.current = String(current + 1);
       notice.classList.remove('is-leaving');
+      notice.classList.toggle('is-typing', phase === 'typing');
     };
     const complete = () => {
-      notice.classList.remove('is-leaving');
+      notice.classList.remove('is-leaving', 'is-typing');
       cursor = entries[current].letters.length;
-      entries[current].typed.textContent = entries[current].text;
+      entries[current].characters.data = entries[current].text;
       phase = 'hold';
     };
     function step() {
       if (!canRun()) return;
       const entry = entries[current];
       if (phase === 'typing') {
-        entry.typed.textContent = entry.letters.slice(0, ++cursor).join('');
-        if (cursor >= entry.letters.length) phase = 'hold';
+        entry.characters.data = entry.letters.slice(0, ++cursor).join('');
+        if (cursor >= entry.letters.length) {
+          phase = 'hold';
+          notice.classList.remove('is-typing');
+        }
         schedule(phase === 'hold' ? 3600 : 22);
       } else if (phase === 'hold') {
         notice.classList.add('is-leaving');
         phase = 'exit'; schedule(260);
       } else {
         current = (current + 1) % entries.length; cursor = 0; phase = 'typing';
-        entries[current].typed.textContent = ''; show(); schedule(180);
+        entries[current].characters.data = ''; show(); schedule(180);
       }
     }
     const sync = () => {
