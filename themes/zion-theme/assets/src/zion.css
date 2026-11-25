@@ -1141,7 +1141,7 @@ body:has(.zion-product-page--sticky) {
 
 .zion-header-sticky .wp-site-blocks > header.wp-block-template-part {
 	position: sticky;
-	inset-block-start: var(--wp-admin--admin-bar--height, 0px);
+	inset-block-start: var(--zion-header-inset, 0px);
 	z-index: 120;
 	background: var(--wp--preset--color--ink);
 }
@@ -1154,7 +1154,7 @@ body:has(.zion-product-page--sticky) {
 
 .zion-header-transparent:not(.zion-header-sticky) .wp-site-blocks > header.wp-block-template-part {
 	position: absolute;
-	inset: var(--wp-admin--admin-bar--height, 0px) 0 auto;
+	inset: var(--zion-header-inset, 0px) 0 auto;
 }
 
 .zion-header-transparent:not(.zion-header-sticky) .zion-hero {
@@ -3131,7 +3131,12 @@ body:has(.zion-product-page--sticky) {
 .zion-header-cart-count[hidden] { display: none; }
 
 /* Five presentations of the same native, editable navigation. */
-.wp-site-blocks > header.wp-block-template-part:has(.zion-header) { position: relative; z-index: 120; width: 100%; max-width: none; isolation: isolate; }
+.wp-site-blocks > header.wp-block-template-part:has(.zion-header) { --zion-header-inset: 0px; position: relative; z-index: 120; width: 100%; max-width: none; isolation: isolate; }
+.admin-bar .wp-site-blocks > header.wp-block-template-part:has(.zion-header) { --zion-header-inset: var(--wp-admin--admin-bar--height, 32px); }
+/* The mobile WordPress toolbar scrolls away instead of remaining fixed. */
+@media (max-width: 600px) {
+	.admin-bar.zion-header-sticky .wp-site-blocks > header.wp-block-template-part:has(.zion-header) { --zion-header-inset: 0px; }
+}
 .wp-site-blocks > header.wp-block-template-part:has(.zion-header)::after { content: ""; position: absolute; inset: auto 0 0; height: 1px; background: color-mix(in srgb, var(--wp--preset--color--accent) 42%, transparent); pointer-events: none; }
 .zion-header-sticky .wp-site-blocks > header.wp-block-template-part:has(.zion-header) { position: sticky; }
 .zion-header { --zion-menu-panel: var(--wp--preset--color--surface); --zion-menu-ink: var(--wp--preset--color--text); --zion-menu-muted: var(--wp--preset--color--muted); --zion-menu-focus: var(--wp--preset--color--accent); min-height: 88px; border-bottom: 0; padding-block: .65rem; box-sizing: border-box; }

@@ -10,12 +10,14 @@ function assertLocal(baseURL) {
   expect(['localhost', '127.0.0.1', '[::1]']).toContain(url.hostname);
   expect(url.port).toBe('8917');
 }
-async function fixture(page, baseURL, { withHeader = true, account = true, drawer = false, empty = false } = {}) {
+async function fixture(page, baseURL, { withHeader = true, account = true, drawer = false, empty = false, sticky = false, loggedIn = false } = {}) {
   assertLocal(baseURL);
   const notice = `<aside class="zion-updates" aria-label="Noutăți Zion"><div class="zion-updates__panel"><div class="zion-updates__inner"><span class="zion-updates__heading">Noutăți</span><ul class="zion-updates__items">${(empty ? [] : titles).map((title, i) => `<li><a href="/news-${i}"><span class="zion-updates__category">${i < 2 ? 'Din jurnal' : 'Magazin 3D'}</span><span class="zion-updates__title">${title}</span></a></li>`).join('')}</ul><div class="zion-updates__controls" hidden><span class="zion-updates__count" aria-hidden="true"></span><button type="button" class="zion-updates__pause" aria-label="Oprește animația" aria-pressed="false">Ⅱ</button><button type="button" class="zion-updates__next" aria-label="Următoarea noutate">→</button><button type="button" class="zion-updates__close" aria-label="Închide bara de noutăți">×</button></div></div></div></aside>`;
   const cart = drawer ? '<div class="zion-header-cart"><button aria-label="Coș de test">Coș</button></div>' : '<a class="zion-header-cart" href="/test-cart" aria-label="Coș de test">Coș</a>';
-  const header = withHeader ? `<header>${notice}<div class="wp-block-group zion-shell zion-header"><a href="/" class="zion-header-logo">Zion</a><nav class="zion-navigation"><button aria-label="Meniu de test">☰</button></nav><div class="zion-header-tools">${account ? '<div class="zion-header-account"><a href="/test-account" aria-label="Cont de test">Cont</a></div>' : ''}${cart}</div></div></header>` : notice;
-  await page.route('**/zion-notification-fixture*', route => route.fulfill({ contentType: 'text/html', body: `<!doctype html><html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{${tokens};--wp--preset--spacing--gutter:1rem}body{margin:0}</style><link rel="stylesheet" href="/wp-content/themes/zion-theme/assets/dist/zion.css"></head><body><div class="wp-site-blocks">${header}<main><a href="/zion-notification-fixture-next">Următoarea pagină de test</a></main></div><script src="/wp-content/themes/zion-theme/assets/blocks/announcements.js"></script></body></html>` }));
+  const header = withHeader ? `<header class="wp-block-template-part">${notice}<div class="wp-block-group zion-shell zion-header"><a href="/" class="zion-header-logo">Zion</a><nav class="zion-navigation"><button aria-label="Meniu de test">☰</button></nav><div class="zion-header-tools">${account ? '<div class="zion-header-account"><a href="/test-account" aria-label="Cont de test">Cont</a></div>' : ''}${cart}</div></div></header>` : notice;
+  const toolbar = loggedIn ? '<div id="wpadminbar" aria-label="Bară WordPress de test">Administrator</div>' : '';
+  const fixtureStyles = sticky ? ':root{--wp-admin--admin-bar--height:32px}html.zion-test-admin{margin-top:var(--wp-admin--admin-bar--height)}#wpadminbar{position:fixed;inset:0 0 auto;height:var(--wp-admin--admin-bar--height);z-index:9999;background:#111;color:#fff}main{min-height:5000px}@media(max-width:782px){:root{--wp-admin--admin-bar--height:46px}}@media(max-width:600px){#wpadminbar{position:absolute}}' : '';
+  await page.route('**/zion-notification-fixture*' , route => route.fulfill({ contentType: 'text/html', body: `<!doctype html><html lang="ro" class="${loggedIn ? 'zion-test-admin' : ''}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>:root{${tokens};--wp--preset--spacing--gutter:1rem}body{margin:0}${fixtureStyles}</style><link rel="stylesheet" href="/wp-content/themes/zion-theme/assets/dist/zion.css"></head><body class="${sticky ? 'zion-header-sticky' : ''} ${loggedIn ? 'admin-bar' : ''}">${toolbar}<div class="wp-site-blocks">${header}<main><a href="/zion-notification-fixture-next">Următoarea pagină de test</a></main></div><script src="/wp-content/themes/zion-theme/assets/blocks/announcements.js"></script></body></html>` }));
   await page.goto('/zion-notification-fixture');
 }
 const toggle = page => page.locator('.zion-updates__toggle');
@@ -194,3 +196,42 @@ test('without JavaScript all four full titles remain native accessible links', a
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await context.close();
 });
+
+for (const width of [320, 390, 600, 601, 768, 782, 783, 1024, 1440]) {
+  for (const loggedIn of [false, true]) test(`sticky notification leaves no gap at ${width}px for ${loggedIn ? 'administrator' : 'visitor'}`, async ({ page, baseURL }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await fixture(page, baseURL, { sticky: true, loggedIn });
+    const header = page.locator('header.wp-block-template-part');
+    const menu = page.locator('.zion-header');
+    const notice = page.locator('.zion-updates');
+    const toolbarHeight = width <= 782 ? 46 : 32;
+    const stickyTop = loggedIn && width > 600 ? toolbarHeight : 0;
+    await expect.poll(async () => (await header.boundingBox()).y).toBe(loggedIn ? toolbarHeight : 0);
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await expect.poll(async () => (await header.boundingBox()).y).toBe(stickyTop);
+    await notice.getByRole('button', { name: 'Închide bara de noutăți' }).click();
+    await expect(toggle(page)).toHaveAttribute('aria-expanded', 'false');
+    await expect.poll(async () => (await notice.boundingBox()).height).toBe(0);
+    await expect.poll(async () => (await menu.boundingBox()).y).toBe(stickyTop);
+    expect((await header.boundingBox()).height).toBe((await menu.boundingBox()).height);
+    await toggle(page).press('Enter');
+    await expect(toggle(page)).toHaveAttribute('aria-expanded', 'true');
+    expect((await menu.boundingBox()).y).toBeCloseTo(stickyTop + (await notice.boundingBox()).height, 1);
+    await toggle(page).click();
+    await expect.poll(async () => (await menu.boundingBox()).y).toBe(stickyTop);
+    await page.getByRole('link', { name: 'Următoarea pagină de test' }).click();
+    await expect(toggle(page)).toHaveAttribute('aria-expanded', 'false');
+    await expect.poll(async () => (await menu.boundingBox()).y).toBe(loggedIn ? toolbarHeight : 0);
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await expect.poll(async () => (await menu.boundingBox()).y).toBe(stickyTop);
+    if (width === 390) {
+      for (const resizedWidth of [768, 1024, 1440, 390]) {
+        await page.setViewportSize({ width: resizedWidth, height: 900 });
+        await page.evaluate(() => window.scrollTo(0, 600));
+        const expected = loggedIn && resizedWidth > 600 ? (resizedWidth <= 782 ? 46 : 32) : 0;
+        await expect.poll(async () => (await menu.boundingBox()).y).toBe(expected);
+      }
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  });
+}

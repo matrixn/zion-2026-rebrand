@@ -4,11 +4,11 @@ Temă WordPress bazată pe blocuri, cu identitatea Zion 3D și două vitrine car
 
 ## Implementat
 
-- [x] **Zion Theme 1.1.48** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
+- [x] **Zion Theme 1.1.49** cu presetări native în `theme.json` v3, homepage negru-lime, navigație responsivă și header și footer editabile.
 - [x] **Zion Control Center** în **Aspect → Zion Theme**, cu setări globale, pe vitrină și pe produs sau pagină, plus resetare și import/export JSON.
 - [x] **Șabloane editoriale** pentru pagini, articole, jurnal, arhive, căutare și 404, cu carduri, paginare și stări fără rezultate.
 - [x] **Șabloane WooCommerce** pentru catalog, căutare de produse și pagina individuală. Arhivele de categorii, etichete și branduri folosesc layoutul catalogului, iar coșul și checkoutul folosesc șabloanele WooCommerce.
-- [x] **Zion Core 1.1.48** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
+- [x] **Zion Core 1.1.49** cu taxonomia `zion_shop`, clasificare individuală și în masă, câmpuri editoriale și interogări comune pentru colecții.
 - [x] **Vitrine configurabile separat** cu grilă sau listă, coloane responsive, Product Collection și Product Filters WooCommerce, sortare, paginare și opțiunea „Încarcă mai multe”.
 - [x] **Carduri de produs** cu un renderer comun și cinci preseturi responsive. Imaginea, badge-urile, ordinea, informațiile și acțiunile se configurează global sau pe vitrină.
 - [x] **Pagini de produs** cu preseturi Physical 3D, Software, Minimal și Premium, secțiuni reordonabile și suprascrieri per produs. Formularul, variațiile și stocul folosesc WooCommerce.
@@ -39,6 +39,17 @@ Ordinea urmează fazele proiectului. Marchează un punct drept finalizat după c
   - [ ] Rulează inventarul pe o clonă reală zion3d.ro, reconstruiește paginile dependente și validează URL-urile pe staging.
   - [ ] Validează gateway-urile în sandbox, descărcarea fișierelor reale, abonamentele unde sunt folosite, cache-ul și Core Web Vitals în teren.
   - [ ] Exersează restaurarea completă pe staging și aprobă checklistul de lansare.
+
+## Header fără spațiu gol la închiderea noutăților · 1.1.49
+
+- [x] Meniul sticky nu mai rezervă 46 px pentru bara WordPress după ce aceasta a ieșit din ecran pe mobil. Pentru vizitatori, poziția implicită este zero; doar utilizatorii cu bara de administrare primesc offsetul corespunzător.
+- [x] Sub 601 px, headerul urmărește marginea ecranului după scroll. De la 601 px, respectă bara WordPress fixă de 46/32 px. Panoul închis ocupă zero înălțime, fără spațiu între partea de sus și meniu.
+- [x] Teste de regresie pentru vizitatori și administratori la **320/390/600/601/768/782/783/1024/1440 px**, cu închidere din X și clopoțel, redeschidere prin tastatură, navigare și redimensionare.
+- [x] Build și WPCS; PHPUnit **61 teste / 436 aserțiuni**; integrare **259 verificări**; Playwright **45/45 teste** trecute, inclusiv cele patru comparații vizuale existente.
+- [x] Verificare pe live la toate cele nouă lățimi: panoul închis are **0 px**, fără overflow. La 390 px, meniul după scroll este la **0 px**; cu bara WordPress fixă vizibilă, rămâne corect la 46/32 px.
+- [x] Theme/Core **1.1.49** instalate după backup privat; toate cele **167 fișiere** coincid cu ZIP-urile. X, clopoțelul și persistența verificate pe live; README, raport și ambele ZIP-uri versionate finalizate.
+
+Detalii: [corecția poziției headerului 1.1.49](docs/header-gap-1.1.49.md).
 
 ## Cursor terminal în bara de noutăți · 1.1.48
 
